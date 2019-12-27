@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <KeyOriginatorFile>../../F5NonCommercial.snk</KeyOriginatorFile>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="../../lib/Typedescriptor.Metadata.dll" />
+    <Reference Include="../../lib/Carbonfrost.Commons.SharedRuntime.dll" />
+    <Reference Include="../../lib/Carbonfrost.Commons.Spec.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Carbonfrost.Commons.Core\Carbonfrost.Commons.Core.csproj" />
+  </ItemGroup>
+</Project>

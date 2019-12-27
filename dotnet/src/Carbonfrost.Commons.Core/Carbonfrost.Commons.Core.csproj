@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../Build.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Carbonfrost.Commons.Core</RootNamespace>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Copyright>Copyright 2005-2019 Carbonfrost Systems, Inc.</Copyright>
+    <Authors>Carbonfrost</Authors>
+    <Description>Provides core functionality such as service locator, dependency injection,
+      provider model, runtime adapter model, templates, and namespace URI naming.
+    </Description>
+    <PackageProjectUrl>https://github.com/Carbonfrost/f-core</PackageProjectUrl>
+    <KeyOriginatorFile>../../F5NonCommercial.snk</KeyOriginatorFile>
+  </PropertyGroup>
+</Project>
