@@ -1,0 +1,24 @@
+name: .NET Core Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.0.100
+        source-url: https://nuget.pkg.github.com/Carbonfrost/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Check release requirements
+      run: make release/requirements
+    - name: Create the package
+      run: make dotnet/pack
+    - name: Publish the package to GitHub Packages
+      run: make -- -dotnet/push
