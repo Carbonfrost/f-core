@@ -1,0 +1,490 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </resheader>
+  <data name="AdapterRoleNotDefined" xml:space="preserve">
+    <value>Specified adapter role name is not defined: {0}</value>
+  </data>
+  <data name="AllWhitespace" xml:space="preserve">
+    <value>The argument cannot be the empty string or all whitespace.</value>
+  </data>
+  <data name="AlreadyInitialized" xml:space="preserve">
+    <value>The instance is already initialized.</value>
+  </data>
+  <data name="ApplyPropertiesStaticMethodRequiresArg" xml:space="preserve">
+    <value>Can't use the specified static method because it must have at least one parameter for use as the 'this' argument.</value>
+  </data>
+  <data name="AssemblyComponentCanOnlyLoadLocalFile" xml:space="preserve">
+    <value>Assembly components can only be loaded from an absolute URI that represents a local file.</value>
+  </data>
+  <data name="AssemblyFullyQualifiedRequired" xml:space="preserve">
+    <value>A fully qualified assembly name is required.</value>
+  </data>
+  <data name="BuilderCannotBeSelf" xml:space="preserve">
+    <value>Cannot specify the target type itself for the builder role or another type that itself specifies a builder role: {0}</value>
+  </data>
+  <data name="CannotActivateNoConstructor" xml:space="preserve">
+    <value>Cannot activate the type `{0}' because it has no available activation constructor.</value>
+  </data>
+  <data name="CannotActivateNoConstructorOrBuilder" xml:space="preserve">
+    <value>Cannot activate the type `{0}' because it has no available activation constructor and no builder defined.</value>
+  </data>
+  <data name="CannotBeNegative" xml:space="preserve">
+    <value>The specified argument cannot be negative.</value>
+  </data>
+  <data name="CannotBeNonNegative" xml:space="preserve">
+    <value>The value for the argument cannot be positive or zero.</value>
+  </data>
+  <data name="CannotBeNonPositive" xml:space="preserve">
+    <value>The specified argument cannot be negative or zero.</value>
+  </data>
+  <data name="CannotBePositive" xml:space="preserve">
+    <value>The value for the argument cannot be positive.</value>
+  </data>
+  <data name="CannotBeZero" xml:space="preserve">
+    <value>The specified argument cannot be equal to zero.</value>
+  </data>
+  <data name="CannotBuildTagUri" xml:space="preserve">
+    <value>Cannot build a tag URI from this instance.  The instance isn't a URL with a valid path and query.</value>
+  </data>
+  <data name="CannotCallStartTwice" xml:space="preserve">
+    <value>The progress callback cannot be started multiple times when the work to do is set to a positive value.</value>
+  </data>
+  <data name="CannotExpandPrefixNotFound" xml:space="preserve">
+    <value>Cannot expand qualified name.  The prefix `{0}' was not found.</value>
+  </data>
+  <data name="CannotSeekOrSetPosition" xml:space="preserve">
+    <value>The position of the stream cannot be seeked or set because the stream does not support the operation.</value>
+  </data>
+  <data name="CannotSpecifyNullKey" xml:space="preserve">
+    <value>The key in the key-value pair must not have a null key.</value>
+  </data>
+  <data name="CannotSpecifyPublicKeyToken" xml:space="preserve">
+    <value>PublicKeyToken and PublicKey must not be specified together.</value>
+  </data>
+  <data name="CannotWriteToStream" xml:space="preserve">
+    <value>Stream is read-only; cannot write to stream.</value>
+  </data>
+  <data name="CannotFindCompatibleLoader" xml:space="preserve">
+    <value>Cannot find a loader compatible with the component type `{0}'</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>The instance has been closed.</value>
+  </data>
+  <data name="CollectionCannotBeEmpty" xml:space="preserve">
+    <value>An empty collection is not valid for this argument.</value>
+  </data>
+  <data name="CollectionCannotCopyToMultidimensionalArray" xml:space="preserve">
+    <value>Cannot copy the collection contents to a multidimensional array.</value>
+  </data>
+  <data name="CollectionContainsNullElement" xml:space="preserve">
+    <value>An element in the collection is null.</value>
+  </data>
+  <data name="CollectionCountOutOfRange" xml:space="preserve">
+    <value>The specified count must be greater than or equal to 0 and less than the total number of items in the collection less the index offset ({0} to {1}, inclusive).</value>
+  </data>
+  <data name="CollectionFixedSize" xml:space="preserve">
+    <value>The operation is not supported for collections that are fixed size.</value>
+  </data>
+  <data name="CollectionIndexOutOfRange" xml:space="preserve">
+    <value>The specified index must be between {0} and {1}, inclusive.</value>
+  </data>
+  <data name="CollectionIndexOutOfRangeNoElements" xml:space="preserve">
+    <value>The specified index is out of range for the collection.</value>
+  </data>
+  <data name="ComparisonOperandsMustMatch" xml:space="preserve">
+    <value>The types of the comparison operands do not match.</value>
+  </data>
+  <data name="ComponentTypeCannotBeAnything" xml:space="preserve">
+    <value>Expected a valid component type, not a wildcard type.</value>
+  </data>
+  <data name="ConcreteClassError" xml:space="preserve">
+    <value>Unexpected result from the concrete class provider for `{0}`.  Concrete class result must extend the base type and may not be abstract or an interface.</value>
+  </data>
+  <data name="ContentTypeNotStandard" xml:space="preserve">
+    <value>Specified type is not one of the supported standard types for an Internet media type.</value>
+  </data>
+  <data name="CouldNotActivateProperty" xml:space="preserve">
+    <value>Failed to activate property `{0}'.</value>
+  </data>
+  <data name="CriteriaNotUnderstood" xml:space="preserve">
+    <value>Specified criteria type is not supported.</value>
+  </data>
+  <data name="DefineProvider" xml:space="preserve">
+    <value>Define provider {0} {1}</value>
+  </data>
+  <data name="DefineRootProvider" xml:space="preserve">
+    <value>Define root provider {0}</value>
+  </data>
+  <data name="DirectedStreamCannotRead" xml:space="preserve">
+    <value>The stream is directed and reading is not permitted or the base stream cannot read.</value>
+  </data>
+  <data name="DirectedStreamCannotWrite" xml:space="preserve">
+    <value>The stream is directed and writing is not permitted or the base stream cannot write.</value>
+  </data>
+  <data name="Disposed" xml:space="preserve">
+    <value>Cannot utilize '{0}' after the instance has been disposed.</value>
+  </data>
+  <data name="Empty" xml:space="preserve">
+    <value>&lt;empty&gt;</value>
+  </data>
+  <data name="EmptyCollectionNotValid" xml:space="preserve">
+    <value>An empty collection is not valid for this argument.</value>
+  </data>
+  <data name="EmptyStringNotValid" xml:space="preserve">
+    <value>The empty string is not valid for the argument.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>[Error]</value>
+  </data>
+  <data name="EventMissing" xml:space="preserve">
+    <value>The specified event, {0}, does not exist or cannot be converted to the required type.</value>
+  </data>
+  <data name="EventObsolete" xml:space="preserve">
+    <value>The specified event, {0} is obsolete: {1}</value>
+  </data>
+  <data name="EventPreliminary" xml:space="preserve">
+    <value>The specified event, {0} is preliminary: {1}</value>
+  </data>
+  <data name="Expected" xml:space="preserve">
+    <value>Expected: `{0}'</value>
+  </data>
+  <data name="ExpectedIdentifier" xml:space="preserve">
+    <value>Expected: 'identifier'.</value>
+  </data>
+  <data name="ExpectedLeftBraceOrDollar" xml:space="preserve">
+    <value>Expected: '{{' or '$'.</value>
+  </data>
+  <data name="ExpectedRightBrace" xml:space="preserve">
+    <value>Expected: '}'</value>
+  </data>
+  <data name="FailedToGenerateProxy" xml:space="preserve">
+    <value>Failed to generate a dynamic proxy for an instance of type {0}.  A required interface or base type couldn't be implemented.</value>
+  </data>
+  <data name="ForbiddenStreamStreamContext" xml:space="preserve">
+    <value>The `stream:' protocol cannot be used as a stream context type.</value>
+  </data>
+  <data name="ForbiddenType" xml:space="preserve">
+    <value>The specified type cannot be used for the argument: {0}.</value>
+  </data>
+  <data name="IncompleteEscapeSequence" xml:space="preserve">
+    <value>Unrecognized or incomplete escape sequence.</value>
+  </data>
+  <data name="InvalidProviderDeclared" xml:space="preserve">
+    <value>Invalid provider `{0}': {1}</value>
+  </data>
+  <data name="InvalidProviderFieldOrMethod" xml:space="preserve">
+    <value>Given provider field or method is not valid because it is not static or has a return type that doesn't extend the provider base type.</value>
+  </data>
+  <data name="InvalidProviderInstanceType" xml:space="preserve">
+    <value>Given provider instance type is not valid because it is abstract or doesn't extend the provider base type.</value>
+  </data>
+  <data name="ItemAlreadyExists" xml:space="preserve">
+    <value>The specified item already exists within the collection: {0}.</value>
+  </data>
+  <data name="ItemRequiredToExistInCollection" xml:space="preserve">
+    <value>The item is required to exist in the collection.</value>
+  </data>
+  <data name="KeyAlreadyExists" xml:space="preserve">
+    <value>The specified key or identifier, {0}, cannot be added to the collection because it already exists.</value>
+  </data>
+  <data name="LateBoundTypeFailure" xml:space="preserve">
+    <value>Late-bound loading of a type `{0}' that was referenced by a component has failed.</value>
+  </data>
+  <data name="MinMustBeLessThanMax" xml:space="preserve">
+    <value>The minimum value must be less than or equal to the maximum value.</value>
+  </data>
+  <data name="Modified" xml:space="preserve">
+    <value>The enumeration may not complete because the collection has been modified.</value>
+  </data>
+  <data name="MultipleComponentsMatch" xml:space="preserve">
+    <value>Multiple components match the given criteria.</value>
+  </data>
+  <data name="MultipleNamespaces" xml:space="preserve">
+    <value>Multiple namespaces matched the given selection.</value>
+  </data>
+  <data name="MultipleProviders" xml:space="preserve">
+    <value>Multiple providers match the given criteria.</value>
+  </data>
+  <data name="MultipleProviderTypes" xml:space="preserve">
+    <value>Provider implements more than one provider type.</value>
+  </data>
+  <data name="NamedServiceNotFound" xml:space="preserve">
+    <value>The specified service `{0}' of type {1} not found.</value>
+  </data>
+  <data name="NaN" xml:space="preserve">
+    <value>The value is not-a-number, which is not valid for this argument.</value>
+  </data>
+  <data name="NoAcceptableStreamingSource" xml:space="preserve">
+    <value>No acceptable streaming source could be created for the required output type, {0}.</value>
+  </data>
+  <data name="NoAdapterForRole" xml:space="preserve">
+    <value>No adapter can supply the conversion from the source type `{0}' to the needed adapter role, `{1}'.</value>
+  </data>
+  <data name="NoAvailableTextConversion" xml:space="preserve">
+    <value>No technique is available to convert type `{0}' from text.</value>
+  </data>
+  <data name="NoComponentStoreClientProviderMatchesCriteria" xml:space="preserve">
+    <value>Cannot connect to `{0}'.  No component store client provider matches the criteria.</value>
+  </data>
+  <data name="NotAnyRequiredType" xml:space="preserve">
+    <value>The type, {0}, is not one of the required types, {1}.</value>
+  </data>
+  <data name="NotAssignableFrom" xml:space="preserve">
+    <value>The type `{0}' cannot be assigned to the required type, `{1}' because it is not a subclass or implementer of the required type.</value>
+  </data>
+  <data name="NotCompliantIdentifier" xml:space="preserve">
+    <value>The identifier ({0}) is not compliant with the required level, {1}.</value>
+  </data>
+  <data name="NotCompliantIdentifier2" xml:space="preserve">
+    <value>The specified identifier is not compliant.</value>
+  </data>
+  <data name="NotEnoughSpaceInArray" xml:space="preserve">
+    <value>Given the index, there is not enough space in the array.</value>
+  </data>
+  <data name="NotInitialized" xml:space="preserve">
+    <value>The operation cannot continue in the current state because the instance has not been initialized.</value>
+  </data>
+  <data name="NotInstanceOf" xml:space="preserve">
+    <value>The value is not an instance of the required type, `{0}'.</value>
+  </data>
+  <data name="NotRequiredType" xml:space="preserve">
+    <value>The instance type is {0}, but it is not of the required type, {1}.</value>
+  </data>
+  <data name="NotSubclassOf" xml:space="preserve">
+    <value>The type `{0}' is not a subclass of the required type, `{1}'.</value>
+  </data>
+  <data name="NotSupportedIdentityKey" xml:space="preserve">
+    <value>The key, '{0}', is not supported for an identity.</value>
+  </data>
+  <data name="NotValidComponentUriNamePart" xml:space="preserve">
+    <value>Invalid value for name part of component URI.</value>
+  </data>
+  <data name="NotValidComponentUriSourcePart" xml:space="preserve">
+    <value>Invalid text or unsupported scheme for source part of component URI.</value>
+  </data>
+  <data name="NotValidDataUri" xml:space="preserve">
+    <value>The URI does not represent a valid data: URI.</value>
+  </data>
+  <data name="NotValidHexString" xml:space="preserve">
+    <value>The input string does not represent a valid hexadecimal byte array.</value>
+  </data>
+  <data name="NotValidLocalName" xml:space="preserve">
+    <value>Local name contains an illegal character.</value>
+  </data>
+  <data name="NotValidPathCharacter" xml:space="preserve">
+    <value>The path '{0}' contains an invalid character or does not identify a supported path name.</value>
+  </data>
+  <data name="NotWithinEnum" xml:space="preserve">
+    <value>The specified value is not within the defined values for the enumeration type, {0}.</value>
+  </data>
+  <data name="NullableMustHaveValue" xml:space="preserve">
+    <value>The given nullable argument must have a value.</value>
+  </data>
+  <data name="OnlyTypedAdapterFactory" xml:space="preserve">
+    <value>Only an instance of the strongly typed adapter factory type, AdapterFactory&lt;T&gt;, or one of its constructed generic subtypes can be used as an argument.</value>
+  </data>
+  <data name="OpaqueIdRequiresVersionPublicKeyToken" xml:space="preserve">
+    <value>A version and a public key token must be available to generate an opaque ID.</value>
+  </data>
+  <data name="OutOfRangeInclusive" xml:space="preserve">
+    <value>The value must be in the range {0} to {1}, inclusive.</value>
+  </data>
+  <data name="OutsideEnumeration" xml:space="preserve">
+    <value>The operation is not valid because the enumerator is positioned before or after the enumeration body.</value>
+  </data>
+  <data name="ParseFailure" xml:space="preserve">
+    <value>The text cannot be parsed into a valid instance of type '{0}'.</value>
+  </data>
+  <data name="ProbingForAssemblies" xml:space="preserve">
+    <value>Probing for assemblies ({0})</value>
+  </data>
+  <data name="ProgressCallbackNotStarted" xml:space="preserve">
+    <value>The progress callback cannot consume units until Start() has been invoked.</value>
+  </data>
+  <data name="PropertiesCategoryMissingBrackets" xml:space="preserve">
+    <value>A category name must be specified in brackets.</value>
+  </data>
+  <data name="PropertiesParseKeyNameExpected" xml:space="preserve">
+    <value>Parser error: Expected key.</value>
+  </data>
+  <data name="PropertyConversionFailed" xml:space="preserve">
+    <value>Property `{0}': Cannot convert {1} to the required type.</value>
+  </data>
+  <data name="PropertyDeclarationMissingKey" xml:space="preserve">
+    <value>The property declaration does not specify a key.</value>
+  </data>
+  <data name="PropertyMissing" xml:space="preserve">
+    <value>The specified property, {0}, does not exist or cannot be converted to the required type.</value>
+  </data>
+  <data name="PropertyMustBeSet" xml:space="preserve">
+    <value>The property, {0}, is expected to be set.</value>
+  </data>
+  <data name="PropertyNotFound" xml:space="preserve">
+    <value>Property with the given name was not found, {0}.</value>
+  </data>
+  <data name="PropertyObsolete" xml:space="preserve">
+    <value>The specified property, {0} is obsolete: {1}</value>
+  </data>
+  <data name="PropertyPreliminary" xml:space="preserve">
+    <value>The specified property, {0} is preliminary: {1}</value>
+  </data>
+  <data name="ProviderNotFound" xml:space="preserve">
+    <value>No provider of type `{0}' was not found matching the criteria.</value>
+  </data>
+  <data name="PublicTypeRequiredAdapter" xml:space="preserve">
+    <value>A public type is required for the output adapter: {0}.</value>
+  </data>
+  <data name="PublishAttributeTypeMismatch" xml:space="preserve">
+    <value>The given member `{0}' has a return type or the return result that does not match the service type contract, `{1}`.</value>
+  </data>
+  <data name="QualifiedNameCannotBeGeneratedFromConstructed" xml:space="preserve">
+    <value>Qualified names cannot be created for array, byref, or pointer types, or for constructed generic types or generic parameters.</value>
+  </data>
+  <data name="ReadOnlyCollection" xml:space="preserve">
+    <value>The operation cannot proceed because the collection is read-only.</value>
+  </data>
+  <data name="ReadOnlyProperty" xml:space="preserve">
+    <value>The property, `{0}' cannot be modified because it is read-only.</value>
+  </data>
+  <data name="ReadOnlyPropertyNoName" xml:space="preserve">
+    <value>The property cannot be modified because it is read-only.</value>
+  </data>
+  <data name="RequiredSubscriptionConstructor" xml:space="preserve">
+    <value>Cannot activate the component because a service is required but none is available (activating constructor: {0}, parameter: {1})</value>
+  </data>
+  <data name="RequiredSubscriptonFieldOrProperty" xml:space="preserve">
+    <value>Cannot activate the component because a service is required but none is available (field or property: {0})</value>
+  </data>
+  <data name="RootServiceProviderInitFailure" xml:space="preserve">
+    <value>Failed to initialize custom root service provider type `{0}': {1}</value>
+  </data>
+  <data name="SealableNotSealed" xml:space="preserve">
+    <value>The operation cannot continue because the instance is not sealed.</value>
+  </data>
+  <data name="SealableReadOnly" xml:space="preserve">
+    <value>Once sealed, the object cannot be modified.</value>
+  </data>
+  <data name="SeekDirectionIncompatible" xml:space="preserve">
+    <value>The specified or implied seek direction is incompatible with the seek directions permitted on the stream.</value>
+  </data>
+  <data name="SeekNotSupportedByBase" xml:space="preserve">
+    <value>The stream cannot be seeked because the base stream does not support seeking.</value>
+  </data>
+  <data name="ServiceAlreadyExists" xml:space="preserve">
+    <value>A service bound to the given name or type already exists in the service container: `{0}'.</value>
+  </data>
+  <data name="ServiceFailedToStart" xml:space="preserve">
+    <value>Failed to start service: `{0}'</value>
+  </data>
+  <data name="ServiceNotFound" xml:space="preserve">
+    <value>The specified service `{0}' was not found.</value>
+  </data>
+  <data name="StreamCannotRead" xml:space="preserve">
+    <value>The stream cannot be read, but it is expected to be readable.</value>
+  </data>
+  <data name="StreamCannotWrite" xml:space="preserve">
+    <value>The stream cannot be written to, but it is expected to be writable.</value>
+  </data>
+  <data name="StreamContextDoesNotExist" xml:space="preserve">
+    <value>Failed to open stream context.</value>
+  </data>
+  <data name="TemplateDoesNotSupportOperand" xml:space="preserve">
+    <value>Specified argument is not supported by the template.</value>
+  </data>
+  <data name="TemplateNotFound" xml:space="preserve">
+    <value>Template with the given name not found: {0}</value>
+  </data>
+  <data name="ThisArgumentIncorrectType" xml:space="preserve">
+    <value>Can't apply method to an instance of {0}.</value>
+  </data>
+  <data name="TypeMissing" xml:space="preserve">
+    <value>The type was not found: {0}.</value>
+  </data>
+  <data name="TypeMissingFromQualifiedName" xml:space="preserve">
+    <value>Could not load type because no type matches the qualified name: {0}</value>
+  </data>
+  <data name="TypeNotCastableAdaptable" xml:space="preserve">
+    <value>The type, `{0}', is not of the required type(s), '{1}', and there is no suitable adapter factory in the service context to supply the conversion.</value>
+  </data>
+  <data name="TypeReferenceResolveError" xml:space="preserve">
+    <value>An exception occurred while resolving the type: {0}</value>
+  </data>
+  <data name="TypeReferenceResolvingType" xml:space="preserve">
+    <value>"Type reference resolving type '{0}'</value>
+  </data>
+  <data name="UnexpectedEof" xml:space="preserve">
+    <value>The file ended unexpectedly when the reader expected more data.</value>
+  </data>
+  <data name="UnexpectedlyNull" xml:space="preserve">
+    <value>A required value was unexpectedly null.</value>
+  </data>
+  <data name="UnknownAdapterRole" xml:space="preserve">
+    <value>Specified adapter role is not known: {0}.</value>
+  </data>
+  <data name="UnknownUriScheme" xml:space="preserve">
+    <value>Unknown or unsupported URI scheme for objects of type `{0}'</value>
+  </data>
+  <data name="UseProviderRegistrationAttributeOverload" xml:space="preserve">
+    <value>Don't use this attribute constructor to specify custom provider registration.  Use the overload that accepts the type.</value>
+  </data>
+  <data name="ValueTypesNotSupported" xml:space="preserve">
+    <value>Value types are not supported in this context.</value>
+  </data>
+</root>

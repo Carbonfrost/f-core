@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <Version>$(ENG_GIT_VERSION)</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>[share:GitCommitHash]</_Parameter1>
+      <_Parameter2>$(ENG_GIT_HEAD_REVISION)</_Parameter2>
+    </AssemblyAttribute>
+
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>[share:BuildDate]</_Parameter1>
+      <_Parameter2>$(ENG_GIT_BUILD_DATE)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
