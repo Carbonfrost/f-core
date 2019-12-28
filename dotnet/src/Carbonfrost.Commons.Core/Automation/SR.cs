@@ -1064,5 +1064,12 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("ValueTypesNotSupported") );
     }
 
+  /// <summary>Either the type or value of the data provider must be specified, but not both.</summary>
+    internal static string DataProviderTypeOrValueNotBoth(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("DataProviderTypeOrValueNotBoth") );
+    }
+
     }
 }

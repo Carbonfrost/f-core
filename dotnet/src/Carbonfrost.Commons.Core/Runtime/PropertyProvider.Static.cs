@@ -36,6 +36,14 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
+        public static IPropertyProvider LateBound(TypeReference type) {
+            if (type == null) {
+                throw new ArgumentNullException("type");
+            }
+
+            return new LateBoundPropertyProvider(type);
+        }
+
         public static IPropertyProvider Compose(IEnumerable<IPropertyProvider> providers) {
             return ComposeCore(providers);
         }

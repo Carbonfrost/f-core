@@ -333,5 +333,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public static ArgumentException AdapterRoleNotDefined(string argumentName, string argumentValue) {
             return Failure.Prepare(new ArgumentException(SR.AdapterRoleNotDefined(argumentValue), argumentName));
         }
+
+        public static ArgumentException DataProviderTypeOrValueNotBoth() {
+            return Failure.Prepare(new ArgumentException(SR.DataProviderTypeOrValueNotBoth()));
+        }
     }
 }

@@ -487,4 +487,7 @@
   <data name="ValueTypesNotSupported" xml:space="preserve">
     <value>Value types are not supported in this context.</value>
   </data>
+  <data name="DataProviderTypeOrValueNotBoth" xml:space="preserve">
+    <value>Either the type or value of the data provider must be specified, but not both.</value>
+  </data>
 </root>
