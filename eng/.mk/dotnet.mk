@@ -51,15 +51,11 @@ dotnet/push: dotnet/pack -dotnet/push
 	@ eval $(shell eng/build_env); \
 		dotnet pack --configuration $(CONFIGURATION) --no-build ./dotnet
 
+# Nuget CLI doesn't work with GitHub package registry for some reason, so we're using a curl directly
 -dotnet/push:
-	@ echo "<configuration />" > $(NUGET_FILE)
-	@ nuget source add -Name "GPR" \
-		 -Source $(NUGET_SOURCE_URL) \
-		 -UserName $(NUGET_USER_NAME) \
-		 -Password $(NUGET_PASSWORD) \
-		 -ConfigFile $(NUGET_FILE) \
-		 -StorePasswordInClearText
-	@ dotnet nuget push ./dotnet/src/*/bin/Release/*.nupkg --source $(NUGET_SOURCE_URL)
+	@ for f in dotnet/src/*/bin/Release/*.nupkg; do \
+		curl -X PUT -u "$(NUGET_USER_NAME):$(NUGET_PASSWORD)" -F package=@$$f $(NUGET_UPLOAD_URL); \
+	done
 
 release/requirements:
 	@ eng/release_requirements
