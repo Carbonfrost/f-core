@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: actions/setup-dotnet@b7821147f564527086410e8edd122d89b4b9602f
+    - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
         source-url: https://nuget.pkg.github.com/Carbonfrost/index.json
