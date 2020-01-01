@@ -33,7 +33,7 @@ jobs:
       run: make -- -dotnet/pack
 
     - name: Publish the package to GitHub Package Repository
-      run: make dotnet/push
+      run: make -- -dotnet/push
       env:
         NUGET_SOURCE_URL: https://nuget.pkg.github.com/Carbonfrost/index.json
         NUGET_USER_NAME: ${{ github.actor }}

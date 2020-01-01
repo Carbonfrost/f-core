@@ -28,7 +28,7 @@
 CONFIGURATION?=Release
 
 # The location of the NuGet configuration file
-NUGET_FILE?=./dotnet/nuget.config
+NUGET_FILE?=./nuget.config
 
 ## Restore package dependencies
 dotnet/restore:
