@@ -35,6 +35,6 @@ jobs:
     - name: Publish the package to GitHub Package Repository
       run: make -- -dotnet/push
       env:
-        NUGET_SOURCE_URL: https://nuget.pkg.github.com/Carbonfrost/index.json
+        NUGET_UPLOAD_URL: https://nuget.pkg.github.com/carbonfrost/
         NUGET_USER_NAME: ${{ github.actor }}
         NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
