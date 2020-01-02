@@ -23,7 +23,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     | AttributeTargets.Interface
                     | AttributeTargets.Class,
                     AllowMultiple = false, Inherited = false)]
-    public sealed class ConcreteClassAttribute : ConcreteClassProviderAttributeBase {
+    public sealed class ConcreteClassAttribute : Attribute, IConcreteClassProvider {
 
         private readonly Type type;
 
@@ -37,7 +37,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             this.type = type;
         }
 
-        protected override Type GetConcreteClassCore(Type sourceType, IServiceProvider serviceProvider) {
+        public Type GetConcreteClass(Type sourceType, IServiceProvider serviceProvider) {
             return ConcreteType;
         }
     }

@@ -1,5 +1,5 @@
 //
-// Copyright 2014, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,20 @@
 // limitations under the License.
 //
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+using Carbonfrost.Commons.Core.Runtime;
+using Carbonfrost.Commons.Spec;
 
-namespace Carbonfrost.Commons.Core.Runtime {
+namespace Carbonfrost.UnitTests.Core.Runtime {
 
-    class DefaultAssemblyProbe : AssemblyProbe {
+    public class AdapterFactoryAttributeTests {
 
-        // TODO Improve by looking at binding manifest
+        class HelloRoleAttribute : AdapterFactoryAttribute {
+            public HelloRoleAttribute() : base(typeof(string)) {}
+        }
 
-        public override IEnumerable<string> EnumerateAssemblyFiles() {
-            try {
-                return Directory.EnumerateFiles(App.BasePath, "*.dll");
-            } catch {
-            }
-            return Array.Empty<string>();
+        [Fact]
+        public void Role_should_be_implied_when_unspecified() {
+            Assert.Equal("HelloRole", new HelloRoleAttribute().Role);
         }
     }
 }

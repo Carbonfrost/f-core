@@ -15,11 +15,9 @@
 //
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.Core {
@@ -27,18 +25,17 @@ namespace Carbonfrost.Commons.Core {
     public sealed partial class AssemblyInfo {
 
         private string[] _nsCache;
-        private static readonly IDictionary<Assembly, AssemblyInfo> map = new Dictionary<Assembly, AssemblyInfo>();
-        private readonly Assembly assembly;
+        private static readonly IDictionary<Assembly, AssemblyInfo> _map = new Dictionary<Assembly, AssemblyInfo>();
+        private readonly Assembly _assembly;
         private readonly IAssemblyInfoXmlNamespaceResolver _resolver;
 
-        private readonly ICustomAttributeProvider attributes;
-        private readonly SharedRuntimeOptionsAttribute options;
+        private readonly SharedRuntimeOptionsAttribute _options;
 
         internal static readonly IEnumerable<AssemblyName> ALL;
 
         public IEnumerable<AssemblyInfo> ReferencedAssemblies {
             get {
-                return this.Assembly.GetReferencedAssemblies().Select(AssemblyInfo.GetAssemblyInfo);
+                return Assembly.GetReferencedAssemblies().Select(AssemblyInfo.GetAssemblyInfo);
             }
         }
 
@@ -61,30 +58,34 @@ namespace Carbonfrost.Commons.Core {
         }
 
         internal bool ScanForTemplates {
-            get { return Scannable && options.Templates; }
+            get { return Scannable && _options.Templates; }
         }
 
         internal bool ScanForAdapters {
-            get { return Scannable && options.Adapters; }
+            get { return Scannable && _options.Adapters; }
         }
 
         internal bool ScanForProviders {
-            get { return Scannable && options.Providers; }
+            get { return Scannable && _options.Providers; }
         }
 
         internal bool Scannable {
-            get; private set;
+            get;
+            private set;
         }
 
-        public Assembly Assembly { get { return assembly; } }
+        public Assembly Assembly {
+            get {
+                return _assembly;
+            }
+        }
 
         private AssemblyInfo(Assembly a) {
-            this.assembly = a;
-            this.attributes = assembly;
+            _assembly = a;
 
-            var sc = CustomAttributeProvider.GetCustomAttribute<SharedRuntimeOptionsAttribute>(this.attributes, false);
-            this.options = sc ?? SharedRuntimeOptionsAttribute.Default;
-            this.Scannable = Utility.IsScannableAssembly(a);
+            var sc = (SharedRuntimeOptionsAttribute) Attribute.GetCustomAttribute(_assembly, typeof(SharedRuntimeOptionsAttribute));
+            _options = sc ?? SharedRuntimeOptionsAttribute.Default;
+            Scannable = Utility.IsScannableAssembly(a);
 
             if (this.Scannable) {
                 _resolver = new AssemblyInfoXmlNamespaceResolver(this);
@@ -95,7 +96,8 @@ namespace Carbonfrost.Commons.Core {
 
         static AssemblyInfo() {
             ALL = App.DescribeAssemblies(
-                a => new [] { a.GetName() });
+                a => new [] { a.GetName() }
+            );
         }
 
         public IEnumerable<string> GetNamespaces(string pattern) {
@@ -103,19 +105,21 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public static AssemblyInfo GetAssemblyInfo(AssemblyName assemblyName) {
-            if (assemblyName == null)
+            if (assemblyName == null) {
                 throw new ArgumentNullException("assemblyName");
+            }
 
             return GetAssemblyInfo(Assembly.Load(assemblyName));
         }
 
         public static AssemblyInfo GetAssemblyInfo(Assembly assembly) {
-            if (assembly == null)
-                throw new ArgumentNullException("assembly"); // $NON-NLS-1
+            if (assembly == null) {
+                throw new ArgumentNullException("assembly");
+            }
 
             AssemblyInfo result;
-            if (!map.TryGetValue(assembly, out result)) {
-                result = map[assembly] = new AssemblyInfo(assembly);
+            if (!_map.TryGetValue(assembly, out result)) {
+                result = _map[assembly] = new AssemblyInfo(assembly);
             }
 
             return result;
@@ -126,8 +130,9 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public string GetClrNamespace(NamespaceUri namespaceUri) {
-            if (namespaceUri == null)
-                throw new ArgumentNullException("namespaceUri"); // $NON-NLS-1
+            if (namespaceUri == null) {
+                throw new ArgumentNullException("namespaceUri");
+            }
 
             return GetClrNamespaces(namespaceUri).SingleOrThrow(RuntimeFailure.MultipleNamespaces);
         }
@@ -137,15 +142,16 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public string GetXmlNamespacePrefix(NamespaceUri namespaceUri) {
-            if (namespaceUri == null)
+            if (namespaceUri == null) {
                 throw new ArgumentNullException("namespaceUri");
+            }
 
             return _resolver.LookupPrefix(namespaceUri);
         }
 
         private string[] AllNamespaces() {
             if (_nsCache == null) {
-                _nsCache = this.assembly.GetTypesHelper()
+                _nsCache = _assembly.GetTypesHelper()
                     .Select(t => t.Namespace)
                     .Where(t => !string.IsNullOrEmpty(t))
                     .Distinct()
@@ -156,19 +162,21 @@ namespace Carbonfrost.Commons.Core {
         }
 
         internal IProviderRegistration GetProviderRegistration() {
-            if (!ScanForProviders)
+            if (!ScanForProviders) {
                 return ProviderRegistration.None;
+            }
 
             var sc = (ProviderRegistrationAttribute[])
-                assembly.GetCustomAttributes(typeof(ProviderRegistrationAttribute), false);
+                _assembly.GetCustomAttributes(typeof(ProviderRegistrationAttribute), false);
 
             var items = sc.Select(t => t.Registration).ToArray();
-            if (items.Length == 0)
+            if (items.Length == 0) {
                 return ProviderRegistration.Default;
-            else if (items.Length == 1)
+            }
+            if (items.Length == 1) {
                 return items[0];
-            else
-                return new CompositeProviderRegistration(items);
+            }
+            return new CompositeProviderRegistration(items);
         }
     }
 

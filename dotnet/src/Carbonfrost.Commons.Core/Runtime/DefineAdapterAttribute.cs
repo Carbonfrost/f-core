@@ -86,7 +86,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 predicate = t => (adapteeType == t.AdapteeType);
             }
 
-            return cache.GetValueOrDefault(adapterRoleName, Empty<DefineAdapterAttribute>.Array)
+            return cache.GetValueOrDefault(adapterRoleName, Array.Empty<DefineAdapterAttribute>())
                 .Where(predicate)
                 .Select(t => t.AdapterType);
         }

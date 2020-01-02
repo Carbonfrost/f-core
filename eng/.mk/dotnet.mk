@@ -43,6 +43,9 @@ dotnet/pack: dotnet/build -dotnet/pack
 ## Push the dotnet build into package repository
 dotnet/push: dotnet/pack -dotnet/push
 
+## Executes dotnet publish
+dotnet/publish: dotnet/build -dotnet/publish
+
 -dotnet/build:
 	@ eval $(shell eng/build_env); \
 		dotnet build --configuration $(CONFIGURATION) --no-restore ./dotnet
@@ -50,6 +53,10 @@ dotnet/push: dotnet/pack -dotnet/push
 -dotnet/pack:
 	@ eval $(shell eng/build_env); \
 		dotnet pack --configuration $(CONFIGURATION) --no-build ./dotnet
+
+-dotnet/publish:
+	@ eval $(shell eng/build_env); \
+		dotnet publish --configuration $(CONFIGURATION) --no-build ./dotnet
 
 # Nuget CLI doesn't work with GitHub package registry for some reason, so we're using a curl directly
 -dotnet/push:

@@ -1,5 +1,5 @@
 //
-// Copyright 2012, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2012, 2016, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,10 +26,7 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
         [ConcreteClassImpl]
         interface IP<T> {}
-        class P : IP<P>, IQ<P>, IR {}
-
-        [ConcreteClassImpl2]
-        interface IQ<T> {}
+        class P : IP<P>, IR {}
 
         [ConcreteClassProvider(typeof(MyConcreteClassProvider))]
         interface IR {}
@@ -44,17 +41,10 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             }
         }
 
-        sealed class ConcreteClassImplAttribute : ConcreteClassProviderAttributeBase {
+        sealed class ConcreteClassImplAttribute : Attribute, IConcreteClassProvider {
 
-            protected override Type GetConcreteClassCore(Type sourceType, IServiceProvider serviceProvider) {
+            public Type GetConcreteClass(Type sourceType, IServiceProvider serviceProvider) {
                 return sourceType.GetTypeInfo().GetGenericArguments()[0];
-            }
-        }
-
-        sealed class ConcreteClassImpl2Attribute : Attribute, IConcreteClassProvider {
-
-            Type IConcreteClassProvider.GetConcreteClass(Type sourceType, IServiceProvider serviceProvider) {
-                return typeof(P);
             }
         }
 
@@ -62,12 +52,6 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         public void GetConcreteClass_test_concrete_class_provider_custom_impl() {
             Assert.Equal(typeof(P), typeof(IP<P>).GetConcreteClass());
             Assert.IsInstanceOf<ConcreteClassImplAttribute>(typeof(IP<P>).GetConcreteClassProvider());
-        }
-
-        [Fact]
-        public void GetConcreteClass_test_concrete_class_provider_via_interface() {
-            Assert.Equal(typeof(P), typeof(IQ<P>).GetConcreteClass());
-            Assert.IsInstanceOf<ConcreteClassImpl2Attribute>(typeof(IQ<P>).GetConcreteClassProvider());
         }
 
         [Fact]
