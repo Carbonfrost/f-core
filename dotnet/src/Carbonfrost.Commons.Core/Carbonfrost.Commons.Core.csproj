@@ -12,6 +12,5 @@
     </Description>
     <PackageProjectUrl>https://github.com/Carbonfrost/f-core</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Carbonfrost/f-core</RepositoryUrl>
-    <KeyOriginatorFile>../../F5NonCommercial.snk</KeyOriginatorFile>
   </PropertyGroup>
 </Project>

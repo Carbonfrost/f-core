@@ -1,5 +1,5 @@
 //
-// Copyright 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2010, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 //
 
 
+using System;
 using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Core {
@@ -36,13 +37,13 @@ namespace Carbonfrost.Commons.Core {
 
             ICollection<TKey> IDictionary<TKey, TValue>.Keys {
                 get {
-                    return Empty<TKey>.Array;
+                    return Array.Empty<TKey>();
                 }
             }
 
             ICollection<TValue> IDictionary<TKey, TValue>.Values {
                 get {
-                    return Empty<TValue>.Array;
+                    return Array.Empty<TValue>();
                 }
             }
 
@@ -95,11 +96,11 @@ namespace Carbonfrost.Commons.Core {
             }
 
             IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator() {
-                return Empty<KeyValuePair<TKey, TValue>>.Enumerator;
+                yield break;
             }
 
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-                return Empty<KeyValuePair<TKey, TValue>>.Enumerator;
+                yield break;
             }
         }
     }

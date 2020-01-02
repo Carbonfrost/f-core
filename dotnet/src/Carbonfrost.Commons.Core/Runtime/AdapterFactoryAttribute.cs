@@ -1,5 +1,5 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,34 +14,68 @@
 // limitations under the License.
 //
 
-
 using System;
+using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
     [AttributeUsage(AttributeTargets.Assembly)]
     public class AdapterFactoryAttribute : Attribute {
 
-        public Type AdapterFactoryType { get; private set; }
-        public string Role { get; private set; }
+        public Type AdapterFactoryType {
+            get;
+            private set;
+        }
 
-        public AdapterFactoryAttribute(Type adapterFactoryType) {
-            this.AdapterFactoryType = adapterFactoryType;
+        public string Role {
+            get;
+            private set;
+        }
+
+        private string ImpliedRoleName {
+            get {
+                return Regex.Replace(GetType().Name, "Attribute$" , "");
+            }
+        }
+
+        protected AdapterFactoryAttribute(Type adapterFactoryType) {
+            AdapterFactoryType = adapterFactoryType;
+            Role = ImpliedRoleName;
+        }
+
+        protected AdapterFactoryAttribute(string adapterFactoryType) {
+            AdapterFactoryType = Type.GetType(adapterFactoryType);
+            Role = ImpliedRoleName;
         }
 
         public AdapterFactoryAttribute(string role, Type adapterFactoryType) {
-            if (role == null)
+            if (role == null) {
                 throw new ArgumentNullException("role");
-            if (role.Length == 0)
+            }
+            if (role.Length == 0) {
                 throw Failure.EmptyString("role");
-            if (adapterFactoryType == null)
+            }
+            if (adapterFactoryType == null) {
                 throw new ArgumentNullException("adapterFactoryType");
+            }
 
-            this.AdapterFactoryType = adapterFactoryType;
-            this.Role = role;
+            AdapterFactoryType = adapterFactoryType;
+            Role = role;
         }
 
+        public AdapterFactoryAttribute(string role, string adapterFactoryType) {
+            if (role == null) {
+                throw new ArgumentNullException("role");
+            }
+            if (role.Length == 0) {
+                throw Failure.EmptyString("role");
+            }
+            if (adapterFactoryType == null) {
+                throw new ArgumentNullException("adapterFactoryType");
+            }
+
+            AdapterFactoryType = Type.GetType(adapterFactoryType);
+            Role = role;
+        }
     }
-
 }
-

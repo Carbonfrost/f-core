@@ -2,7 +2,6 @@
   <Import Project="../../Build.props" />
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <KeyOriginatorFile>../../F5NonCommercial.snk</KeyOriginatorFile>
     <IsPackable>false</IsPackable>
     <RootNamespace></RootNamespace>
   </PropertyGroup>

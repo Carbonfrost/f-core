@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -30,7 +31,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     var lines = Platform.RunCommand(SWVERS_LOCATION, "", true);
                     return ParseResult(lines);
                 }
-                return Empty<PlatformVersion>.Array;
+                return Array.Empty<PlatformVersion>();
             }
 
             internal IEnumerable<PlatformVersion> ParseResult(IEnumerable<string> lines) {

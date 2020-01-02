@@ -103,7 +103,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             return new Buffer<TValue>(
-                AssemblyObserver.Instance.SelectMany(t => selector(t) ?? Empty<TValue>.Array));
+                AssemblyObserver.Instance.SelectMany(t => selector(t) ?? Array.Empty<TValue>()));
         }
 
         public static IReadOnlyDictionary<TKey, TValue> DescribeAssemblies<TKey, TValue>(
@@ -152,7 +152,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         static Func<Assembly, IEnumerable<TValue>> AssemblyThunk<TValue>(Func<Type, IEnumerable<TValue>> selector) {
-            return (a) => (a.GetTypesHelper().SelectMany(s => selector(s.AsType())) ?? Empty<TValue>.Array);
+            return (a) => (a.GetTypesHelper().SelectMany(s => selector(s.AsType())) ?? Array.Empty<TValue>());
         }
 
         static IReadOnlyList<Assembly> LoadedAssembliesImpl() {

@@ -280,7 +280,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         internal static IEnumerable<PropertyInfo> GetProperties(object obj) {
             if (obj == null)
-                return Empty<PropertyInfo>.Array;
+                return Array.Empty<PropertyInfo>();
 
             return obj.GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)

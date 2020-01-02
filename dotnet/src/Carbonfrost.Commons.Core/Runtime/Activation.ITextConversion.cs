@@ -27,7 +27,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         private static readonly Dictionary<Type, ITextConversion> _textConversionCache
             = new Dictionary<Type, ITextConversion>() {
-            { typeof(string), new StringNopConversion() }
+            { typeof(string), new StringNopConversion() },
+            { typeof(Uri), new UriConversion() },
         };
 
         private static readonly ITextConversion _nullTextConversion = new NullTextConversion();
@@ -72,7 +73,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             bool TryConvertFromText(string text, Type componentType, IServiceProvider sp, CultureInfo culture, out object result);
         }
 
-        class StreamingSourceConversion : ITextConversion {
+        sealed class StreamingSourceConversion : ITextConversion {
 
             public static readonly StreamingSourceConversion Instance = new StreamingSourceConversion();
 
@@ -91,7 +92,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        class ParseMethodConversion : ITextConversion {
+        sealed class ParseMethodConversion : ITextConversion {
 
             private readonly MethodInfo _parse;
 
@@ -120,7 +121,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        class TryParseMethodConversion : ITextConversion {
+        sealed class TryParseMethodConversion : ITextConversion {
 
             private readonly MethodInfo _parse;
 
@@ -155,7 +156,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        class NullTextConversion : ITextConversion {
+        sealed class NullTextConversion : ITextConversion {
 
             public bool TryConvertFromText(string text, Type componentType, IServiceProvider sp, CultureInfo culture, out object result) {
                 result = null;
@@ -163,11 +164,24 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        class StringNopConversion : ITextConversion {
+        sealed class StringNopConversion : ITextConversion {
 
             public bool TryConvertFromText(string text, Type componentType, IServiceProvider sp, CultureInfo culture, out object result) {
                 result = text;
                 return true;
+            }
+        }
+
+        sealed class UriConversion : ITextConversion {
+
+            public bool TryConvertFromText(string text, Type componentType, IServiceProvider sp, CultureInfo culture, out object result) {
+                Uri uri;
+                if (Uri.TryCreate(text, UriKind.RelativeOrAbsolute, out uri)) {
+                    result = uri;
+                    return true;
+                }
+                result = null;
+                return false;
             }
         }
     }

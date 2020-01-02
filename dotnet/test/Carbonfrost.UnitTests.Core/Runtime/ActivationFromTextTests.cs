@@ -1,5 +1,5 @@
 //
-// Copyright 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
 // limitations under the License.
 //
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System;
+using Carbonfrost.Commons.Core.Runtime;
+using Carbonfrost.Commons.Spec;
 
-namespace Carbonfrost.Commons.Core {
+namespace Carbonfrost.UnitTests.Core.Runtime {
 
-    static class Empty<T> {
+    public class ActivationFromTextTests {
 
-        public static readonly T[] Array = {};
-        public static readonly IList<T> List = Array;
-        public static readonly IEnumerator<T> Enumerator = List.GetEnumerator();
-        public static readonly ReadOnlyCollection<T> ReadOnly = new ReadOnlyCollection<T>(List);
+        [Fact]
+        public void FromText_should_parse_URI() {
+            Assert.Equal(
+                new Uri("https://example.com"),
+                Activation.FromText<Uri>("https://example.com")
+            );
+        }
     }
 }

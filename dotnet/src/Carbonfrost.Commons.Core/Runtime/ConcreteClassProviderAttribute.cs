@@ -20,7 +20,7 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    public sealed class ConcreteClassProviderAttribute : ConcreteClassProviderAttributeBase {
+    public sealed class ConcreteClassProviderAttribute : Attribute, IConcreteClassProvider {
 
         private readonly LateBound<IConcreteClassProvider> _concreteClassProvider;
 
@@ -48,7 +48,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             _concreteClassProvider = new LateBound<IConcreteClassProvider>(TypeReference.FromType(concreteClassProviderType), ServiceProvider.Current);
         }
 
-        protected override Type GetConcreteClassCore(Type sourceType, IServiceProvider serviceProvider) {
+        public Type GetConcreteClass(Type sourceType, IServiceProvider serviceProvider) {
             return Value.GetConcreteClass(sourceType, serviceProvider);
         }
     }
