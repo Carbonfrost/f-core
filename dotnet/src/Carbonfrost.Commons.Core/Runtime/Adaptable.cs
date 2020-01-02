@@ -16,7 +16,6 @@
 //
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -26,8 +25,6 @@ using System.Reflection;
 namespace Carbonfrost.Commons.Core.Runtime {
 
     public static partial class Adaptable {
-
-        const string DEVELOPER = "Developer";
 
         static readonly MethodInfo GetDefaultValueMethod = typeof(Adaptable).GetMethod("GetDefaultValue_", BindingFlags.Static | BindingFlags.NonPublic);
 
@@ -345,6 +342,14 @@ namespace Carbonfrost.Commons.Core.Runtime {
             var tt = type.GetTypeInfo();
             bool isStatic = tt.IsSealed && tt.IsAbstract;
             return !(tt.IsPrimitive || tt.IsEnum || isStatic);
+        }
+
+        public static bool IsComposable(this Type type) {
+            if (type == null) {
+                throw new ArgumentNullException("type");
+            }
+
+            return type.GetTypeInfo().IsDefined(typeof(ComposableAttribute), false);
         }
 
         internal static object InvokeBuilder(
