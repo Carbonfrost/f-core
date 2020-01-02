@@ -65,7 +65,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             var ns = qn.Namespace;
             var names =
                 SelectNames()
-                .Concat(GetDefaultProviderNames(type) ?? Empty<string>.Array)
+                .Concat(GetDefaultProviderNames(type) ?? Array.Empty<string>())
                 .Where(t => !string.IsNullOrEmpty(t))
                 .Select(t => ns + t);
 
@@ -76,7 +76,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         IEnumerable<string> SelectNames() {
             if (string.IsNullOrEmpty(this.Name))
-                return Empty<string>.Array;
+                return Array.Empty<string>();
 
             IEnumerable<string> names = this.Name.Split(
                 new [] {

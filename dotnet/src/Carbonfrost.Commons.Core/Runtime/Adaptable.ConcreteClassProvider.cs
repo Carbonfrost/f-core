@@ -44,10 +44,11 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             var cca = GetConcreteClassProvider(property);
             var type = property.PropertyType.GetTypeInfo();
-            if (cca == null)
+            if (cca == null) {
                 return (type.IsAbstract || type.IsInterface) ? null : type.AsType();
-            else
-                return cca.GetConcreteClass(property.PropertyType, serviceProvider);
+            }
+
+            return VerifyConcreteClass(property.PropertyType, cca.GetConcreteClass(property.PropertyType, serviceProvider));
         }
 
         public static Type GetConcreteClass(this Type type, IServiceProvider serviceProvider = null) {
@@ -57,10 +58,22 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             var cca = GetConcreteClassProvider(type);
             var tt = type.GetTypeInfo();
-            if (cca == null)
+            if (cca == null) {
                 return (tt.IsAbstract || tt.IsInterface) ? null : type;
-            else
-                return cca.GetConcreteClass(type, serviceProvider);
+            }
+
+            return VerifyConcreteClass(type, cca.GetConcreteClass(type, serviceProvider));
+        }
+
+        internal static Type VerifyConcreteClass(Type sourceType, Type resultType) {
+            if (resultType == null) {
+                return null;
+            }
+            var result = resultType.GetTypeInfo();
+            if (result != null && (result.IsAbstract || result.IsInterface || !sourceType.GetTypeInfo().IsAssignableFrom(result))) {
+                throw RuntimeFailure.ConcreteClassError(resultType);
+            }
+            return resultType;
         }
     }
 }

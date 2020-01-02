@@ -118,7 +118,7 @@ namespace Carbonfrost.Commons.Core {
             }
 
             public IEnumerator<NamespaceUri> GetEnumerator() {
-                return Empty<NamespaceUri>.Enumerator;
+                yield break;
             }
 
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
@@ -132,9 +132,10 @@ namespace Carbonfrost.Commons.Core {
             }
 
             public IEnumerable<string> GetClrNamespaces(NamespaceUri namespaceUri) {
-                if (namespaceUri == null)
+                if (namespaceUri == null) {
                     throw new ArgumentNullException("namespaceUri");
-                return Empty<string>.Array;
+                }
+                return Array.Empty<string>();
             }
 
             public string LookupPrefix(NamespaceUri namespaceUri) {

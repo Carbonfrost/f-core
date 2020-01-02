@@ -121,7 +121,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             var roleFactories = new List<IAdapterFactory>();  // [assembly: StreamingSourceFactory(typeof(H))]
 
             if (all.Length == 0)
-                return ReflectedAdapterFactory.Create(assembly, Empty<string>.Array);
+                return ReflectedAdapterFactory.Create(assembly, Array.Empty<string>());
 
             foreach (var t in all) {
                 var inst = (IAdapterFactory) Activator.CreateInstance(t.AdapterFactoryType);

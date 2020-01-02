@@ -28,7 +28,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (type == null) {
                 throw new ArgumentNullException("type");
             }
-            attributes = attributes ?? Empty<Attribute>.Array;
+            attributes = attributes ?? Array.Empty<Attribute>();
 
             return base.CreateInstance(type, values, serviceProvider, attributes);
         }
