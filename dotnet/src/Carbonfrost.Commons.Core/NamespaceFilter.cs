@@ -45,12 +45,13 @@ namespace Carbonfrost.Commons.Core {
             return _filter.IsMatch(t ?? string.Empty);
         }
 
-        internal static Regex GetNamespaceFilterRegex(string pattern) {
+        private static Regex GetNamespaceFilterRegex(string pattern) {
             StringBuilder sb = new StringBuilder();
 
             foreach (string p in pattern.Split(',')) {
-                if (sb.Length > 0)
+                if (sb.Length > 0) {
                     sb.Append("|");
+                }
 
                 sb.Append(GetNamespaceFilterRegexInternal(p));
             }
@@ -59,11 +60,12 @@ namespace Carbonfrost.Commons.Core {
             return r;
         }
 
-        static string GetNamespaceFilterRegexInternal(string pattern) {
+        private static string GetNamespaceFilterRegexInternal(string pattern) {
             // Last one is special (allow .* to be used at end)
             pattern = pattern.Trim();
-            if (pattern.EndsWith(".*", StringComparison.Ordinal))
+            if (pattern.EndsWith(".*", StringComparison.Ordinal)) {
                 pattern = pattern.Substring(0, pattern.Length - 2) + (@"(\..+)?");
+            }
 
             return string.Concat("(^", pattern.Replace("*", ".+?"), "$)");
         }

@@ -20,50 +20,38 @@ using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.UnitTests.Core.Runtime {
 
-    public class AdapterFactoryAttributeTests {
-
-        class HelloRoleAttribute : AdapterFactoryAttribute {
-            public HelloRoleAttribute() : base(typeof(string)) {}
-        }
-
-        [Fact]
-        public void Role_should_be_implied_when_unspecified() {
-            Assert.Equal("HelloRole", new HelloRoleAttribute().Role);
-        }
-
-        [Fact]
-        public void Constructor_should_initialize_nominal() {
-            var attr = new AdapterFactoryAttribute("null", typeof(string));
-            Assert.Equal("null", attr.Role);
-            Assert.Equal(typeof(string), attr.AdapterFactoryType);
-        }
-
-        [Fact]
-        public void Constructor_string_type_should_initialize_nominal() {
-            var attr = new AdapterFactoryAttribute("null", "System.String");
-            Assert.Equal("null", attr.Role);
-            Assert.Equal(typeof(string), attr.AdapterFactoryType);
-        }
+    public class AdapterAttributeTests {
 
         [Fact]
         public void Constructor_should_throw_on_required_role_argument() {
             Assert.Throws<ArgumentNullException>(
-                () => new AdapterFactoryAttribute(null, typeof(string))
+                () => new AdapterAttribute(typeof(string), null)
             );
 
             Assert.Throws<ArgumentNullException>(
-                () => new AdapterFactoryAttribute(null, "System.String")
+                () => new AdapterAttribute("System.String", null)
             );
         }
 
         [Fact]
         public void Constructor_should_throw_on_empty_role_argument() {
             Assert.Throws<ArgumentException>(
-                () => new AdapterFactoryAttribute("", typeof(string))
+                () => new AdapterAttribute(typeof(string), "")
             );
 
             Assert.Throws<ArgumentException>(
-                () => new AdapterFactoryAttribute("", "System.String")
+                () => new AdapterAttribute("System.String", "")
+            );
+        }
+
+        [Fact]
+        public void Constructor_should_throw_on_null_or_empty_type() {
+            Assert.Throws<ArgumentException>(
+                () => new AdapterAttribute((Type) null, "role")
+            );
+
+            Assert.Throws<ArgumentException>(
+                () => new AdapterAttribute("", "role")
             );
         }
     }

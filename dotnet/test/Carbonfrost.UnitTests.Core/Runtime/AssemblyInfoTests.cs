@@ -52,12 +52,12 @@ namespace Carbonfrost.UnitTests.Core {
             var info = AssemblyInfo.GetAssemblyInfo(a);
 
             // Notice that default ns isn't included
-            // Exclude System
+            // Exclude System (and coverlet when coverage is running)
             Assert.SetEqual(new [] {
                             "Carbonfrost.Commons.Core.Resources",
                             "Carbonfrost.Commons.Core",
                             "Carbonfrost.Commons.Core.Runtime",
-                        }, info.ClrNamespaces.Except(new[] { "System" }));
+                        }, info.ClrNamespaces.Except(new[] { "System", "Coverlet.Core.Instrumentation.Tracker" }));
         }
 
         [Fact]

@@ -16,6 +16,8 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -40,9 +42,20 @@ namespace Carbonfrost.Commons.Core.Runtime {
             CheckProperty(property);
             object objValue;
 
-            bool result = TryGetPropertyCore(property, propertyType, out objValue);
-            value = objValue;
-            return result;
+            try {
+                bool result = TryGetPropertyCore(property, propertyType, out objValue);
+                value = objValue;
+                return result;
+
+            } catch (TargetInvocationException ex) {
+                if (ex.InnerException is KeyNotFoundException
+                    || ex.InnerException is ArgumentException) {
+                        value = null;
+                        return false;
+                }
+
+                throw;
+            }
         }
 
         static void CheckProperty(string property) {

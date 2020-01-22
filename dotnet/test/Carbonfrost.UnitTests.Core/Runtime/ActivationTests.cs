@@ -143,7 +143,31 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         }
 
         [Fact]
-        public void should_obtain_service_provider_current() {
+        public void CreateInstance_should_resolve_qualified_name() {
+            Assert.IsInstanceOf(typeof(Properties),
+                Activation.CreateInstance(QualifiedName.Create(Xmlns.Core2008, "Properties"))
+            );
+
+            Assert.IsInstanceOf(typeof(Properties),
+                Activation.CreateInstance<Properties>(QualifiedName.Create(Xmlns.Core2008, "Properties"))
+            );
+        }
+
+        [Fact]
+        public void FromFile_should_apply_text_conversion() {
+            var actual = (Properties) Activation.FromFile(typeof(Properties), TestContext.Current.GetFullPath("alpha.properties"));
+            Assert.Equal("bar", actual.GetProperty("Foo"));
+        }
+
+        [Fact]
+        public void CreateInstanceOfT_nominal() {
+            Assert.IsInstanceOf(typeof(Properties),
+                Activation.CreateInstance<Properties>()
+            );
+        }
+
+        [Fact]
+        public void CreateInstance_should_obtain_service_provider_current() {
             ServiceContainer sc = new ServiceContainer();
 
             var e = Activation.CreateInstance<PHasServiceProvider>((IServiceProvider) sc);

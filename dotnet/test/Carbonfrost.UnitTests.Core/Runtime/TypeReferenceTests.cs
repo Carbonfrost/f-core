@@ -64,6 +64,16 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             Assert.Equal(typeof(TypeReference), tr.Resolve());
         }
 
+        [Theory]
+        [InlineData("http")]
+        [InlineData("https")]
+        public void Resolve_qualified_name_equivalent_https(string scheme) {
+            string fullName = "{" + scheme + "://ns.carbonfrost.com/commons/core} Glob";
+
+            TypeReference tr = TypeReference.Parse(fullName);
+            Assert.Equal(typeof(Glob), tr.Resolve());
+        }
+
         [Fact]
         public void Resolve_qualified_name_using_prefix_resolves() {
             ServiceContainer services = new ServiceContainer();

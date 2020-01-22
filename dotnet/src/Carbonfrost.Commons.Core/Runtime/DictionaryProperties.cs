@@ -33,8 +33,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
             _items.Clear();
         }
 
-        public override bool IsReadOnly(string key) {
-            return _items.IsReadOnly;
+        public override bool IsReadOnly {
+            get {
+                return _items.IsReadOnly;
+            }
         }
 
         public override IEnumerator<KeyValuePair<string, object>> GetEnumerator() {

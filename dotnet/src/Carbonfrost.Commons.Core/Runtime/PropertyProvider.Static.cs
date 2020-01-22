@@ -95,12 +95,14 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 return PropertyProvider.Null;
 
             IPropertyProvider pp = context as IPropertyProvider;
-            if (pp != null)
+            if (pp != null) {
                 return pp;
+            }
 
             var indexer = FindIndexerProperty(context.GetType());
-            if (indexer != null)
+            if (indexer != null) {
                 return new ReflectionPropertyProviderUsingIndexer(context, indexer);
+            }
 
             // Any IEnumerable<KeyValuePair<,>>
             var inter = context.GetType().GetTypeInfo().GetInterfaces().FirstOrDefault(IsKeyValuePairEnum);

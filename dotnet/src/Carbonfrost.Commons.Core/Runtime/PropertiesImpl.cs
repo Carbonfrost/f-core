@@ -19,12 +19,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
     internal abstract class PropertiesImpl : PropertyProvider, IProperties {
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual bool IsReadOnly {
+            get {
+                return false;
+            }
+        }
 
         protected PropertiesImpl() : this(null) {}
 
@@ -57,10 +64,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         protected abstract void SetPropertyCore(string key, object defaultValue);
 
-        public virtual bool IsReadOnly(string key) {
-            return false;
-        }
-
         public void SetProperty(string property, object value) {
             if (property == null) {
                 throw new ArgumentNullException("property");
@@ -79,10 +82,19 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public bool TrySetProperty(string property, object value) {
-            if (IsReadOnly(property)) {
+            if (IsReadOnly) {
                 return false;
             }
-            SetProperty(property, value);
+            try {
+                SetProperty(property, value);
+            } catch (TargetInvocationException ex) {
+                if (ex.InnerException is KeyNotFoundException
+                    || ex.InnerException is ArgumentException) {
+                    return false;
+                }
+
+                throw;
+            }
             return true;
         }
 

@@ -1,5 +1,5 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,23 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             Assert.Throws<ArgumentException>(() => {
                 new ActivationProviderAttribute(typeof(ActivationProviderAttributeTests));
             });
+        }
+
+        [Fact]
+        public void Constructor_should_require_correct_type_string_argument() {
+            Assert.Throws<ArgumentException>(() => {
+                new ActivationProviderAttribute("System.String");
+            });
+        }
+
+        [Fact]
+        public void Constructor_should_convert_from_string() {
+            Assert.Equal(
+                typeof(UriContextActivationProvider),
+                new ActivationProviderAttribute(
+                    "Carbonfrost.Commons.Core.Runtime.UriContextActivationProvider, Carbonfrost.Commons.Core, PublicKeyToken=d09aaf34527fe3e6"
+                ).AdapterType
+            );
         }
     }
 }

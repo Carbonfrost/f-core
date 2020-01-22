@@ -38,8 +38,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         // Implicit construction.
         // N.B. Conforms with Streaming source patterns
         public static Properties FromStream(Stream stream, Encoding encoding = null) {
-            if (stream == null)
+            if (stream == null) {
                 throw new ArgumentNullException("stream");
+            }
             Properties p = new Properties();
             p.Load(stream, encoding);
             return p;
@@ -56,10 +57,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static Properties FromFile(string fileName) {
-            if (fileName == null)
+            if (fileName == null) {
                 throw new ArgumentNullException("fileName"); // $NON-NLS-1
-            if (string.IsNullOrWhiteSpace(fileName))
+            }
+            if (string.IsNullOrWhiteSpace(fileName)) {
                 throw Failure.AllWhitespace("fileName");
+            }
 
             Properties p = new Properties();
             p.Load(fileName);
@@ -72,20 +75,23 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             IProperties pp = context as IProperties;
-            if (pp != null)
+            if (pp != null) {
                 return pp;
+            }
 
             IPropertiesContainer container = context as IPropertiesContainer;
-            if (container != null)
+            if (container != null) {
                 return container.Properties;
+            }
 
             NameValueCollection nvc = context as NameValueCollection;
             if (nvc != null) {
                 return new NameValueCollectionAdapter(nvc);
             }
             pp = MakeDictionaryProperties(context);
-            if (pp != null)
+            if (pp != null) {
                 return pp;
+            }
 
             var indexer = FindIndexerProperty(context.GetType());
             if (indexer != null) {
@@ -95,8 +101,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static new IProperties FromArray(params object[] values) {
-            if (values == null || values.Length == 0)
+            if (values == null || values.Length == 0) {
                 return Properties.Null;
+            }
 
             return new Properties(values.Select((t, i) => new KeyValuePair<string, object>(i.ToString(), t)));
         }
@@ -240,7 +247,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             while (c.MoveNext()) {
                 switch (c.Current) {
                     case '\\':
-                        sb.Append(UnescapeChar(c));
+                        sb.Append(StringUnescaper.UnescapeChar(c));
                         break;
 
                     case '"':
@@ -279,48 +286,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 yield return sb.ToString();
         }
 
-        static char UnescapeChar(IEnumerator<char> e) {
-            char? c0 = e.RequireNext();
-            if (!c0.HasValue)
-                throw RuntimeFailure.IncompleteEscapeSequence();
-
-            char c = c0.Value;
-
-            switch (c) {
-                case 'b':
-                    return '\b';
-
-                case 't':
-                    return '\t';
-
-                case 'n':
-                    return '\n';
-
-                case 'f':
-                    return '\f';
-
-                case 'r':
-                    return '\r';
-
-                case 'u':
-                    return Utility.UnescapeUnicode(e.RequireNext(4));
-
-                case 'x':
-                    return Utility.UnescapeHex(e.RequireNext(2));
-
-                case '0':
-                    return '\0';
-
-                default:
-                    return c;
-            }
-        }
-
         static PropertyInfo FindIndexerProperty(Type type) {
             foreach (PropertyInfo pi in type.GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
                 var parameters = pi.GetIndexParameters();
-                if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string))
+                if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string)) {
                     return pi;
+                }
             }
             return null;
         }

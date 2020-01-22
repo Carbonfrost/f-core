@@ -40,9 +40,9 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public static Glob Combine(params Glob[] items) {
-            if (items == null)
+            if (items == null) {
                 throw new ArgumentNullException("items");
-
+            }
             switch (items.Length) {
                 case 0:
                     return Anything;
@@ -57,8 +57,9 @@ namespace Carbonfrost.Commons.Core {
                     return Combine(items[0], items[1], items[2]);
             }
 
-            if (items.Any(t => t.IsAnything))
+            if (items.Any(t => t.IsAnything)) {
                 return Anything;
+            }
 
             return new Glob(
                 string.Join(";", items.Select(t => t._text)),
@@ -66,11 +67,13 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public static Glob Combine(Glob arg1, Glob arg2) {
-            if (arg1 == null)
+            if (arg1 == null) {
                 throw new ArgumentNullException("arg1");
+            }
 
-            if (arg2 == null)
+            if (arg2 == null) {
                 throw new ArgumentNullException("arg2");
+            }
 
             if (object.ReferenceEquals(arg1, arg2))
                 return arg1;
@@ -83,14 +86,17 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public static Glob Combine(Glob arg1, Glob arg2, Glob arg3) {
-            if (arg1 == null)
+            if (arg1 == null) {
                 throw new ArgumentNullException("arg1");
+            }
 
-            if (arg2 == null)
+            if (arg2 == null) {
                 throw new ArgumentNullException("arg2");
+            }
 
-            if (arg3 == null)
+            if (arg3 == null) {
                 throw new ArgumentNullException("arg3");
+            }
 
             return Combine(arg1, Combine(arg2, arg3));
         }

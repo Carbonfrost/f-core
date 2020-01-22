@@ -52,7 +52,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
             return _items.Select(
-                (t, i) => new KeyValuePair<string, object>(i.ToString(), t)).GetEnumerator();
+                (t, i) => new KeyValuePair<string, object>(i.ToString(), t)
+            ).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

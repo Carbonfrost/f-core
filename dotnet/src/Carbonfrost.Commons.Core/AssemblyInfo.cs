@@ -87,7 +87,7 @@ namespace Carbonfrost.Commons.Core {
             _options = sc ?? SharedRuntimeOptionsAttribute.Default;
             Scannable = Utility.IsScannableAssembly(a);
 
-            if (this.Scannable) {
+            if (Scannable) {
                 _resolver = new AssemblyInfoXmlNamespaceResolver(this);
             } else {
                 _resolver = AssemblyInfoXmlNamespaceResolver.Null;

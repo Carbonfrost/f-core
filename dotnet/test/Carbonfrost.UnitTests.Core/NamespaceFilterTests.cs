@@ -47,6 +47,14 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Fact]
+        public void Filter_should_apply_to_literal_name_list() {
+            Assert.SetEqual(new string[] {
+                                "System",
+                                "System.Linq",
+                            }, FilterNamespaces(NAMES, "System,System.Linq"));
+        }
+
+        [Fact]
         public void Filter_should_apply_to_prefix_wildcard() {
             string[] systemNames =  {
                 "System",

@@ -18,4 +18,16 @@ dotnet/test: dotnet/build -dotnet/test
 		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.Commons.Core.dll \
 		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.UnitTests.Core.dll
 
-include eng/.mk/*.mk
+## Run unit tests with code coverage
+dotnet/cover: dotnet/build -check-command-coverlet
+	coverlet \
+		--target "make" \
+		--targetargs "-- -dotnet/test" \
+		--format lcov \
+		--output lcov.info \
+		--exclude-by-attribute 'Obsolete' \
+		--exclude-by-attribute 'GeneratedCode' \
+		--exclude-by-attribute 'CompilerGenerated' \
+		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.UnitTests.Core.dll
+
+-include eng/.mk/*.mk

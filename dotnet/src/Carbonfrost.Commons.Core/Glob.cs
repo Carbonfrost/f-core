@@ -103,7 +103,7 @@ namespace Carbonfrost.Commons.Core {
             int hashCode = 0;
             unchecked {
                 if (_text != null)
-                    hashCode += 1000000007 * _text.GetHashCode();
+                    hashCode += 7 * _text.GetHashCode();
             }
             return hashCode;
         }
@@ -130,8 +130,9 @@ namespace Carbonfrost.Commons.Core {
             bool needPipe = false;
 
             foreach (SegmentSequence segments in this._segments) {
-                if (needPipe)
+                if (needPipe) {
                     text.Append("|");
+                }
 
                 segments.AppendRegex(text);
 

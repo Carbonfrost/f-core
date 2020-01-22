@@ -146,7 +146,7 @@ namespace Carbonfrost.Commons.Core {
         private GlobTemplateMatch NewMatch(string match) {
             var m = _regex.Match(match);
             var vars = _regex.GetGroupNames().ToDictionary(t => t, t => m.Groups[t].Value);
-            return new GlobTemplateMatch(match, vars, true);
+            return new GlobTemplateMatch(match, vars);
         }
 
         private IEnumerable<GlobTemplateMatch> NewMatches(IEnumerable<string> matches) {

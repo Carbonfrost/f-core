@@ -342,14 +342,5 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 writer.WriteProperty(prop.Key, prop.Value);
             }
         }
-
-        private void CheckProperty(string property) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
-            if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
-            }
-        }
     }
 }

@@ -35,7 +35,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         protected override bool TryGetPropertyCore(string property, Type propertyType, out object value) {
-            CheckProperty(property);
+            PropertyProvider.CheckProperty(property);
             value = null;
             foreach (var pp in _items) {
                 if (pp.TryGetProperty(property, propertyType, out value))
@@ -56,19 +56,20 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
-            return _items.SelectMany(t => t).GetEnumerator();
+            return _items.SelectMany(t => t).Distinct(new UniqueKeys()).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
 
-        static void CheckProperty(string property) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
+        sealed class UniqueKeys : IEqualityComparer<KeyValuePair<string, object>> {
+            public bool Equals(KeyValuePair<string, object> x, KeyValuePair<string, object> y) {
+                return x.Key == y.Key;
             }
-            if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
+
+            public int GetHashCode(KeyValuePair<string, object> obj) {
+                return obj.Key.GetHashCode();
             }
         }
     }

@@ -40,10 +40,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
                                   object value) {
 
             if (outputTarget == null) {
-                throw new ArgumentNullException("outputTarget"); // $NON-NLS-1
+                throw new ArgumentNullException("outputTarget");
             }
             if (value == null) {
-                throw new ArgumentNullException("value"); // $NON-NLS-1
+                throw new ArgumentNullException("value");
             }
 
             using (StreamWriter sw = outputTarget.AppendText(Encoding)) {
@@ -53,12 +53,17 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public override object Load(StreamContext inputSource,
                                     Type instanceType) {
-            if (inputSource == null)
-                throw new ArgumentNullException("inputSource"); // $NON-NLS-1
+            if (inputSource == null) {
+                throw new ArgumentNullException("inputSource");
+            }
 
             using (StreamReader sr = inputSource.OpenText()) {
                 return Load(sr, instanceType);
             }
+        }
+
+        internal override object LoadFromText(string text, Type componentType) {
+            return Load(new StringReader(text), componentType);
         }
     }
 }

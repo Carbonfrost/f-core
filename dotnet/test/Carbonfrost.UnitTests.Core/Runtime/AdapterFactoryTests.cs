@@ -1,5 +1,5 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,17 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         }
 
         [Fact]
+        public void Compose_converts_null_to_Null_provider() {
+            Assert.Same(AdapterFactory.Null, AdapterFactory.Compose(null, null));
+        }
+
+        [Fact]
+        public void Compose_will_apply_optimal_composite_on_nulls() {
+            var original = AdapterFactory.Default;
+            Assert.Same(original, AdapterFactory.Compose(AdapterFactory.Null, original, AdapterFactory.Null));
+        }
+
+        [Fact]
         public void GetAdapterType_adapter_factory_t_should_filter_on_role() {
             IAdapterFactory fc = new AdapterFactory<StreamingSource>(AdapterRole.StreamingSource);
             Assert.Null(fc.GetAdapterType(typeof(IProperties), "Builder"));
@@ -40,6 +51,11 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         public void GetAdapterType_default_adapter_factory_composed_of_all() {
             IAdapterFactory fc = AdapterFactory.Default;
             Assert.Null(fc.GetAdapterType(typeof(IProperties), "StreamingSource"));
+        }
+
+        [Fact]
+        public void FromName_provides_Default_provider() {
+            Assert.Same(AdapterFactory.Default, AdapterFactory.FromName("Default"));
         }
 
         [Fact]

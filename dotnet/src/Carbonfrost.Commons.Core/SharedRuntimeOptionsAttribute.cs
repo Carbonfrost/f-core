@@ -41,12 +41,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             get { return !Optimizations.HasFlag(SharedRuntimeOptimizations.DisableProviderScanning); }
         }
 
-        internal static SharedRuntimeOptionsAttribute GetSharedRuntimeOptions(
-            Assembly assembly) {
-
-            if (assembly == null)
-                throw new ArgumentNullException("assembly");
-
+        internal static SharedRuntimeOptionsAttribute GetSharedRuntimeOptions(Assembly assembly) {
             var attr = assembly.GetCustomAttribute<SharedRuntimeOptionsAttribute>();
             if (attr == null) {
 

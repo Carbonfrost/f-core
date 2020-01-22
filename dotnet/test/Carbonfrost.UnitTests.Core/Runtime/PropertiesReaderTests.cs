@@ -27,7 +27,6 @@ namespace Carbonfrost.UnitTests.Core {
         public void Parse_from_file_read_nominal() {
             Properties p = ReadAlpha();
 
-            Assert.Equal(5, p.InnerMap.Count);
             Assert.Equal("bar", p.GetProperty("Foo"));
             Assert.Equal("Continued on multiple lines (prefix whitespace removed). Another line. Another.", p.GetProperty("Baz"));
         }
@@ -38,7 +37,16 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Equal("Escape\nTwo lines", p.GetProperty("Bash"));
         }
 
-        // TODO Url syntax test
+        [Fact]
+        public void Read_should_process_category_lines() {
+            using (var pr = new PropertiesReader(new StringReader("[category]\nkey=value"))) {
+                Assert.True(pr.Read());
+                Assert.Equal(PropertyNodeKind.Category, pr.NodeKind);
+
+                Properties p = new Properties(pr.ReadToEnd());
+                Assert.True(p.HasProperty("category.key"));
+            }
+        }
 
         private Properties ReadAlpha() {
             Stream source = TestContext.OpenRead("alpha.properties");

@@ -15,6 +15,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Spec;
@@ -49,10 +50,32 @@ namespace Carbonfrost.UnitTests.Core {
             var unit = GlobTemplate.Parse(text);
             var all = unit.EnumerateFiles();
 
+            Assert.HasCount(1, t => t.FileName.EndsWith("AssemblyInfo.cs"), all);
+        }
+
+        [Fact]
+        public void ToString_should_equal_Glob() {
+            var unit = GlobTemplate.Parse("dotnet/src/Carbonfrost.Commons.Core/{name}/{file}.cs");
+            Assert.Equal(unit.ToString(), unit.Glob.ToString());
+        }
+
+        [Theory]
+        [InlineData("dotnet/src/Carbonfrost.Commons.Core/{name}/{file}.cs")]
+        public void EnumerateFiles_should_capture_variables(string text) {
+            var unit = GlobTemplate.Parse(text);
+            var all = unit.EnumerateFiles();
+
             var assembly = all.Single(t => t.FileName.EndsWith("AssemblyInfo.cs"));
+
             Assert.Equal("Properties", assembly["name"]);
             Assert.Equal("AssemblyInfo", assembly["file"]);
+            Assert.Equal("Properties", assembly.Data["name"]);
+            Assert.Equal("AssemblyInfo", assembly.Data["file"]);
+
+            Assert.Null(assembly["missing"]);
+            Assert.Throws<KeyNotFoundException>(
+                () => assembly.Data["missing"]
+            );
         }
     }
-
 }

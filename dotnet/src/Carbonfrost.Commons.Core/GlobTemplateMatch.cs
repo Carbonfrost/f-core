@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,11 +22,7 @@ namespace Carbonfrost.Commons.Core {
     public class GlobTemplateMatch {
 
         private readonly IReadOnlyDictionary<string, string> _data;
-        private readonly bool _success;
         private readonly string _value;
-
-        public static readonly GlobTemplateMatch Empty
-            = new GlobTemplateMatch(null, new Dictionary<string, string>(), false);
 
         public IReadOnlyDictionary<string, string> Data {
             get {
@@ -44,21 +40,14 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
-        public bool Success {
-            get {
-                return _success;
-            }
-        }
-
         public string FileName {
             get {
                 return _value;
             }
         }
 
-        internal GlobTemplateMatch(string value, IDictionary<string, string> dict, bool success) {
+        internal GlobTemplateMatch(string value, IDictionary<string, string> dict) {
             _data = new ReadOnlyDictionary<string, string>(dict);
-            _success = success;
             _value = value;
         }
 

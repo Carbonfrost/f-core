@@ -35,8 +35,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         private TextReader BaseReader { get; set; }
 
-        public string Category { get { return _category; } }
-        public string Key { get { return _key; } }
         public PropertyNodeKind NodeKind { get { return _nodeKind; } }
 
         public string QualifiedKey {
@@ -162,7 +160,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             _key = newKey;
-            _value = Utility.Unescape(newValue);
+            _value = StringUnescaper.Unescape(newValue);
             _nodeKind = PropertyNodeKind.Property;
         }
     }

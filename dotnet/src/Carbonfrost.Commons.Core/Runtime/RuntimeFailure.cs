@@ -33,10 +33,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return Failure.Prepare(new ArgumentException(SR.PropertyNotFound(propertyName), propertyNameArgument));
         }
 
-        public static FormatException NotValidHexString() {
-            return Failure.Prepare(new FormatException(SR.NotValidHexString()));
-        }
-
         public static NotSupportedException SeekNotSupportedByBase() {
             return Failure.Prepare(new NotSupportedException(SR.SeekNotSupportedByBase()));
         }

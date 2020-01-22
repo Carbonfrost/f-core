@@ -77,7 +77,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return result;
         }
 
-        static void CheckProperty(string property) {
+        internal static void CheckProperty(string property) {
             if (property == null) {
                 throw new ArgumentNullException("property");
             }

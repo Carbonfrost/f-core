@@ -58,16 +58,6 @@ namespace Carbonfrost.Commons.Core {
 
         public static TValue GetValueOrCache<TKey, TValue>(this IDictionary<TKey, TValue> source,
                                                            TKey key,
-                                                           TValue defaultValue) {
-            TValue v;
-            if (!source.TryGetValue(key, out v)) {
-                source.Add(key, v = defaultValue);
-            }
-            return v;
-        }
-
-        public static TValue GetValueOrCache<TKey, TValue>(this IDictionary<TKey, TValue> source,
-                                                           TKey key,
                                                            Func<TValue> cacheFunction = null) {
             TValue v;
             if (!source.TryGetValue(key, out v)) {
@@ -111,20 +101,6 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
-        public static T FirstNonNull<T>(this IEnumerable<T> source) where T : class {
-            foreach (var t in source) {
-                if (t != null) {
-                    return t;
-                }
-            }
-
-            return default(T);
-        }
-
-        public static TResult FirstNonNull<T, TResult>(this IEnumerable<T> source, Func<T, TResult> selector) where TResult : class {
-            return source.Select(t => selector(t)).FirstNonNull();
-        }
-
         public static string RequireNext(this IEnumerator<char> e, int count) {
             char[] result = new char[count];
             int index = 0;
@@ -132,7 +108,7 @@ namespace Carbonfrost.Commons.Core {
                 result[index++] = e.Current;
             }
 
-            if (count != 0) {
+            if (count > 0) {
                 return null;
             }
             return new String(result);
