@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2012, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2012, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,11 +70,8 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public static NamespaceUri Create(string namespaceName) {
-            if (namespaceName == null) {
-                throw new ArgumentNullException("namespaceName");
-            }
-            if (namespaceName.Length == 0) {
-                throw Failure.EmptyString("namespaceName");
+            if (string.IsNullOrEmpty(namespaceName)) {
+                throw Failure.NullOrEmptyString(nameof(namespaceName));
             }
 
             return Parse(namespaceName);

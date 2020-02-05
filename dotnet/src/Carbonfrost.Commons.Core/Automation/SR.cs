@@ -525,6 +525,13 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("NullableMustHaveValue") );
     }
 
+  /// <summary>Argument cannot be null or the empty string.</summary>
+    internal static string NullOrEmptyStringNotValid(
+
+    ) {
+        return string.Format(Culture, ResourceFinder("NullOrEmptyStringNotValid") );
+    }
+
   /// <summary>The value must be in the range ${min} to ${max}, inclusive.</summary>
     internal static string OutOfRangeInclusive(
     object @min, object @max

@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2016, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2016, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,11 +56,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static StreamContext FromFile(string fileName) {
-            if (fileName == null) {
-                throw new ArgumentNullException("fileName");
-            }
             if (string.IsNullOrEmpty(fileName)) {
-                throw Failure.EmptyString("fileName");
+                throw Failure.NullOrEmptyString(nameof(fileName));
             }
             var uri = new Uri(fileName, UriKind.RelativeOrAbsolute);
             if (Path.IsPathRooted(fileName)) {

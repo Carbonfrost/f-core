@@ -1,5 +1,5 @@
 //
-// Copyright 2012, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2012, 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -128,11 +128,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (templateType == null) {
                 throw new ArgumentNullException("templateType");
             }
-            if (name == null) {
-                throw new ArgumentNullException("name");
-            }
-            if (name.Length == 0) {
-                throw Failure.EmptyString("name");
+            if (string.IsNullOrEmpty(name)) {
+                throw Failure.NullOrEmptyString(nameof(name));
             }
             return TemplateData.GetTemplatesByLocalName(templateType, name).SingleOrDefault();
         }

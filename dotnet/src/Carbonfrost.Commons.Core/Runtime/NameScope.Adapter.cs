@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2019-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,22 +28,16 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public Type GetPropertyType(string property) {
-                if (property == null) {
-                    throw new ArgumentNullException("property");
-                }
                 if (string.IsNullOrEmpty(property)) {
-                    throw Failure.EmptyString("property");
+                    throw Failure.NullOrEmptyString(nameof(property));
                 }
                 var value = _nameScope.FindName(property);
                 return value == null ? null : value.GetType();
             }
 
             public bool TryGetProperty(string property, Type propertyType, out object value) {
-                if (property == null) {
-                    throw new ArgumentNullException("property");
-                }
                 if (string.IsNullOrEmpty(property)) {
-                    throw Failure.EmptyString("property");
+                    throw Failure.NullOrEmptyString(nameof(property));
                 }
 
                 value = _nameScope.FindName(property);
@@ -54,12 +48,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         private abstract class ReadOnlyAdapterBase : INameScope {
             public abstract object FindName(string name);
             public void RegisterName(string name, object item) {
-                if (name == null) {
-                    throw new ArgumentNullException("name");
-                }
                 if (string.IsNullOrEmpty(name)) {
-                    throw Failure.EmptyString("name");
-                }
+                throw Failure.NullOrEmptyString(nameof(name));
+            }
                 if (item == null) {
                     throw new ArgumentNullException("item");
                 }
@@ -67,12 +58,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public void UnregisterName(string name) {
-                if (name == null) {
-                    throw new ArgumentNullException("name");
-                }
                 if (string.IsNullOrEmpty(name)) {
-                    throw Failure.EmptyString("name");
-                }
+                throw Failure.NullOrEmptyString(nameof(name));
+            }
                 throw Failure.ReadOnlyCollection();
             }
         }

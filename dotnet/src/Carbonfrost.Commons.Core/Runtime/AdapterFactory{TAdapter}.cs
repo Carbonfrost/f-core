@@ -1,5 +1,5 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,10 +37,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public AdapterFactory(
             string role, IAdapterFactory implementation) {
 
-            if (role == null)
-                throw new ArgumentNullException("role");
-            if (role.Length == 0)
-                throw Failure.EmptyString("role");
+            if (string.IsNullOrEmpty(role)) {
+                throw Failure.NullOrEmptyString(nameof(role));
+            }
 
             this.role = role;
             this.implementation = implementation ?? AdapterFactory.Default;
@@ -71,10 +70,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         private void CheckArgs(object adaptee, string adapterRoleName) {
             if (adaptee == null)
                 throw new ArgumentNullException("adaptee");
-            if (adapterRoleName == null)
-                throw new ArgumentNullException("adapterRoleName");
-            if (adapterRoleName.Length == 0)
-                throw Failure.EmptyString("adapterRoleName");
+            if (string.IsNullOrEmpty(adapterRoleName)) {
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
+            }
         }
 
         object IAdapterFactory.GetAdapter(object adaptee, string adapterRoleName) {
@@ -98,10 +96,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         Type IAdapterFactory.GetAdapterType(Type adapteeType, string adapterRoleName) {
             if (adapteeType == null)
                 throw new ArgumentNullException("adapteeType");
-            if (adapterRoleName == null)
-                throw new ArgumentNullException("adapterRoleName");
-            if (adapterRoleName.Length == 0)
-                throw Failure.EmptyString("adapterRoleName");
+            if (string.IsNullOrEmpty(adapterRoleName)) {
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
+            }
 
             if (CompareRoles(adapterRoleName))
                 return GetAdapterType(adapteeType);

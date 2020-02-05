@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,11 +30,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         protected override bool TryGetPropertyCore(string property, Type propertyType, out object value) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
             if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
+                throw Failure.NullOrEmptyString(nameof(property));
             }
             value = null;
 

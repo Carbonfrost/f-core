@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -185,10 +185,9 @@ namespace Carbonfrost.Commons.Core {
 
         static Exception _TryParse(string text, out SegmentSequence[] results2) {
             results2 = null;
-            if (text == null)
-                return new ArgumentNullException("text");
-            if (text.Length == 0)
-                return Failure.EmptyString("text");
+            if (string.IsNullOrEmpty(text)) {
+                return Failure.NullOrEmptyString(nameof(text));
+            }
 
             List<SegmentSequence> results = new List<SegmentSequence>();
 

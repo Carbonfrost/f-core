@@ -256,6 +256,9 @@
   <data name="NullableMustHaveValue" xml:space="preserve">
     <value>The given nullable argument must have a value.</value>
   </data>
+  <data name="NullOrEmptyStringNotValid" xml:space="preserve">
+    <value>Argument cannot be null or the empty string.</value>
+  </data>
   <data name="OutOfRangeInclusive" xml:space="preserve">
     <value>The value must be in the range {0} to {1}, inclusive.</value>
   </data>

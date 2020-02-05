@@ -1,5 +1,5 @@
 //
-// Copyright 2012 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2012, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -385,11 +385,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         IProviderInfo IProviderInfoDescription.GetProviderInfo(Type type, string name) {
-            if (name == null) {
-                throw new ArgumentNullException("name");
-            }
             if (string.IsNullOrEmpty(name)) {
-                throw Failure.EmptyString("name");
+                throw Failure.NullOrEmptyString(nameof(name));
             }
 
             return ProviderData.GetProvidersByLocalName(

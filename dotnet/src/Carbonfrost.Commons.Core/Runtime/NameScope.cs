@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,11 +63,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public object FindName(string name) {
-            if (name == null) {
-                throw new ArgumentNullException("name");
-            }
             if (string.IsNullOrEmpty(name)) {
-                throw Failure.EmptyString("name");
+                throw Failure.NullOrEmptyString(nameof(name));
             }
             var result = _items.GetValueOrDefault(name);
             if (result == null && _parent != null) {
@@ -77,11 +74,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public void RegisterName(string name, object item) {
-            if (name == null) {
-                throw new ArgumentNullException("name");
-            }
             if (string.IsNullOrEmpty(name)) {
-                throw Failure.EmptyString("name");
+                throw Failure.NullOrEmptyString(nameof(name));
             }
             if (item == null) {
                 throw new ArgumentNullException("item");
@@ -90,11 +84,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public void UnregisterName(string name) {
-            if (name == null) {
-                throw new ArgumentNullException("name");
-            }
             if (string.IsNullOrEmpty(name)) {
-                throw Failure.EmptyString("name");
+                throw Failure.NullOrEmptyString(nameof(name));
             }
             _items.Remove(name);
         }

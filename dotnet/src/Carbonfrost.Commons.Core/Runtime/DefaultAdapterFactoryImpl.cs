@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 throw new ArgumentNullException("adaptee");
             }
             if (string.IsNullOrEmpty(adapterRoleName)) {
-                throw Failure.EmptyString("adapterRoleName");
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
             }
             object result;
             if (TryBasicFactories(adaptee.GetType(), adapterRoleName, t => t.GetAdapter(adaptee, adapterRoleName), out result)) {
@@ -57,7 +57,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 throw new ArgumentNullException("adaptee");
             }
             if (string.IsNullOrEmpty(adapterRoleName)) {
-                throw Failure.EmptyString("adapterRoleName");
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
             }
             Type result;
             if (TryBasicFactories(adaptee.GetType(), adapterRoleName, t => t.GetAdapterType(adaptee, adapterRoleName), out result)) {
@@ -72,7 +72,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 throw new ArgumentNullException("adapteeType");
             }
             if (string.IsNullOrEmpty(adapterRoleName)) {
-                throw Failure.EmptyString("adapterRoleName");
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
             }
             Type result;
             if (TryBasicFactories(adapteeType, adapterRoleName, t => t.GetAdapterType(adapteeType, adapterRoleName), out result)) {

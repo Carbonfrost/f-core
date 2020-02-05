@@ -1,7 +1,7 @@
 //
 // - CompositeAdapterFactoryImpl.cs -
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,10 +33,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public object GetAdapter(object adaptee, string adapterRoleName) {
             if (adaptee == null)
                 throw new ArgumentNullException("adaptee");
-            if (adapterRoleName == null)
-                throw new ArgumentNullException("adapterRoleName");
-            if (adapterRoleName.Length == 0)
-                throw Failure.EmptyString("adapterRoleName");
+            if (string.IsNullOrEmpty(adapterRoleName)) {
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
+            }
 
             return FirstResult(e => e.GetAdapter(adaptee, adapterRoleName));
         }
@@ -44,10 +43,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public Type GetAdapterType(Type adapteeType, string adapterRoleName) {
             if (adapteeType == null)
                 throw new ArgumentNullException("adapteeType");
-            if (adapterRoleName == null)
-                throw new ArgumentNullException("adapterRoleName");
-            if (adapterRoleName.Length == 0)
-                throw Failure.EmptyString("adapterRoleName");
+            if (string.IsNullOrEmpty(adapterRoleName)) {
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
+            }
 
             return FirstResult(e => e.GetAdapterType(adapteeType, adapterRoleName));
         }
@@ -55,10 +53,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public Type GetAdapterType(object adaptee, string adapterRoleName) {
             if (adaptee == null)
                 throw new ArgumentNullException("adaptee");
-            if (adapterRoleName == null)
-                throw new ArgumentNullException("adapterRoleName");
-            if (adapterRoleName.Length == 0)
-                throw Failure.EmptyString("adapterRoleName");
+            if (string.IsNullOrEmpty(adapterRoleName)) {
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
+            }
 
             return FirstResult(e => e.GetAdapterType(adaptee, adapterRoleName));
         }

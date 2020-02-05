@@ -1,5 +1,5 @@
 //
-// Copyright 2012 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2012, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,10 +42,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public DefineAdapterAttribute(
             string role, Type adapteeType, Type adapterType) {
-            if (role == null)
-                throw new ArgumentNullException("role");
-            if (role.Length == 0)
-                throw Failure.EmptyString("role");
+            if (string.IsNullOrEmpty(role)) {
+                throw Failure.NullOrEmptyString(nameof(role));
+            }
             if (adapteeType == null)
                 throw new ArgumentNullException("adapteeType");
             if (adapterType == null)
@@ -58,16 +57,14 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public DefineAdapterAttribute(
             string role, Type adapteeType, string adapterType) {
-            if (role == null)
-                throw new ArgumentNullException("role");
-            if (role.Length == 0)
-                throw Failure.EmptyString("role");
+            if (string.IsNullOrEmpty(role)) {
+                throw Failure.NullOrEmptyString(nameof(role));
+            }
             if (adapteeType == null)
                 throw new ArgumentNullException("adapteeType");
-            if (adapterType == null)
-                throw new ArgumentNullException("adapterType");
-            if (adapterType.Length == 0)
-                throw Failure.EmptyString("adapterType");
+            if (string.IsNullOrEmpty(adapterType)) {
+                throw Failure.NullOrEmptyString(nameof(adapterType));
+            }
 
             this.role = role;
             this.adapteeType = adapteeType;

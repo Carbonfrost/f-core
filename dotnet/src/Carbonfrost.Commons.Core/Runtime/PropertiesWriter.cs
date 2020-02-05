@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,11 +47,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public virtual void WriteCategory(string category) {
-            if (category == null) {
-                throw new ArgumentNullException("category");
-            }
             if (string.IsNullOrEmpty(category)) {
-                throw Failure.EmptyString("category");
+                throw Failure.NullOrEmptyString(nameof(category));
             }
             BaseWriter.Write('[');
             BaseWriter.Write(category);
@@ -72,11 +69,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public virtual void WriteProperty(string property, object value) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
             if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
+                throw Failure.NullOrEmptyString(nameof(property));
             }
             BaseWriter.Write(property);
             BaseWriter.Write('=');

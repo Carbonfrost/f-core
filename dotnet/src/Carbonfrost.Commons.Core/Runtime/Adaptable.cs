@@ -219,13 +219,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static object TryAdapt(this object source, string adapterRoleName, IServiceProvider serviceProvider = null) {
             if (source == null) {
-                throw new ArgumentNullException("source"); // $NON-NLS-1
-            }
-            if (adapterRoleName == null) {
-                throw new ArgumentNullException("adapterRoleName");
+                throw new ArgumentNullException("source");
             }
             if (string.IsNullOrEmpty(adapterRoleName)) {
-                throw Failure.EmptyString("adapterRoleName");
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
             }
             var af = (serviceProvider ?? ServiceProvider.Null)
                 .GetServiceOrDefault<IAdapterFactory>(AdapterFactory.Default);
@@ -298,11 +295,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         {
             if (instanceType == null)
                 throw new ArgumentNullException("instanceType"); // $NON-NLS-1
-            if (name == null)
-                throw new ArgumentNullException("name"); // $NON-NLS-1
-
-            if (name.Length == 0)
-                throw Failure.EmptyString("name");
+            if (string.IsNullOrEmpty(name)) {
+                throw Failure.NullOrEmptyString(nameof(name));
+            }
 
             Type[] argTypes = signature.Parameters.Select(p => p.Type).ToArray();
             MethodInfo mi = instanceType.GetTypeInfo().GetMethod(name, argTypes, null);
