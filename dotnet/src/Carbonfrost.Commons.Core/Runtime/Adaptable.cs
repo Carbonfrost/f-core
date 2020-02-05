@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2014, 2016, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2014, 2016, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,6 +106,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 throw new ArgumentNullException("type");
             }
             return type.GetTypeInfo().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static)
+                .OrderByDescending(m => m.GetParameters().Length)
                 .FirstOrDefault(m => m.Name == "Parse" && !m.IsGenericMethod);
         }
 
@@ -404,10 +405,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 return string.Concat(QualName(type.DeclaringType), '.', name);
             else
                 return name;
-        }
-
-        static IActivationProvider MakeActivationProvider(Type type) {
-            return (IActivationProvider) Activator.CreateInstance(type);
         }
 
         static bool IsActivationConstructor(ConstructorInfo t) {

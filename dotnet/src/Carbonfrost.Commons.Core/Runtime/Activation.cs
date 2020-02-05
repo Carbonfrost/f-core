@@ -26,12 +26,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
     [Providers]
     public static partial class Activation {
 
-        static readonly Expression<Func<string, object>> Parse
-            = (a) => (default(object));
-
-        static readonly Expression<Func<string, CultureInfo, object>> ParseWithCulture
-            = (a, b) => (default(object));
-
         public static T CreateInstance<T>(QualifiedName typeName,
                                           IEnumerable<KeyValuePair<string, object>> values = null,
                                           IServiceProvider serviceProvider = null) {

@@ -58,8 +58,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             componentType = componentType ?? typeof(object);
 
             Type result = componentType.GetAdapterType(AdapterRole.StreamingSource);
-            if (result != null)
+            if (result != null) {
                 return Activation.CreateInstance<StreamingSource>(result, serviceProvider);
+            }
 
             return App.GetProvider<StreamingSource>(new { ContentType = contentType, OutputType = componentType, Extension = extension });
         }

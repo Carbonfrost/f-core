@@ -51,7 +51,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public string PlatformFamily {
             get {
-                return Versions.Select(t => t.PlatformFamily).FirstNonNull();;
+                return Versions.Select(t => t.PlatformFamily).First(t => t != null);
             }
         }
 

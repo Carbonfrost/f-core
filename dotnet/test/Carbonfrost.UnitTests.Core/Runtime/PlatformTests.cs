@@ -1,6 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019-2020 Carbonfrost Systems, Inc.
-// (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +14,17 @@
 // limitations under the License.
 //
 
-namespace Carbonfrost.Commons.Core.Runtime {
+using Carbonfrost.Commons.Core.Runtime;
+using Carbonfrost.Commons.Spec;
 
-    [ConcreteClass(typeof(Properties))]
-    public interface IProperties : IPropertyStore {
-        void ClearProperties();
-        void ClearProperty(string property);
-        void SetProperty(string property, object value);
-        bool TrySetProperty(string property, object value);
+namespace Carbonfrost.UnitTests.Core.Runtime {
+
+    public class PlatformTests {
+
+        [Fact]
+        public void Current_should_provide_nonempty_string_all_platforms() {
+            Assert.NotEmpty(Platform.Current.UserAgent);
+        }
     }
 }
+

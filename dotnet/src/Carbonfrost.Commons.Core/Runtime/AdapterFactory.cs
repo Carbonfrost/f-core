@@ -1,5 +1,5 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -86,8 +85,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static IAdapterFactory FromAssembly(Assembly assembly) {
-            if (assembly == null)
+            if (assembly == null) {
                 throw new ArgumentNullException("assembly");
+            }
 
             return cache.GetValueOrCache(assembly, () => FromAssemblyInternal(assembly));
         }
@@ -111,6 +111,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         static IAdapterFactory FromAssemblyInternal(Assembly assembly) {
+            if (!AssemblyInfo.GetAssemblyInfo(assembly).ScanForAdapters) {
+                return Null;
+            }
             // This will contain all factories that are declared.  If any factory has an explicit role, then
             // all adapters in that role must be made available from it (otherwise, the optimization is pointless since we
             // have to fall back to a full scan).
@@ -120,8 +123,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             var genericFactories = new List<IAdapterFactory>();  // [assembly: AdapterFactory(typeof(H))]
             var roleFactories = new List<IAdapterFactory>();  // [assembly: StreamingSourceFactory(typeof(H))]
 
-            if (all.Length == 0)
+            if (all.Length == 0) {
                 return ReflectedAdapterFactory.Create(assembly, Array.Empty<string>());
+            }
 
             foreach (var t in all) {
                 var inst = (IAdapterFactory) Activator.CreateInstance(t.AdapterFactoryType);
@@ -134,8 +138,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             // If no generic factories were defined, then fallback available
-            if (genericFactories.Count == 0)
+            if (genericFactories.Count == 0) {
                 genericFactories.Add(ReflectedAdapterFactory.Create(assembly, except));
+            }
 
             // Consider role factories before generic ones
             return Compose(roleFactories.Concat(genericFactories));

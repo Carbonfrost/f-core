@@ -1,5 +1,5 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 
+using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 using Carbonfrost.Commons.Spec;
 
@@ -24,12 +25,39 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
     public class StreamingSourceTests {
 
-        [Fact]
-        public void FromName_test_known_nominal() {
-            Assert.NotNull(StreamingSource.FromName("xmlFormatter"));
-            Assert.NotNull(StreamingSource.FromName("text"));
-            Assert.NotNull(StreamingSource.FromName("properties"));
+        [Theory]
+        [InlineData("xmlFormatter")]
+        [InlineData("text")]
+        [InlineData("properties")]
+        public void FromName_test_known_nominal(string name) {
+            Assert.NotNull(StreamingSource.FromName(name));
         }
+
+        [Theory]
+        [InlineData("xmlFormatter")]
+        [InlineData("text")]
+        [InlineData("properties")]
+        public void FromName_test_known_qualified_name(string name) {
+            var qn = NamespaceUri.Create(Xmlns.Core2008) + name;
+            Assert.NotNull(StreamingSource.FromName(qn));
+        }
+
+        [Theory]
+        [InlineData(KnownStreamingSource.XmlFormatter, typeof(XmlFormatterStreamingSource))]
+        [InlineData(KnownStreamingSource.Properties, typeof(PropertiesStreamingSource))]
+        [InlineData(KnownStreamingSource.Text, typeof(TextStreamingSource))]
+        public void GetStreamingSourceType_from_known_produces_correct_type(KnownStreamingSource ks, Type expected) {
+            Assert.Equal(
+                expected,
+                StreamingSource.GetStreamingSourceType(ks)
+            );
+
+            Assert.IsInstanceOf(
+                expected,
+                StreamingSource.Create(ks)
+            );
+        }
+
 
         [Fact]
         public void AppProviderNames_test_known_adapter_names() {

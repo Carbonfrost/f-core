@@ -43,6 +43,18 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Fact]
+        public void Combine_should_combine_into_semicolon_syntax_3() {
+            Glob a = Glob.Parse("*.cs");
+            Glob b = Glob.Parse("*.vb");
+            Glob c = Glob.Parse("*.java");
+            Glob d = Glob.Parse("*.gs");
+
+            Glob e = Glob.Combine(a, b, c, d);
+
+            Assert.Equal("*.cs;*.vb;*.java;*.gs", e.ToString());
+        }
+
+        [Fact]
         public void Combine_should_conserve_on_reference_equality() {
             Glob a = Glob.Parse("*.java");
             Glob c = Glob.Combine(a, a, a);

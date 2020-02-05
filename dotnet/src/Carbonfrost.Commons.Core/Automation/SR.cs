@@ -497,13 +497,6 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("NotValidDataUri") );
     }
 
-  /// <summary>The input string does not represent a valid hexadecimal byte array.</summary>
-    internal static string NotValidHexString(
-    
-    ) {
-        return string.Format(Culture, ResourceFinder("NotValidHexString") );
-    }
-
   /// <summary>Local name contains an illegal character.</summary>
     internal static string NotValidLocalName(
     

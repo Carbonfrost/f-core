@@ -1,5 +1,5 @@
 //
-// Copyright 2014, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 using System;
 using System.Reflection;
 using System.Linq.Expressions;
-using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 using Carbonfrost.Commons.Spec;
 
@@ -34,6 +33,7 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             Assembly asm = type.GetTypeInfo().Assembly;
             Assert.False(SharedRuntimeOptionsAttribute.GetSharedRuntimeOptions(asm).Providers);
             Assert.False(SharedRuntimeOptionsAttribute.GetSharedRuntimeOptions(asm).Templates);
+            Assert.False(SharedRuntimeOptionsAttribute.GetSharedRuntimeOptions(asm).Adapters);
         }
 
         [Fact]
@@ -43,6 +43,15 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
             Assembly self = GetType().GetTypeInfo().Assembly;
             Assert.True(SharedRuntimeOptionsAttribute.GetSharedRuntimeOptions(self).Providers);
+        }
+
+        [Fact]
+        public void Adapters_scanning_for_this_assembly_enabled() {
+            Assembly shared = typeof(Adaptable).GetTypeInfo().Assembly;
+            Assert.True(SharedRuntimeOptionsAttribute.GetSharedRuntimeOptions(shared).Adapters);
+
+            Assembly self = GetType().GetTypeInfo().Assembly;
+            Assert.True(SharedRuntimeOptionsAttribute.GetSharedRuntimeOptions(self).Adapters);
         }
     }
 }

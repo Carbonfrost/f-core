@@ -22,10 +22,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         protected StreamingSource() {}
 
-        public virtual bool IsValidInput(StreamContext inputSource) {
-            return true;
-        }
-
         public abstract object Load(StreamContext inputSource, Type instanceType);
         public abstract void Save(StreamContext outputTarget, object value);
 
@@ -45,5 +41,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             Template.Copy(copyFrom, instance);
         }
 
+        internal virtual object LoadFromText(string text, Type componentType) {
+            return Load(StreamContext.FromText(text), componentType);
+        }
     }
 }

@@ -342,8 +342,9 @@ namespace Carbonfrost.Commons.Core {
         public static T Prepare<T>(T exception)
             where T : Exception {
 
-            if (exception == null)
+            if (exception == null) {
                 return null;
+            }
 
             if (exception.HelpLink == null) {
                 // TODO Set the correct HelpURL

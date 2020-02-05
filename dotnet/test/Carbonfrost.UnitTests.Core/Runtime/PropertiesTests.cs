@@ -22,7 +22,7 @@ using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.UnitTests.Core {
 
-    public class PropertiesTests {
+    public class PropertiesTests : TestClass {
 
         [Fact]
         public void Parse_key_value_pairs_whitespace_rules() {
@@ -35,6 +35,20 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Fact]
+        public void FromFile_will_read_file() {
+            Properties p = Properties.FromFile(TestContext.GetFullPath("alpha.properties"));
+            Assert.ContainsKeyWithValue("Bash", "Escape\nTwo lines", p);
+        }
+
+        [Fact]
+        public void FromStreamContext_will_read_file() {
+            Properties p = Properties.FromStreamContext(
+                StreamContext.FromFile(TestContext.GetFullPath("alpha.properties"))
+            );
+            Assert.ContainsKeyWithValue("Bash", "Escape\nTwo lines", p);
+        }
+
+        [Fact]
         public void Parse_key_value_pairs() {
             Properties p = Properties.Parse("a=a;b=b;c=true");
             Assert.Equal(3, p.InnerMap.Count);
@@ -42,6 +56,14 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Equal("a", p.GetProperty("a"));
             Assert.Equal("b", p.GetProperty("b"));
             Assert.Equal("true", p.GetProperty("c"));
+        }
+
+        [Fact]
+        public void Parse_escape_sequences() {
+            Properties p = Properties.Parse(@"a=\t\n\r\u27F5;c=\x20\b\f\0");
+
+            Assert.Equal("\t\n\r⟵", p.GetProperty("a"));
+            Assert.Equal(" \b\f\0", p.GetProperty("c"));
         }
 
         [Fact]
@@ -146,6 +168,11 @@ namespace Carbonfrost.UnitTests.Core {
             var pp = new MyProperties() { A = "a" };
             Assert.True(pp.HasProperty("A"));
             Assert.Equal("a", pp.GetProperty("A"));
+        }
+
+        [Fact]
+        public void Properties_is_the_concrete_class_for_IProperties() {
+            Assert.Equal(typeof(Properties), typeof(IProperties).GetConcreteClass());
         }
     }
 }

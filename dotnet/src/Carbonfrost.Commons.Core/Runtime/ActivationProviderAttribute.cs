@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,9 +33,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
             CheckType();
         }
 
-        void CheckType() {
-            if (this.AdapterType == null || !typeof(IActivationProvider).GetTypeInfo().IsAssignableFrom(this.AdapterType))
+        private void CheckType() {
+            if (AdapterType == null || !typeof(IActivationProvider).GetTypeInfo().IsAssignableFrom(AdapterType)) {
                 throw Failure.NotInstanceOf("adapterType", AdapterType, typeof(IActivationProvider));
+            }
         }
     }
 }

@@ -14,16 +14,21 @@
 // limitations under the License.
 //
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
+using Carbonfrost.Commons.Core;
+using Carbonfrost.Commons.Spec;
 
-namespace Carbonfrost.Commons.Core {
+namespace Carbonfrost.UnitTests.Core {
 
-    static class Empty<TKey, TValue> {
+    public class GlobTemplateMatchTests {
 
-        public static readonly IDictionary<TKey, TValue> Dictionary =
-            new ReadOnlyDictionary<TKey, TValue>(
-                new Dictionary<TKey, TValue>()
-            );
+        [Fact]
+        public void ToString_should_equal_filename() {
+            var unit = GlobTemplate.Parse("dotnet/src/Carbonfrost.Commons.Core/{name}/{file}.cs");
+            var all = unit.EnumerateFiles();
+            var assembly = all.Single(t => t.FileName.EndsWith("AssemblyInfo.cs"));
+
+            Assert.Equal(assembly.ToString(), assembly.FileName);
+        }
     }
 }
