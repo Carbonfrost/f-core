@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.Core {
@@ -36,7 +35,7 @@ namespace Carbonfrost.Commons.Core {
             _asm = asm;
             _resolver = new XmlNamespaceResolver(_asm.ReferencedAssemblies.Select(t => t.XmlNamespaceResolver));
             foreach (XmlnsAttribute attr in asm.Assembly.GetCustomAttributes(typeof(XmlnsAttribute), false)) {
-                AddXmlns(attr.Prefix, attr.ClrNamespace, attr.Xmlns);
+                AddXmlns(attr.Prefix, attr.Namespace, attr.Xmlns);
             }
         }
 
@@ -88,7 +87,7 @@ namespace Carbonfrost.Commons.Core {
         private void AddXmlns(string prefix, string clrNamespacePattern, Uri xmlns) {
             NamespaceUri nu = NamespaceUri.Create(xmlns);
 
-            var allNamespaces = _asm.ClrNamespaces;
+            var allNamespaces = _asm.Namespaces;
             foreach (var m in new NamespaceFilter(clrNamespacePattern).Filter(allNamespaces)) {
                 if (!this.xmlns.ContainsKey(m ?? string.Empty)) {
                     this.xmlns.Add(m ?? string.Empty, nu);

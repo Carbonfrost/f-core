@@ -22,7 +22,7 @@ using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 
 [assembly: Xmlns(Xmlns.Core2008,
-                 Prefix = "runtime", ClrNamespace = "Carbonfrost.Commons.Core.*")]
+                 Prefix = "runtime", Namespace = "Carbonfrost.Commons.Core.*")]
 
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

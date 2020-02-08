@@ -273,7 +273,7 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("DefineRootProvider") , @providerType);
     }
 
-  /// <summary>Cannot utilize '${instanceName}' after the instance has been disposed.</summary>
+  /// <summary>Cannot utilize `${instanceName}' after the instance has been disposed.</summary>
     internal static string Disposed(
     object @instanceName
     ) {
@@ -334,6 +334,13 @@ namespace Carbonfrost.Commons.Core.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("IncompleteEscapeSequence") );
+    }
+
+  /// <summary>Assembly `${assembly}' specifies related assembly with the same name, which is not allowed.</summary>
+    internal static string InvalidSelfRelatedAssembly(
+    object @assembly
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidSelfRelatedAssembly") , @assembly);
     }
 
   /// <summary>Invalid provider `${type}': ${ex}</summary>
@@ -504,7 +511,7 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("NotValidLocalName") );
     }
 
-  /// <summary>The path '${pathText}' contains an invalid character or does not identify a supported path name.</summary>
+  /// <summary>The path `${pathText}' contains an invalid character or does not identify a supported path name.</summary>
     internal static string NotValidPathCharacter(
     object @pathText
     ) {
@@ -546,7 +553,7 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("OutsideEnumeration") );
     }
 
-  /// <summary>The text cannot be parsed into a valid instance of type '${typeName}'.</summary>
+  /// <summary>The text cannot be parsed into a valid instance of type `${typeName}'.</summary>
     internal static string ParseFailure(
     object @typeName
     ) {
@@ -728,7 +735,7 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("TypeMissingFromQualifiedName") , @name);
     }
 
-  /// <summary>The type, `${typeName}', is not of the required type(s), '${requiredType}', and there is no suitable adapter factory in the service context to supply the conversion.</summary>
+  /// <summary>The type, `${typeName}', is not of the required type(s), `${requiredType}', and there is no suitable adapter factory in the service context to supply the conversion.</summary>
     internal static string TypeNotCastableAdaptable(
     object @typeName, object @requiredType
     ) {
@@ -742,11 +749,18 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("TypeReferenceResolveError") , @exception);
     }
 
-  /// <summary>"Type reference resolving type '${fullName}'</summary>
+  /// <summary>"Type reference resolving type `${fullName}'</summary>
     internal static string TypeReferenceResolvingType(
     object @fullName
     ) {
         return string.Format(Culture, ResourceFinder("TypeReferenceResolvingType") , @fullName);
+    }
+
+  /// <summary>Could not find related assembly `${relatedAssembly}' defined in `${definingAssembly}' (search locations: ${searchLocations})</summary>
+    internal static string UnableToLoadRelatedAssembly(
+    object @relatedAssembly, object @definingAssembly, object @searchLocations
+    ) {
+        return string.Format(Culture, ResourceFinder("UnableToLoadRelatedAssembly") , @relatedAssembly, @definingAssembly, @searchLocations);
     }
 
   /// <summary>The file ended unexpectedly when the reader expected more data.</summary>

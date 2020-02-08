@@ -39,7 +39,13 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
-        public IReadOnlyList<string> ClrNamespaces {
+        public IReadOnlyList<Assembly> RelatedAssemblies {
+            get {
+                return Assembly.GetRelatedAssemblies();
+            }
+        }
+
+        public IReadOnlyList<string> Namespaces {
             get {
                 return AllNamespaces();
             }

@@ -47,7 +47,7 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Fact]
-        public void ClrNamespaces_should_get_known_namespaces() {
+        public void Namespaces_should_get_known_namespaces() {
             Assembly a = typeof(TypeReference).GetTypeInfo().Assembly;
             var info = AssemblyInfo.GetAssemblyInfo(a);
 
@@ -57,7 +57,7 @@ namespace Carbonfrost.UnitTests.Core {
                             "Carbonfrost.Commons.Core.Resources",
                             "Carbonfrost.Commons.Core",
                             "Carbonfrost.Commons.Core.Runtime",
-                        }, info.ClrNamespaces.Except(new[] { "System", "Coverlet.Core.Instrumentation.Tracker" }));
+                        }, info.Namespaces.Except(new[] { "System", "Coverlet.Core.Instrumentation.Tracker" }));
         }
 
         [Fact]

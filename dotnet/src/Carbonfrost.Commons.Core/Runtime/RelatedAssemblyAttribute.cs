@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,26 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-using System.Reflection;
+using System;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    static class RuntimeUtility {
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public sealed class RelatedAssemblyAttribute : Attribute {
 
-        public static AssemblyName GetAssemblyName(string file) {
-            return AssemblyName.GetAssemblyName(file);
+        public string AssemblyFileName {
+            get;
+            private set;
         }
+
+        public RelatedAssemblyAttribute(string assemblyFileName) {
+            if (string.IsNullOrEmpty(assemblyFileName)) {
+                throw Failure.NullOrEmptyString(nameof(assemblyFileName));
+            }
+
+            AssemblyFileName = assemblyFileName;
+        }
+
     }
 }

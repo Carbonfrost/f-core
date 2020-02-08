@@ -27,7 +27,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             private set;
         }
 
-        public string ClrNamespace {
+        public string Namespace {
             get;
             set;
         }
