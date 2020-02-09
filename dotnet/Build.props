@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>$(ENG_GIT_VERSION)</Version>
+    <Version>$(ENG_VERSION)</Version>
     <KeyOriginatorFile>../../F5NonCommercial.snk</KeyOriginatorFile>
   </PropertyGroup>
 
