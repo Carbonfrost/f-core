@@ -58,23 +58,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (name == null) {
                 throw new ArgumentNullException("name");
             }
-
-            string cleanName = name.LocalName.Replace('.', '+').Replace('-', '`');
-            foreach (var a in Assemblies) {
-                AssemblyInfo ai = AssemblyInfo.GetAssemblyInfo(a);
-                foreach (string clrns in ai.GetClrNamespaces(name.Namespace)) {
-                    Type result = a.GetType(CombinedTypeName(clrns, cleanName));
-                    if (result != null) {
-                        return result;
-                    }
-                }
-            }
-
-            if (throwOnError) {
-                throw RuntimeFailure.TypeMissingFromQualifiedName(name);
-            }
-
-            return null;
+            var tr = TypeReference.FromQualifiedName(name);
+            return throwOnError ? tr.Resolve() : tr.TryResolve();
         }
 
         public static Type GetTypeByQualifiedName(QualifiedName name) {
@@ -142,13 +127,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             var func = AssemblyThunk(selector);
             return new BufferDictionary<TKey, TValue>(AssemblyObserver.Instance.SelectMany(func));
-        }
-
-        static string CombinedTypeName(string clrns, string name) {
-            if (clrns.Length == 0) {
-                return name;
-            }
-            return string.Concat(clrns, ".", name);
         }
 
         static Func<Assembly, IEnumerable<TValue>> AssemblyThunk<TValue>(Func<Type, IEnumerable<TValue>> selector) {

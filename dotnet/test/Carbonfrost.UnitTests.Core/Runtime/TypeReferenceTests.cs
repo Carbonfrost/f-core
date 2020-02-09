@@ -111,6 +111,12 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         }
 
         [Fact]
+        public void Resolve_type_from_system() {
+            TypeReference tr = TypeReference.Parse("System.Uri");
+            Assert.Equal(typeof(Uri), tr.TryResolve());
+        }
+
+        [Fact]
         public void Parse_assembly_qualified_name_should_get_original_name_and_string() {
             string fullName = "Carbonfrost.Commons.Core.Runtime.TypeReference, Carbonfrost.Commons.Core, PublicKeyToken=d09aaf34527fe3e6";
 
@@ -139,5 +145,30 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             TypeReference tr = TypeReference.Parse(fullName);
             Assert.Equal(typeof(TypeReferenceTests), tr.Resolve());
         }
+
+        [Theory]
+        [InlineData("F", "Carbonfrost.Commons.Core.Glob")]
+        [InlineData("O", "")]
+        [InlineData("q", "runtime:Glob")]
+        [InlineData("Q", "{https://ns.carbonfrost.com/commons/core} Glob")]
+        public void ToString_format_strings(string format, string expected) {
+            var tr = TypeReference.FromType(typeof(Glob));
+            Assert.Equal(expected, tr.ToString(format));
+        }
+
+        [Fact]
+        public void ToString_will_use_OriginalString_from_parse() {
+            var tr = TypeReference.Parse("Hello");
+            Assert.Equal("Hello", tr.ToString("O"));
+        }
+
+        [Theory]
+        [InlineData("N")]
+        [InlineData("R")]
+        public void ToString_will_use_AssemblyQualifiedName_roundtrip(string code) {
+            var tr = TypeReference.FromType(typeof(Glob));
+            Assert.Equal(typeof(Glob).AssemblyQualifiedName, tr.ToString(code));
+        }
+
     }
 }

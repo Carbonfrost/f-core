@@ -31,8 +31,6 @@ namespace Carbonfrost.Commons.Core {
 
         private readonly SharedRuntimeOptionsAttribute _options;
 
-        internal static readonly IEnumerable<AssemblyName> ALL;
-
         public IEnumerable<AssemblyInfo> ReferencedAssemblies {
             get {
                 return Assembly.GetReferencedAssemblies().Select(AssemblyInfo.GetAssemblyInfo);
@@ -98,12 +96,6 @@ namespace Carbonfrost.Commons.Core {
             } else {
                 _resolver = AssemblyInfoXmlNamespaceResolver.Null;
             }
-        }
-
-        static AssemblyInfo() {
-            ALL = App.DescribeAssemblies(
-                a => new [] { a.GetName() }
-            );
         }
 
         public IEnumerable<string> GetNamespaces(string pattern) {

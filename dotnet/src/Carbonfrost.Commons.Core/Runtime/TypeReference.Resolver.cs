@@ -1,11 +1,11 @@
 //
-// Copyright 2012, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2012, 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,23 +28,91 @@ namespace Carbonfrost.Commons.Core.Runtime {
             public abstract Type Resolve();
         }
 
-        class QualifiedNameResolver : TypeReferenceResolver {
+        class CacheTypeReferenceResolver : TypeReferenceResolver {
+            private readonly TypeReferenceResolver _inner;
+            private Exception _resolveError;
+            private Type _result;
 
-            private QualifiedName qn;
-
-            public QualifiedNameResolver(QualifiedName qn) {
-                this.qn = qn;
+            public CacheTypeReferenceResolver(TypeReferenceResolver inner) {
+                _inner = inner;
             }
 
             public override string CanonicalString {
                 get {
-                    return qn.ToString();
+                    return _inner.CanonicalString;
+                }
+            }
+
+            public Exception ResolveError {
+                get {
+                    return _resolveError;
                 }
             }
 
             public override Type Resolve() {
-                return App.GetTypeByQualifiedName(qn);
+                var result = EnsureResult();
+                if (result == typeof(FailedToResolve)) {
+                    return null;
+                }
+                return result;
             }
+
+            private Type EnsureResult() {
+                if (_result == null) {
+                    try {
+                        _result = _inner.Resolve();
+                        if (_result == null) {
+                            _result = typeof(FailedToResolve);
+                        }
+
+                    } catch (Exception ex) {
+                        _resolveError = ex;
+                        _result = typeof(FailedToResolve);
+                    }
+                }
+                return _result;
+            }
+
+            class FailedToResolve {}
+        }
+
+        class QualifiedNameResolver : TypeReferenceResolver {
+
+            private QualifiedName _qn;
+
+            public QualifiedNameResolver(QualifiedName qn) {
+                _qn = qn;
+            }
+
+            public override string CanonicalString {
+                get {
+                    return _qn.ToString();
+                }
+            }
+
+            public override Type Resolve() {
+                string cleanName = _qn.LocalName.Replace('.', '+').Replace('-', '`');
+
+                foreach (var a in App.Assemblies) {
+                    AssemblyInfo ai = AssemblyInfo.GetAssemblyInfo(a);
+                    foreach (string clrns in ai.GetClrNamespaces(_qn.Namespace)) {
+                        Type result = a.GetType(CombinedTypeName(clrns, cleanName));
+                        if (result != null) {
+                            return result;
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            static string CombinedTypeName(string clrns, string name) {
+                if (clrns.Length == 0) {
+                    return name;
+                }
+                return string.Concat(clrns, ".", name);
+            }
+
         }
 
         class TrivialResolver : TypeReferenceResolver {
@@ -81,10 +149,11 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public override Type Resolve() {
-                foreach (AssemblyName an in AssemblyInfo.ALL) {
-                    Type type = Type.GetType(typeName + ", " + an);
-                    if (type != null)
+                foreach (var an in App.DescribeAssemblies()) {
+                    Type type = an.GetType(typeName);
+                    if (type != null) {
                         return type;
+                    }
                 }
 
                 if (!typeName.Contains(".")) {
@@ -131,6 +200,19 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     results = results.Where(a => a.GetName().CultureName == assemblyName.CultureName);
                 }
                 return FindType(results.FirstOrDefault(), typeName);
+            }
+
+            static Type FindType(Assembly assembly, string typeName) {
+                if (assembly == null) {
+                    return null;
+                }
+                Type c = assembly.GetType(typeName);
+                if (c == null && !typeName.Contains(".")) {
+                    var result = assembly.GetTypesHelper().FirstOrDefault(u => u.Name == typeName);
+                    return result == null ? null : result.AsType();
+
+                } else
+                    return c;
             }
         }
     }
