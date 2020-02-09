@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using Carbonfrost.Commons.Core.Runtime;
 using Carbonfrost.Commons.Spec;
@@ -23,6 +24,21 @@ using Carbonfrost.Commons.Spec;
 namespace Carbonfrost.UnitTests.Core {
 
     public class PropertyProviderTests {
+
+        // These apply strict validation of arguments
+
+        public IEnumerable<IPropertyProvider> StrictPropertyProviders {
+            get {
+                return new [] {
+                    PropertyProvider.Null,
+                    PropertyProvider.FromArray(3),
+                    PropertyProvider.FromFactory(() => new Properties()),
+                    PropertyProvider.FromValue(new { a = "" }),
+                    PropertyProvider.FromValue(new Dictionary<string,string> { ["a"] = "" }),
+                    PropertyProvider.FromValue(new NameValueCollection()),
+                };
+            }
+        }
 
         [Fact]
         public void Compose_converts_null_to_Null_provider() {
@@ -51,21 +67,9 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Fact]
-        public void FromArray_can_convert_property_to_index() {
+        public void FromArray_returns_correct_type() {
             var pp = PropertyProvider.FromArray("a", "c");
-            Assert.Equal("a", pp.GetProperty("0"));
-            Assert.Equal(typeof(string), pp.GetPropertyType("0"));
-        }
-
-        [Theory]
-        [InlineData("-1", Name = "out of range")]
-        [InlineData("33", Name = "out of range positive")]
-        [InlineData("text", Name = "not a number")]
-        public void FromArray_adapter_can_use_invalid_properties(string name) {
-            var pp = PropertyProvider.FromArray("a", "c");
-            Assert.Null(pp.GetProperty(name));
-            Assert.Null(pp.GetPropertyType(name));
-            Assert.False(pp.TryGetProperty(name, typeof(object), out _));
+            Assert.IsInstanceOf<ArrayPropertyProvider>(pp);
         }
 
         class A {}
@@ -159,15 +163,14 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Same(existing, pp);
         }
 
-        [Fact]
-        public void FromValue_can_handle_any_KeyValuePair_enumerable() {
-            var items = new [] {
-                new KeyValuePair<string, int>("a", 420),
-                new KeyValuePair<string, int>("b", 500),
-            };
-            var pp = PropertyProvider.FromValue(items);
-            Assert.Equal(420, pp.GetProperty("a"));
-            Assert.IsInstanceOf<IPropertyStore>(pp);
+        [Theory]
+        [PropertyData(nameof(StrictPropertyProviders))]
+        public void GetProperty_will_throw_on_invalid_property_name(IPropertyProvider pp) {
+            Assert.Throws<ArgumentException>(() => pp.GetProperty(""));
+            Assert.Throws<ArgumentException>(() => pp.GetProperty(null));
+
+            Assert.Throws<ArgumentException>(() => pp.TryGetProperty("", typeof(object), out _));
+            Assert.Throws<ArgumentException>(() => pp.TryGetProperty(null, typeof(object), out _));
         }
 
         class PPropertiesContainer : IPropertiesContainer {

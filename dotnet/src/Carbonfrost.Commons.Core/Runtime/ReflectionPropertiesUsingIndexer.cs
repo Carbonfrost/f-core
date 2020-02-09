@@ -47,6 +47,14 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return EmptyEnumerator;
         }
 
+        internal static IProperties TryCreate(object context) {
+            var indexer = ReflectionPropertyProvider.FindIndexerProperty(context.GetType());
+            if (indexer != null) {
+                return new ReflectionPropertiesUsingIndexer(context, indexer);
+            }
+            return null;
+        }
+
         protected override void SetPropertyCore(string key, object defaultValue) {
             _indexer.SetValue(_objectContext, defaultValue, new object[] { key });
         }

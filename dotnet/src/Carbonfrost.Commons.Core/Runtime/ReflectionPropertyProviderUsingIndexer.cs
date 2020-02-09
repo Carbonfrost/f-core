@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    class ReflectionPropertyProviderUsingIndexer : PropertyProviderBase {
+    sealed class ReflectionPropertyProviderUsingIndexer : IPropertyProvider {
 
         private readonly object _objectContext;
         private readonly PropertyInfo _indexer;
@@ -31,7 +31,22 @@ namespace Carbonfrost.Commons.Core.Runtime {
             _indexer = indexer;
         }
 
-        protected override bool TryGetPropertyCore(string property, Type propertyType, out object value) {
+        public static ReflectionPropertyProviderUsingIndexer TryCreate(object context) {
+            Debug.Assert(context != null);
+            var indexer = ReflectionPropertyProvider.FindIndexerProperty(context.GetType());
+            if (indexer != null) {
+                return new ReflectionPropertyProviderUsingIndexer(context, indexer);
+            }
+            return null;
+        }
+
+        public Type GetPropertyType(string property) {
+            PropertyProvider.CheckProperty(property);
+            return _indexer.PropertyType;
+        }
+
+        public bool TryGetProperty(string property, Type propertyType, out object value) {
+            PropertyProvider.CheckProperty(property);
             value = null;
 
             try {

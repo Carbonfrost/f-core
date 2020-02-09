@@ -31,15 +31,15 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         void OnPropertyChanged(PropertyChangedEventArgs e) {
-            if (PropertyChangedValue != null)
+            if (PropertyChangedValue != null) {
                 PropertyChangedValue(this, e);
+            }
         }
 
         public override string ToString() {
             return Properties.ToKeyValuePairs(this);
         }
 
-        // IProperties implementation
         public event PropertyChangedEventHandler PropertyChanged {
             add {
                 EnsureEventHandler();
@@ -52,17 +52,21 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public void ClearProperties() {
-            foreach (PropertyInfo pd in _EnsureProperties().Values)
+            foreach (PropertyInfo pd in _EnsureProperties().Values) {
                 _ResetProperty(pd);
+            }
         }
 
         public void ClearProperty(string property) {
+            PropertyProvider.CheckProperty(property);
             PropertyInfo pd = _GetProperty(property);
-            if (pd != null)
+            if (pd != null) {
                 _ResetProperty(pd);
+            }
         }
 
         public bool TrySetProperty(string property, object value) {
+            PropertyProvider.CheckProperty(property);
             PropertyInfo pd = _GetProperty(property);
             if (pd != null && pd.GetValue(ObjectContext) != value) {
                 pd.SetValue(ObjectContext, value);
@@ -72,8 +76,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public void SetProperty(string property, object value) {
+            PropertyProvider.CheckProperty(property);
             PropertyInfo pd = _GetProperty(property);
-            if (pd != null && pd.GetValue(ObjectContext) != value) {
+            if (pd == null) {
+                throw RuntimeFailure.PropertyNotFound(nameof(property), property);
+            }
+            if (pd.GetValue(ObjectContext) != value) {
                 pd.SetValue(ObjectContext, value);
             }
         }

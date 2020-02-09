@@ -1,5 +1,5 @@
 //
-// Copyright 2014, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 
-using System;
-using System.Linq;
 using Carbonfrost.Commons.Core.Runtime;
 using Carbonfrost.Commons.Spec;
 
@@ -63,6 +61,12 @@ namespace Carbonfrost.UnitTests.Core {
             var pp = new ReflectionPropertyProvider(new A());
             Assert.Equal(typeof(string), pp.GetPropertyType("B"));
             Assert.Null(pp.GetPropertyType("Z"));
+        }
+
+        [Fact]
+        public void ToString_calls_underlying_string() {
+            var pp = new ReflectionPropertyProvider(new A());
+            Assert.Equal(new A().ToString(), pp.ToString());
         }
 
     }

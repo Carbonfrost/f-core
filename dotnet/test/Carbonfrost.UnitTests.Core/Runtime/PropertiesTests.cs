@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2016, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2016, 2019-2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,10 @@
 //
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Reflection;
 using Carbonfrost.Commons.Core.Runtime;
 using Carbonfrost.Commons.Spec;
@@ -23,6 +26,30 @@ using Carbonfrost.Commons.Spec;
 namespace Carbonfrost.UnitTests.Core {
 
     public class PropertiesTests : TestClass {
+
+        public IEnumerable<IProperties> ReadOnlyPropertiesAdapters {
+            get {
+                var p = new Properties { { "a", "bc123" } };
+                var dict = new Dictionary<string, string> { { "a", "bc123" } };
+
+                yield return Properties.ReadOnly(p);
+                yield return Properties.ReadOnly(dict);
+            }
+        }
+
+        public IEnumerable<IProperties> StrictProperties {
+            get {
+                return new IProperties[] {
+                    new Properties(),
+                    Properties.Null,
+                    Properties.Empty,
+                    Properties.FromArray(3),
+                    Properties.FromValue(new { a = "" }),
+                    Properties.FromValue(new Dictionary<string,string> { ["a"] = "" }),
+                    Properties.FromValue(new NameValueCollection()),
+                };
+            }
+        }
 
         [Fact]
         public void Parse_key_value_pairs_whitespace_rules() {
@@ -78,6 +105,16 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Equal("a='a    ';b='\"quotat ; ions\"';c='carriage returns\r\n';d=';;; \\'\\' ;;;'", p.ToString());
         }
 
+        [Fact]
+        public void FromValues_can_handle_any_KeyValuePair_enumerable() {
+            var items = new [] {
+                new KeyValuePair<string, int>("a", 420),
+                new KeyValuePair<string, int>("b", 500),
+            };
+            var pp = Properties.FromValues(items);
+            Assert.Equal(420, pp.GetProperty("a"));
+            Assert.IsInstanceOf<IPropertyStore>(pp);
+        }
 
         [Fact]
         public void Parse_convert_key_value_pairs_unescaping() {
@@ -106,16 +143,41 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Same(Properties.Null, Properties.FromValue(null));
         }
 
-        [Fact]
-        public void ReadOnly_should_generate_InvalidOperationException_on_edits() {
-            var p = new Properties { { "a", "bc123" } };
-            var ro = Properties.ReadOnly(p);
-
+        [Theory]
+        [PropertyData(nameof(ReadOnlyPropertiesAdapters))]
+        public void ReadOnly_should_generate_InvalidOperationException_on_edits(IProperties ro) {
             Assert.Throws<InvalidOperationException>(() => ro.SetProperty("a", "x"));
             Assert.Throws<InvalidOperationException>(() => ro.SetProperty("v", "d"));
+        }
+
+        [Theory]
+        [PropertyData(nameof(ReadOnlyPropertiesAdapters))]
+        public void ReadOnly_should_not_generate_InvalidOperationException_on_TrySetProperty(IProperties ro) {
+            Assert.DoesNotThrow(() => ro.TrySetProperty("v", "d"));
+        }
+
+        [Theory]
+        [PropertyData(nameof(ReadOnlyPropertiesAdapters))]
+        public void ReadOnly_should_generate_InvalidOperationException_on_clears(IProperties ro) {
             Assert.Throws<InvalidOperationException>(() => ro.ClearProperty("a"));
             Assert.Throws<InvalidOperationException>(() => ro.ClearProperties());
-            Assert.Equal("bc123", ro.GetProperty("a"));
+        }
+
+        [Theory]
+        [PropertyData(nameof(ReadOnlyPropertiesAdapters))]
+        public void ReadOnlyAdapters_should_apply_GetProperty(IProperties p) {
+            Assert.Equal("bc123", p.GetProperty("a"));
+            Assert.Equal(typeof(string), p.GetPropertyType("a"));
+        }
+
+        [Theory]
+        [PropertyData(nameof(ReadOnlyPropertiesAdapters))]
+        public void ReadOnlyAdapters_should_have_enumerator(IProperties p) {
+            Assert.ContainsKeyWithValue("a", "bc123", p);
+
+            foreach (KeyValuePair<string, object> kvp in (System.Collections.IEnumerable) p) {
+                Assert.Equal(new KeyValuePair<string, object>("a", "bc123"), kvp);
+            }
         }
 
         [Fact]
@@ -173,6 +235,25 @@ namespace Carbonfrost.UnitTests.Core {
         [Fact]
         public void Properties_is_the_concrete_class_for_IProperties() {
             Assert.Equal(typeof(Properties), typeof(IProperties).GetConcreteClass());
+        }
+
+        [Theory]
+        [PropertyData(nameof(StrictProperties))]
+        public void GetProperty_will_throw_on_invalid_property_name(IProperties pp) {
+            Assert.Throws<ArgumentException>(() => pp.GetProperty(""));
+            Assert.Throws<ArgumentException>(() => pp.GetProperty(null));
+            Assert.Throws<ArgumentException>(() => pp.GetPropertyType(""));
+            Assert.Throws<ArgumentException>(() => pp.GetPropertyType(null));
+
+            Assert.Throws<ArgumentException>(() => pp.TryGetProperty("", typeof(object), out _));
+            Assert.Throws<ArgumentException>(() => pp.TryGetProperty(null, typeof(object), out _));
+        }
+
+        [Theory]
+        [PropertyData(nameof(StrictProperties))]
+        public void ClearProperty_will_throw_on_invalid_property_name(IProperties pp) {
+            Assert.Throws<ArgumentException>(() => pp.ClearProperty(""));
+            Assert.Throws<ArgumentException>(() => pp.ClearProperty(null));
         }
     }
 }

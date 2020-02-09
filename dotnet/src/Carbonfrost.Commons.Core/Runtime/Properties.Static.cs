@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,18 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     partial class Properties {
 
-        const string KVP_DELIM = "=";
-        const string ITEM_DELIM = ";";
-        const char CHAR_KVP_DELIM = '=';
-        const char CHAR_ITEM_DELIM = ';';
-
         public static readonly new IProperties Null = new NullProperties();
         public static readonly IProperties Empty = ReadOnly(Null);
+
+        public static Properties FromValues<TValue>(IEnumerable<KeyValuePair<string, TValue>> keyValuePairs) {
+            var result = new Properties();
+            if (keyValuePairs != null) {
+                foreach (var kvp in keyValuePairs) {
+                    result.SetProperty(kvp.Key, kvp.Value);
+                }
+            }
+            return result;
+        }
 
         // Implicit construction.
         // N.B. Conforms with Streaming source patterns
@@ -58,7 +63,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static Properties FromFile(string fileName) {
             if (fileName == null) {
-                throw new ArgumentNullException("fileName"); // $NON-NLS-1
+                throw new ArgumentNullException("fileName");
             }
             if (string.IsNullOrWhiteSpace(fileName)) {
                 throw Failure.AllWhitespace("fileName");
@@ -88,16 +93,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (nvc != null) {
                 return new NameValueCollectionAdapter(nvc);
             }
-            pp = MakeDictionaryProperties(context);
-            if (pp != null) {
-                return pp;
-            }
 
-            var indexer = FindIndexerProperty(context.GetType());
-            if (indexer != null) {
-                return new ReflectionPropertiesUsingIndexer(context, indexer);
-            }
-            return new ReflectionProperties(context);
+            return MakeDictionaryProperties(context)
+                ?? ReflectionPropertiesUsingIndexer.TryCreate(context)
+                ?? new ReflectionProperties(context);
         }
 
         public static new IProperties FromArray(params object[] values) {
@@ -109,8 +108,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static Properties Parse(string text) {
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrWhiteSpace(text)) {
                 return new Properties();
+            }
 
             Properties result = new Properties();
             foreach (var kvp in ParseKeyValuePairs(text))
@@ -119,12 +119,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return result;
         }
 
-        public static IProperties ReadOnly(IReadOnlyDictionary<string, object> value) {
+        public static IProperties ReadOnly<TValue>(IReadOnlyDictionary<string, TValue> value) {
             if (value == null || ReferenceEquals(value, Properties.Null)) {
                 return Properties.Null;
             }
 
-            return new PropertiesDictionaryAdapter(value);
+            return new PropertiesDictionaryAdapter<TValue>(value);
         }
 
         public static IProperties ReadOnly(IPropertyStore value) {
@@ -136,17 +136,18 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         internal static string ToKeyValuePairs(IEnumerable<KeyValuePair<string, object>> properties) {
             if (properties == null)
-                throw new ArgumentNullException("properties"); // $NON-NLS-1
+                throw new ArgumentNullException("properties");
 
             StringBuilder sb = new StringBuilder();
             bool needComma = false;
 
             foreach (KeyValuePair<string, object> kvp in properties) {
-                if (needComma)
-                    sb.Append(ITEM_DELIM);
+                if (needComma) {
+                    sb.Append(";");
+                }
 
                 sb.Append(kvp.Key);
-                sb.Append(KVP_DELIM);
+                sb.Append("=");
                 sb.Append(_Escape(kvp.Value));
                 needComma = true;
             }
@@ -192,14 +193,14 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     break;
                 }
             }
-            text = text.Replace("\\", "\\\\"); // $NON-NLS-1, $NON-NLS-2
+            text = text.Replace("\\", "\\\\");
             if (quotes && apos || hasWhitespace) {
                 // Escape apostrophies and use it as the string literal notation
-                return "'" + text.Replace("'", @"\'") + "'"; // $NON-NLS-1, $NON-NLS-2, $NON-NLS-3, $NON-NLS-4
+                return "'" + text.Replace("'", @"\'") + "'";
             } else if (quotes) {
-                return "'" + text + "'"; // $NON-NLS-1, $NON-NLS-2
+                return "'" + text + "'";
             } else if (apos) {
-                return "\"" + text + "\""; // $NON-NLS-1, $NON-NLS-2
+                return "\"" + text + "\"";
             } else {
                 return text;
             }
@@ -213,13 +214,13 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             foreach (var s in tokens) {
                 switch (s) {
-                    case KVP_DELIM:
+                    case "=":
                         atKey = false;
                         if (key == null)
                             throw RuntimeFailure.PropertiesParseKeyNameExpected();
                         break;
 
-                    case ITEM_DELIM:
+                    case ";":
                         atKey = true;
                         if (key != null) {
                             yield return new KeyValuePair<string, string>(key, value ?? string.Empty);
@@ -235,8 +236,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 }
             }
 
-            if (key != null)
+            if (key != null) {
                 yield return new KeyValuePair<string, string>(key, value ?? string.Empty);
+            }
         }
 
         static IEnumerable<string> ParseTokenizer(string text) {
@@ -263,18 +265,15 @@ namespace Carbonfrost.Commons.Core.Runtime {
                         }
                         break;
 
-                    case CHAR_KVP_DELIM:
-                    case CHAR_ITEM_DELIM:
+                    case '=':
+                    case ';':
                         if (quoteChar != '\0') goto default;
 
                         if (sb.Length > 0) {
                             yield return sb.ToString();
                             sb.Length = 0;
                         }
-                        if (c.Current == CHAR_ITEM_DELIM)
-                            yield return ITEM_DELIM;
-                        else
-                            yield return KVP_DELIM;
+                        yield return (c.Current == ';') ? ";" : "=";
                         break;
 
                     default:
@@ -282,18 +281,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
                         break;
                 }
             }
-            if (sb.Length > 0)
+            if (sb.Length > 0) {
                 yield return sb.ToString();
-        }
-
-        static PropertyInfo FindIndexerProperty(Type type) {
-            foreach (PropertyInfo pi in type.GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
-                var parameters = pi.GetIndexParameters();
-                if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string)) {
-                    return pi;
-                }
             }
-            return null;
         }
     }
 }

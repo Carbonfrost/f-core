@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 //
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -31,18 +30,11 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static IPropertyStore Compose(IEnumerable<IPropertyStore> items) {
-            if (items == null) {
-                return Properties.Null;
-            }
-            var myItems = items.Where(t => t != null && !ReferenceEquals(t, Properties.Null))
-                .ToArray();
-            if (myItems.Length == 0) {
-                return Properties.Null;
-            }
-            if (myItems.Length == 1) {
-                return myItems[0];
-            }
-            return new CompositePropertyStore(myItems);
+            return Utility.OptimalComposite(
+                items,
+                myItems => new CompositePropertyStore(myItems),
+                Properties.Null
+            );
         }
 
         public static IPropertyStore Compose(params IPropertyStore[] items) {

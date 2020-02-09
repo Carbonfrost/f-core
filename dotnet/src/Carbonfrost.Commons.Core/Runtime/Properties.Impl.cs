@@ -19,16 +19,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
     partial class Properties {
 
-        class PropertiesDictionaryAdapter : IProperties {
+        class PropertiesDictionaryAdapter<TValue> : IProperties {
 
-            private readonly IReadOnlyDictionary<string, object> _value;
+            private readonly IReadOnlyDictionary<string, TValue> _value;
 
-            public PropertiesDictionaryAdapter(IReadOnlyDictionary<string, object> value) {
+            public PropertiesDictionaryAdapter(IReadOnlyDictionary<string, TValue> value) {
                 _value = value;
             }
 
@@ -56,7 +57,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
-                return _value.GetEnumerator();
+                return _value.Select(k => new KeyValuePair<string, object>(k.Key, k.Value)).GetEnumerator();
             }
 
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
@@ -64,23 +65,18 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public Type GetPropertyType(string property) {
-                if (property == null) {
-                    throw new ArgumentNullException("property");
-                }
-                object value;
-                if (_value.TryGetValue(property, out value)) {
-                    return value == null ? typeof(object) : value.GetType();
-                }
-                return null;
+                return PropertyProvider.InferPropertyType(this, property);
             }
 
             public bool TryGetProperty(string property, Type propertyType, out object value) {
                 if (property == null) {
                     throw new ArgumentNullException("property");
                 }
-                if (_value.TryGetValue(property, out value) && propertyType.IsInstanceOfType(value)) {
+                if (_value.TryGetValue(property, out TValue result) && propertyType.IsInstanceOfType(result)) {
+                    value = result;
                     return true;
                 }
+                value = null;
                 return false;
             }
         }
@@ -88,12 +84,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         private class ReadOnlyProperties : IProperties {
 
             event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
-                add {
-                    _store.PropertyChanged += value;
-                }
-                remove {
-                    _store.PropertyChanged -= value;
-                }
+                add {}
+                remove {}
             }
 
             private readonly IPropertyStore _store;
@@ -140,14 +132,24 @@ namespace Carbonfrost.Commons.Core.Runtime {
         private class NullProperties : IProperties {
             event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged { add {} remove {} }
             void IProperties.ClearProperties() {}
-            void IProperties.ClearProperty(string key) {}
-            void IProperties.SetProperty(string key, object value) {}
+            void IProperties.ClearProperty(string property) {
+                PropertyProvider.CheckProperty(property);
+            }
+            void IProperties.SetProperty(string property, object value) {
+                PropertyProvider.CheckProperty(property);
+            }
 
-            bool IPropertyProvider.TryGetProperty(string key, Type propertyType, out object value) {
+            bool IPropertyProvider.TryGetProperty(string property, Type propertyType, out object value) {
+                if (string.IsNullOrEmpty(property)) {
+                    throw Failure.NullOrEmptyString(nameof(property));
+                }
                 value = null;
                 return false;
             }
-            Type IPropertyProvider.GetPropertyType(string key) { return null; }
+            Type IPropertyProvider.GetPropertyType(string property) {
+                PropertyProvider.CheckProperty(property);
+                return null;
+            }
 
             public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
                 return ((IEnumerable<KeyValuePair<string, object>>) new KeyValuePair<string, object>[0]).GetEnumerator();
@@ -156,6 +158,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
             public bool TrySetProperty(string property, object value) {
+                PropertyProvider.CheckProperty(property);
                 return false;
             }
 
