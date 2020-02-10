@@ -270,47 +270,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return AdapterFactory.Default.GetAdapterType(adapteeType, adapterRoleName);
         }
 
-        public static MethodInfo GetMethodBySignature<TDelegate>(this Type instanceType, string name, Expression<TDelegate> signature)
-            where TDelegate : class
-        {
-            return GetMethodBySignatureCore<TDelegate>(
-                instanceType,
-                name,
-                signature);
-        }
-
-        public static MethodInfo GetStaticMethodBySignature<TDelegate>(this Type instanceType, string name, Expression<TDelegate> signature)
-            where TDelegate : class
-        {
-            return GetMethodBySignatureCore<TDelegate>(
-                instanceType,
-                name,
-                signature);
-        }
-
-        static MethodInfo GetMethodBySignatureCore<TDelegate>(Type instanceType,
-                                                              string name,
-                                                              Expression<TDelegate> signature)
-            where TDelegate : class
-        {
-            if (instanceType == null)
-                throw new ArgumentNullException("instanceType"); // $NON-NLS-1
-            if (string.IsNullOrEmpty(name)) {
-                throw Failure.NullOrEmptyString(nameof(name));
-            }
-
-            Type[] argTypes = signature.Parameters.Select(p => p.Type).ToArray();
-            MethodInfo mi = instanceType.GetTypeInfo().GetMethod(name, argTypes, null);
-            if (mi == null)
-                return null;
-            if (signature.ReturnType == null)
-                return mi.ReturnType == null ? mi : null;
-            if (signature.ReturnType.IsAssignableFrom(mi.ReturnType))
-                return mi;
-            else
-                return null;
-        }
-
         public static Type GetBuilderType(this Type adapteeType) {
             if (adapteeType == null) {
                 throw new ArgumentNullException("adapteeType"); // $NON-NLS-1

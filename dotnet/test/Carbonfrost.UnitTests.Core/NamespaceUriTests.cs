@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@ namespace Carbonfrost.UnitTests.Core {
     public class NamespaceUriTests : TestClass {
 
         [Theory]
-        [InlineData("T", "tag:www.w3.org,2000:/xmlns/")]
-        [InlineData("G", NamespaceUri.XmlnsPrefixNamespace)]
-        [InlineData("F", NamespaceUri.XmlnsPrefixNamespace)]
+        [InlineData("G", "http://www.w3.org/2000/xmlns/")]
+        [InlineData("F", "http://www.w3.org/2000/xmlns/")]
         [InlineData("B", "{http://www.w3.org/2000/xmlns/}")]
         public void ToString_should_have_format_strings(string format, string expected) {
             Assert.Equal(expected, NamespaceUri.Xmlns.ToString(format));
@@ -33,22 +32,23 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Theory]
-        [InlineData(
-            "http://ns.example.com/2012-01-01/etc",
-            "tag:ns.example.com,2012-01-01:/etc",
-            Name = "Long date"
-        )]
-        [InlineData(
-            "http://ns.example.com/2012-01-01",
-            "tag:ns.example.com,2012-01-01:/",
-            Name = "Rooted")]
-        [InlineData(
-            "http://ns.example.com/2012-01/etc",
-            "tag:ns.example.com,2012-01:/etc",
-            Name = "Year and month")]
-        public void ToString_should_support_various_tag_formats(string ns, string expected) {
-            NamespaceUri nu = NamespaceUri.Parse(ns);
-            Assert.Equal(expected, nu.ToString("t"));
+        [InlineData("https://example.com", "http://example.com", Name = "scheme is ignored")]
+        [InlineData("https://example.com", "example.com", Name = "implied https")]
+        [InlineData("https://example.com/", "https://example.com", Name = "implied trailiing slash")]
+        public void Equals_normalizes_in_comparisons(string x, string y) {
+            Assert.Equal(NamespaceUri.Create(x), NamespaceUri.Create(y));
+
+            Assert.True(NamespaceUri.Equals(
+                NamespaceUri.Create(x),
+                NamespaceUri.Create(y),
+                NamespaceUriComparison.Default
+            ));
+
+            Assert.False(NamespaceUri.Equals(
+                NamespaceUri.Create(x),
+                NamespaceUri.Create(y),
+                NamespaceUriComparison.Ordinal
+            ));
         }
     }
 }

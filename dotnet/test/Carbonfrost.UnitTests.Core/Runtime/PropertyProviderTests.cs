@@ -36,6 +36,7 @@ namespace Carbonfrost.UnitTests.Core {
                     PropertyProvider.FromValue(new { a = "" }),
                     PropertyProvider.FromValue(new Dictionary<string,string> { ["a"] = "" }),
                     PropertyProvider.FromValue(new NameValueCollection()),
+                    new PropertyProviderCollection(),
                 };
             }
         }

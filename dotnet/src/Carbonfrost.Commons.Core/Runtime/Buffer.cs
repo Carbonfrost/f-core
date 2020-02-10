@@ -48,9 +48,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             lock (_cache) {
                 if (_source.MoveNext()) {
-                    if (_source == null) {
-                        return false;
-                    }
                     _cache.Add(_source.Current);
                     OnCacheValue(_source.Current);
                     return true;

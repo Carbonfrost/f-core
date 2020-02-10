@@ -99,7 +99,7 @@ namespace Carbonfrost.Commons.Core {
         }
 
         public IEnumerable<string> GetNamespaces(string pattern) {
-            return new NamespaceFilter(pattern).Filter(AllNamespaces());
+            return new NamespaceFilter(pattern).Filter(Namespaces);
         }
 
         public static AssemblyInfo GetAssemblyInfo(AssemblyName assemblyName) {
@@ -154,6 +154,7 @@ namespace Carbonfrost.Commons.Core {
                     .Where(t => !string.IsNullOrEmpty(t))
                     .Distinct()
                     .ToArray();
+                Array.Sort(_nsCache);
             }
 
             return _nsCache;

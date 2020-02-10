@@ -18,9 +18,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.Core {
 
@@ -29,44 +27,25 @@ namespace Carbonfrost.Commons.Core {
         private static readonly Dictionary<string, NamespaceUri> namespaces
             = new Dictionary<string, NamespaceUri>();
 
-        private readonly Dictionary<string, QualifiedName> names
+        private readonly Dictionary<string, QualifiedName> _names
             = new Dictionary<string, QualifiedName>();
 
-        private readonly int hashCodeCache;
-        private readonly string namespaceUri;
+        private readonly string _namespaceUri;
 
-        static readonly Regex TAG_DATE_PATTERN = new Regex(
-            @"^\d{4}(-\d{2}(-\d{2})?)?$",
-            RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-
-        private static readonly NamespaceUri xml = new NamespaceUri(XmlPrefixNamespace);
-        private static readonly NamespaceUri xmlns = new NamespaceUri(XmlnsPrefixNamespace);
-        private static readonly NamespaceUri defaultNamespace = new NamespaceUri();
-
-        internal const string XmlnsPrefixNamespace = "http://www.w3.org/2000/xmlns/";
-        internal const string XmlPrefixNamespace = "http://www.w3.org/XML/1998/namespace";
-
-        private static readonly int xmlnsPrefixNamespaceLength = XmlnsPrefixNamespace.Length;
-        private static readonly int xmlPrefixNamespaceLength = XmlPrefixNamespace.Length;
+        private static readonly NamespaceUri xml = new NamespaceUri("http://www.w3.org/XML/1998/namespace");
+        private static readonly NamespaceUri xmlns = new NamespaceUri("http://www.w3.org/2000/xmlns/");
+        private static readonly NamespaceUri defaultNamespace = new NamespaceUri("");
 
         public static NamespaceUri Default { get { return defaultNamespace; } }
         public bool IsDefault { get { return object.ReferenceEquals(this, NamespaceUri.Default); } }
-        public string NamespaceName { get { return this.namespaceUri; } }
+        public string NamespaceName { get { return _namespaceUri; } }
 
         public static NamespaceUri Xml { get { return xml; } }
         public static NamespaceUri Xmlns { get { return xmlns; } }
 
-        private NamespaceUri()
-            : this(String.Empty)
-        {
-        }
-
         internal NamespaceUri(string namespaceName) {
             // N.B. Argument checking done upstream
-            this.namespaceUri = namespaceName;
-            unchecked {
-                this.hashCodeCache = 1000000009 * namespaceName.GetHashCode();
-            }
+            _namespaceUri = namespaceName;
         }
 
         public static NamespaceUri Create(string namespaceName) {
@@ -111,20 +90,6 @@ namespace Carbonfrost.Commons.Core {
                 return result;
             }
 
-            // It may be the case that one of the static members is in use
-            int count = text.Length;
-            if ((count == NamespaceUri.xmlnsPrefixNamespaceLength)
-                && (string.CompareOrdinal(
-                    text, XmlnsPrefixNamespace) == 0)) {
-                return Xmlns;
-            }
-
-            if ((count == NamespaceUri.xmlPrefixNamespaceLength)
-                && (string.CompareOrdinal(
-                    text, XmlPrefixNamespace) == 0)) {
-                return Xml;
-            }
-
             result = new NamespaceUri(text);
             namespaces.Add(text, result);
             return result;
@@ -135,12 +100,12 @@ namespace Carbonfrost.Commons.Core {
 
             QualifiedName result = null;
 
-            if (this.names.TryGetValue(localName, out result)) {
+            if (_names.TryGetValue(localName, out result)) {
                 return result;
             }
 
             result = new QualifiedName(this, localName);;
-            this.names.Add(localName, result);
+            _names.Add(localName, result);
             return result;
         }
 
@@ -164,21 +129,51 @@ namespace Carbonfrost.Commons.Core {
             return !object.ReferenceEquals(left, right);
         }
 
-        // 'object' overrides.
-        public override int GetHashCode() { return this.hashCodeCache; }
+        public override int GetHashCode() {
+            unchecked {
+                return 9 * NamespaceName.GetHashCode();
+            }
+        }
 
         public override bool Equals(object obj) {
             return Equals(obj as NamespaceUri);
         }
 
-        public override string ToString() {
-            return this.namespaceUri;
+        public static bool Equals(NamespaceUri x, NamespaceUri y) {
+            return Equals(x, y, NamespaceUriComparison.Default);
         }
 
-        //  'IFormattable' implementation.
+        public static bool Equals(NamespaceUri x, NamespaceUri y, NamespaceUriComparison comparison) {
+            if (object.ReferenceEquals(x, y)) {
+                return true;
+            }
+
+            if (comparison == NamespaceUriComparison.Default) {
+                return string.Compare(
+                    NormalizeUri(x._namespaceUri), NormalizeUri(y._namespaceUri), StringComparison.OrdinalIgnoreCase
+                ) == 0;
+            }
+            return string.Compare(x._namespaceUri, y._namespaceUri, StringComparison.Ordinal) == 0;
+        }
+
+        private static string NormalizeUri(string s) {
+            s = Regex.Replace(s, "^(http://)", @"https://");
+            s = Regex.Replace(s, "/$", "");
+
+            if (!s.StartsWith("https://")) {
+                return "https://" + s;
+            }
+            return s;
+        }
+
+        public override string ToString() {
+            return _namespaceUri;
+        }
+
         public string ToString(string format, IFormatProvider formatProvider = null) {
-            if (string.IsNullOrEmpty(format))
+            if (string.IsNullOrEmpty(format)) {
                 format = "G";
+            }
 
             if (format.Length > 1) {
                 throw new FormatException();
@@ -187,40 +182,17 @@ namespace Carbonfrost.Commons.Core {
             switch (char.ToLowerInvariant(format[0])) {
                 case 'g':
                 case 'f':
-                    return this.NamespaceName;
+                    return NamespaceName;
                 case 'b':
-                    return string.Concat("{", this.NamespaceName, "}");
-                case 't':
-                    return CreateTagUri();
+                    return string.Concat("{", NamespaceName, "}");;
 
                 default:
                     throw new FormatException();
             }
         }
 
-        private string CreateTagUri() {
-            Uri u;
-            if (Uri.TryCreate(this.NamespaceName, UriKind.Absolute, out u)) {
-                string hostName = u.Host;
-                string[] split = u.PathAndQuery.Split(new char[] { '/' }, 3);
-                string date = split[1];
-                string rest = "/" + split.ElementAtOrDefault(2);
-
-                if ((u.Scheme == "http" || u.Scheme == "https") && TAG_DATE_PATTERN.IsMatch(date)) {
-                    return string.Format("tag:{0},{1}:{2}", hostName, date, rest);
-                }
-            }
-
-            throw RuntimeFailure.CannotBuildTagUri();
-        }
-
-        //  'IEquatable' implementation.
         public bool Equals(NamespaceUri other) {
-            if (object.ReferenceEquals(this, other)) {
-                return true;
-            }
-
-            return string.Compare(other.namespaceUri, this.namespaceUri, StringComparison.Ordinal) == 0;
+            return Equals(this, other, NamespaceUriComparison.Default);
         }
     }
 }
