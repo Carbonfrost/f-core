@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ namespace Carbonfrost.Commons.Core {
         private static readonly IDictionary<Assembly, AssemblyInfo> _map = new Dictionary<Assembly, AssemblyInfo>();
         private readonly Assembly _assembly;
         private readonly IAssemblyInfoXmlNamespaceResolver _resolver;
+        private readonly Lazy<IProperties> _metadata;
+        private static readonly NamespaceUri ShareNamespace = NamespaceUri.Create(Xmlns.ShareableCodeMetadata2011);
 
         private readonly SharedRuntimeOptionsAttribute _options;
 
@@ -84,6 +86,18 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
+        public DateTimeOffset BuildDate {
+            get {
+                return Metadata.GetDateTimeOffset((ShareNamespace + "buildDate").ToString());
+            }
+        }
+
+        public IPropertyStore Metadata {
+            get {
+                return _metadata.Value;
+            }
+        }
+
         private AssemblyInfo(Assembly a) {
             _assembly = a;
 
@@ -96,6 +110,26 @@ namespace Carbonfrost.Commons.Core {
             } else {
                 _resolver = AssemblyInfoXmlNamespaceResolver.Null;
             }
+
+            _metadata = new Lazy<IProperties>(() => {
+                var props = new Properties();
+                var globalScope = Carbonfrost.Commons.Core.XmlNamespaceResolver.Global;
+
+                // We provide "share" by convention, and using our own resolver this should also help
+                // avoid probing the full app
+                var services = ServiceProvider.FromValue(new XmlNamespaceResolver(new [] { globalScope }) {
+                    { "share", Xmlns.ShareableCodeMetadata2011 },
+                });
+                foreach (AssemblyMetadataAttribute am in Attribute.GetCustomAttributes(_assembly, typeof(AssemblyMetadataAttribute))) {
+                    if (string.IsNullOrEmpty(am.Key)) {
+                        continue;
+                    }
+                    if (QualifiedName.TryParse(am.Key, services, out QualifiedName qn)) {
+                        props.Add(qn.ToString(), am.Value);
+                    }
+                }
+                return Properties.ReadOnly(props);
+            });
         }
 
         public IEnumerable<string> GetNamespaces(string pattern) {
