@@ -156,7 +156,7 @@ namespace Carbonfrost.UnitTests.Core {
                 if (string.IsNullOrEmpty(kvp.Value)) {
                     r.Add(kvp.Key, null);
                 } else {
-                    r.Add(kvp.Key, new Uri(kvp.Value));
+                    r.Add(kvp.Key, (kvp.Value));
                 }
             }
             return ServiceProvider.FromValue(r);

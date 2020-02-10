@@ -1,5 +1,5 @@
 //
-// Copyright 2014, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 
-using System;
-using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Carbonfrost.Commons.Core;
@@ -32,8 +30,9 @@ namespace Carbonfrost.UnitTests.Core {
             var xr = (AssemblyInfoXmlNamespaceResolver) ai.XmlNamespaceResolver;
 
             var all = xr.GetNamespacesInScope(XmlNamespaceScope.Local);
-            Assert.Equal(1, all.Count);
+            Assert.Equal(2, all.Count);
             Assert.Contains("runtime", all.Keys);
+            Assert.Contains("core", all.Keys);
             Assert.Equal(Xmlns.Core2008, all["runtime"]);
         }
 
@@ -43,9 +42,10 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.True(ai.Scannable);
 
             var all = ai.XmlNamespaceResolver.GetNamespacesInScope(XmlNamespaceScope.All);
-            Assert.Equal(2, all.Count);
+            Assert.Equal(3, all.Count);
             Assert.Contains("test-sr", all.Keys);
             Assert.Contains("runtime", all.Keys);
+            Assert.Contains("core", all.Keys);
         }
 
         // TODO The resolver should resolve prefixes in the correct order if
@@ -68,5 +68,14 @@ namespace Carbonfrost.UnitTests.Core {
             var all = xr.LookupPrefix(Xmlns.Core2008);
             Assert.Equal("runtime", all);
         }
+
+        [Fact]
+        public void LookupPrefix_should_account_for_XmlnsPrefixAttribute() {
+            var ai = AssemblyInfo.GetAssemblyInfo(typeof(TypeReference).GetTypeInfo().Assembly);
+            var xr = ai.XmlNamespaceResolver;
+            var all = xr.LookupNamespace("core");
+            Assert.Equal(Xmlns.Core2008, all);
+        }
+
     }
 }

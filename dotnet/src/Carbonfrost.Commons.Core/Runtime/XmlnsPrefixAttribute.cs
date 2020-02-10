@@ -1,6 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019-2020 Carbonfrost Systems, Inc.
-// (https://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,29 +19,28 @@ using System;
 namespace Carbonfrost.Commons.Core.Runtime {
 
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-    public sealed class XmlnsAttribute : Attribute {
+    public sealed class XmlnsPrefixAttribute : Attribute {
 
         public string Xmlns {
             get;
             private set;
         }
 
-        public string Namespace {
-            get;
-            set;
-        }
-
         public string Prefix {
             get;
-            set;
+            private set;
         }
 
-        public XmlnsAttribute(string xmlns) {
+        public XmlnsPrefixAttribute(string xmlns, string prefix) {
             if (string.IsNullOrEmpty(xmlns)) {
                 throw Failure.NullOrEmptyString(nameof(xmlns));
             }
+            if (string.IsNullOrEmpty(prefix)) {
+                throw Failure.NullOrEmptyString(nameof(prefix));
+            }
 
             Xmlns = xmlns;
+            Prefix = prefix;
         }
     }
 }

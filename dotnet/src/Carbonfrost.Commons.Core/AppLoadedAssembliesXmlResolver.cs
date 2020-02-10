@@ -46,11 +46,18 @@ namespace Carbonfrost.Commons.Core {
                 // used AssemblyInfo.XmlNamespaceResolver directly, we'd end up in a circular
                 // dependency
                 _cache = new XmlNamespaceResolver();
-                var attrs = App.DescribeAssemblies()
-                    .SelectMany(a => a.GetCustomAttributes(typeof(XmlnsAttribute), false))
-                    .Cast<XmlnsAttribute>();
-                foreach (var attr in attrs) {
-                    _cache.Add(attr.Prefix, attr.Xmlns);
+                foreach (var a in App.DescribeAssemblies()) {
+                    var attrs = a.GetCustomAttributes(typeof(XmlnsAttribute), false);
+                    foreach (XmlnsAttribute attr in attrs) {
+                        if (!string.IsNullOrEmpty(attr.Prefix)) {
+                            _cache.Add(attr.Prefix, attr.Xmlns);
+                        }
+                    }
+
+                    attrs = a.GetCustomAttributes(typeof(XmlnsPrefixAttribute), false);
+                    foreach (XmlnsPrefixAttribute attr in attrs) {
+                        _cache.Add(attr.Prefix, attr.Xmlns);
+                    }
                 }
 
             }

@@ -37,6 +37,9 @@ namespace Carbonfrost.Commons.Core {
             foreach (XmlnsAttribute attr in asm.Assembly.GetCustomAttributes(typeof(XmlnsAttribute), false)) {
                 AddXmlns(attr.Prefix, attr.Namespace, attr.Xmlns);
             }
+            foreach (XmlnsPrefixAttribute attr in asm.Assembly.GetCustomAttributes(typeof(XmlnsPrefixAttribute), false)) {
+                _resolver.Add(attr.Prefix, attr.Xmlns);
+            }
         }
 
         public NamespaceUri GetXmlNamespace(string clrNamespace) {
@@ -84,7 +87,7 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
-        private void AddXmlns(string prefix, string clrNamespacePattern, Uri xmlns) {
+        private void AddXmlns(string prefix, string clrNamespacePattern, string xmlns) {
             NamespaceUri nu = NamespaceUri.Create(xmlns);
 
             var allNamespaces = _asm.Namespaces;

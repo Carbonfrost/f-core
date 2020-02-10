@@ -74,7 +74,7 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
-        internal void Add(string prefix, Uri xmlns) {
+        internal void Add(string prefix, string xmlns) {
             NamespaceUri nu = NamespaceUri.Default;
             if (xmlns != null) {
                 nu = NamespaceUri.Create(xmlns);
