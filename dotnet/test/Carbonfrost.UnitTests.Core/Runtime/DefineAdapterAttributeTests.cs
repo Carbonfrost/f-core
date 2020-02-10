@@ -1,11 +1,11 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (https://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     https://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,55 +20,52 @@ using Carbonfrost.Commons.Spec;
 
 namespace Carbonfrost.UnitTests.Core.Runtime {
 
-    public class AdapterFactoryAttributeTests {
+    public class DefineAdapterAttributeTests {
 
-        class HelloRoleAttribute : AdapterFactoryAttribute {
-            public HelloRoleAttribute() : base(typeof(string)) {}
-        }
-
-        class HelloRoleFactoryAttribute : AdapterFactoryAttribute {
-            public HelloRoleFactoryAttribute() : base(typeof(string)) {}
+        class DefineHelloRoleAttribute : DefineAdapterAttribute {
+            public DefineHelloRoleAttribute() : base(typeof(string), typeof(string)) {}
         }
 
         [Fact]
         public void Role_should_be_implied_when_unspecified() {
-            Assert.Equal("HelloRole", new HelloRoleAttribute().Role);
-            Assert.Equal("HelloRole", new HelloRoleFactoryAttribute().Role);
+            Assert.Equal("HelloRole", new DefineHelloRoleAttribute().Role);
         }
 
         [Fact]
         public void Constructor_should_initialize_nominal() {
-            var attr = new AdapterFactoryAttribute("null", typeof(string));
+            var attr = new DefineAdapterAttribute("null", typeof(Uri), typeof(string));
             Assert.Equal("null", attr.Role);
-            Assert.Equal(typeof(string), attr.AdapterFactoryType);
+            Assert.Equal(typeof(Uri), attr.AdapteeType);
+            Assert.Equal(typeof(string), attr.AdapterType);
         }
 
         [Fact]
         public void Constructor_string_type_should_initialize_nominal() {
-            var attr = new AdapterFactoryAttribute("null", "System.String");
+            var attr = new DefineAdapterAttribute("null", typeof(Uri), "System.String");
             Assert.Equal("null", attr.Role);
-            Assert.Equal(typeof(string), attr.AdapterFactoryType);
+            Assert.Equal(typeof(Uri), attr.AdapteeType);
+            Assert.Equal(typeof(string), attr.AdapterType);
         }
 
         [Fact]
         public void Constructor_should_throw_on_required_role_argument() {
-            Assert.Throws<ArgumentNullException>(
-                () => new AdapterFactoryAttribute(null, typeof(string))
+            Assert.Throws<ArgumentException>(
+                () => new DefineAdapterAttribute(null, typeof(string), typeof(string))
             );
 
-            Assert.Throws<ArgumentNullException>(
-                () => new AdapterFactoryAttribute(null, "System.String")
+            Assert.Throws<ArgumentException>(
+                () => new DefineAdapterAttribute(null, typeof(string), "System.String")
             );
         }
 
         [Fact]
         public void Constructor_should_throw_on_empty_role_argument() {
             Assert.Throws<ArgumentException>(
-                () => new AdapterFactoryAttribute("", typeof(string))
+                () => new DefineAdapterAttribute("", typeof(string), typeof(string))
             );
 
             Assert.Throws<ArgumentException>(
-                () => new AdapterFactoryAttribute("", "System.String")
+                () => new DefineAdapterAttribute("", typeof(string), "System.String")
             );
         }
     }

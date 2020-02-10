@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2012, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2012, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,11 +24,17 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     AllowMultiple = false, Inherited = true)]
     public sealed class StreamingSourceAttribute : AdapterAttribute  {
 
-        public StreamingSourceAttribute(KnownStreamingSource knownStreamingSource)
-            : base(StreamingSource.GetStreamingSourceType(knownStreamingSource), AdapterRole.StreamingSource) {}
+        public Type StreamingSourceType {
+            get {
+                return AdapterType;
+            }
+        }
 
-        public StreamingSourceAttribute(string type) : base(type, AdapterRole.StreamingSource) {}
-        public StreamingSourceAttribute(Type type) : base(type, AdapterRole.StreamingSource) {}
+        public StreamingSourceAttribute(KnownStreamingSource knownStreamingSource)
+            : base(StreamingSource.GetStreamingSourceType(knownStreamingSource)) {}
+
+        public StreamingSourceAttribute(string type) : base(type) {}
+        public StreamingSourceAttribute(Type type) : base(type) {}
 
     }
 }

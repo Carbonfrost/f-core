@@ -22,36 +22,45 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
     public class AdapterAttributeTests {
 
+        class HelloRoleAttribute : AdapterAttribute {
+            public HelloRoleAttribute() : base(typeof(string)) {}
+        }
+
+        [Fact]
+        public void Role_should_be_implied_when_unspecified() {
+            Assert.Equal("HelloRole", new HelloRoleAttribute().Role);
+        }
+
         [Fact]
         public void Constructor_should_throw_on_required_role_argument() {
             Assert.Throws<ArgumentNullException>(
-                () => new AdapterAttribute(typeof(string), null)
+                () => new AdapterAttribute(null, typeof(string))
             );
 
             Assert.Throws<ArgumentNullException>(
-                () => new AdapterAttribute("System.String", null)
+                () => new AdapterAttribute(null, "System.String")
             );
         }
 
         [Fact]
         public void Constructor_should_throw_on_empty_role_argument() {
             Assert.Throws<ArgumentException>(
-                () => new AdapterAttribute(typeof(string), "")
+                () => new AdapterAttribute("", typeof(string))
             );
 
             Assert.Throws<ArgumentException>(
-                () => new AdapterAttribute("System.String", "")
+                () => new AdapterAttribute("", "System.String")
             );
         }
 
         [Fact]
         public void Constructor_should_throw_on_null_or_empty_type() {
             Assert.Throws<ArgumentException>(
-                () => new AdapterAttribute((Type) null, "role")
+                () => new AdapterAttribute("role", (Type) null)
             );
 
             Assert.Throws<ArgumentException>(
-                () => new AdapterAttribute("", "role")
+                () => new AdapterAttribute("role", "")
             );
         }
     }

@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -27,48 +28,42 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         static IDictionary<string, DefineAdapterAttribute[]> cache;
 
-        private readonly Type adapteeType;
-        private readonly Type adapterType;
-        private readonly string role;
-
         public Type AdapteeType {
-            get { return this.adapteeType; } }
-
-        public Type AdapterType {
-            get { return this.adapterType; } }
-
-        public string Role {
-            get { return this.role; } }
-
-        public DefineAdapterAttribute(
-            string role, Type adapteeType, Type adapterType) {
-            if (string.IsNullOrEmpty(role)) {
-                throw Failure.NullOrEmptyString(nameof(role));
-            }
-            if (adapteeType == null)
-                throw new ArgumentNullException("adapteeType");
-            if (adapterType == null)
-                throw new ArgumentNullException("adapterType");
-
-            this.role = role;
-            this.adapteeType = adapteeType;
-            this.adapterType = adapterType;
+            get;
+            private set;
         }
 
-        public DefineAdapterAttribute(
-            string role, Type adapteeType, string adapterType) {
-            if (string.IsNullOrEmpty(role)) {
-                throw Failure.NullOrEmptyString(nameof(role));
-            }
-            if (adapteeType == null)
-                throw new ArgumentNullException("adapteeType");
-            if (string.IsNullOrEmpty(adapterType)) {
-                throw Failure.NullOrEmptyString(nameof(adapterType));
-            }
+        public Type AdapterType {
+            get;
+            private set;
+        }
 
-            this.role = role;
-            this.adapteeType = adapteeType;
-            this.adapterType = Type.GetType(adapterType);
+        public string Role {
+            get;
+            private set;
+        }
+
+        private string ImpliedRoleName {
+            get {
+                var result = Regex.Replace(GetType().Name, "Attribute$" , "");
+                return Regex.Replace(result, "^Define" , "");
+            }
+        }
+
+        public DefineAdapterAttribute(string role, Type adapteeType, Type adapterType) {
+            Initialize(role, adapteeType, adapterType);
+        }
+
+        public DefineAdapterAttribute(string role, Type adapteeType, string adapterType) {
+            Initialize(role, adapteeType, adapterType);
+        }
+
+        protected DefineAdapterAttribute(Type adapteeType, Type adapterType) {
+            Initialize(ImpliedRoleName, adapteeType, adapterType);
+        }
+
+        protected DefineAdapterAttribute(Type adapteeType, string adapterType) {
+            Initialize(ImpliedRoleName, adapteeType, adapterType);
         }
 
         internal static IEnumerable<Type> GetAdapterTypes(
@@ -96,5 +91,38 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 cache = allItems.GroupBy(t => t.Role).ToDictionary(t => t.Key, t => t.ToArray());
             }
         }
+
+        private void Initialize(string role, Type adapteeType, Type adapterType) {
+            if (string.IsNullOrEmpty(role)) {
+                throw Failure.NullOrEmptyString(nameof(role));
+            }
+            if (adapteeType == null) {
+                throw new ArgumentNullException(nameof(adapteeType));
+            }
+            if (adapterType == null) {
+                throw new ArgumentNullException(nameof(adapterType));
+            }
+
+            Role = role;
+            AdapteeType = adapteeType;
+            AdapterType = adapterType;
+        }
+
+        private void Initialize(string role, Type adapteeType, string adapterType) {
+            if (string.IsNullOrEmpty(role)) {
+                throw Failure.NullOrEmptyString(nameof(role));
+            }
+            if (adapteeType == null) {
+                throw new ArgumentNullException(nameof(adapteeType));
+            }
+            if (string.IsNullOrEmpty(adapterType)) {
+                throw Failure.NullOrEmptyString(nameof(adapterType));
+            }
+
+            Role = role;
+            AdapteeType = adapteeType;
+            AdapterType = Type.GetType(adapterType);
+        }
+
     }
 }

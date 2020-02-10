@@ -34,7 +34,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         private string ImpliedRoleName {
             get {
-                return Regex.Replace(GetType().Name, "Attribute$" , "");
+                return Regex.Replace(GetType().Name, "(Factory)?Attribute$" , "");
             }
         }
 
@@ -49,14 +49,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public AdapterFactoryAttribute(string role, Type adapterFactoryType) {
-            if (role == null) {
-                throw new ArgumentNullException("role");
-            }
-            if (role.Length == 0) {
-                throw Failure.EmptyString("role");
-            }
+            CheckRole(role);
+
             if (adapterFactoryType == null) {
-                throw new ArgumentNullException("adapterFactoryType");
+                throw new ArgumentNullException(nameof(adapterFactoryType));
             }
 
             AdapterFactoryType = adapterFactoryType;
@@ -64,18 +60,23 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public AdapterFactoryAttribute(string role, string adapterFactoryType) {
-            if (role == null) {
-                throw new ArgumentNullException("role");
-            }
-            if (role.Length == 0) {
-                throw Failure.EmptyString("role");
-            }
+            CheckRole(role);
+
             if (adapterFactoryType == null) {
-                throw new ArgumentNullException("adapterFactoryType");
+                throw new ArgumentNullException(nameof(adapterFactoryType));
             }
 
             AdapterFactoryType = Type.GetType(adapterFactoryType);
             Role = role;
+        }
+
+        private static void CheckRole(string role) {
+            if (role == null) {
+                throw new ArgumentNullException(nameof(role));
+            }
+            if (role.Length == 0) {
+                throw Failure.EmptyString(nameof(role));
+            }
         }
     }
 }

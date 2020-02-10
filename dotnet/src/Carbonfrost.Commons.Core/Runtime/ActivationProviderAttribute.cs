@@ -23,13 +23,17 @@ namespace Carbonfrost.Commons.Core.Runtime {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
     public sealed class ActivationProviderAttribute : AdapterAttribute {
 
-        public ActivationProviderAttribute(Type adapterType)
-            : base(adapterType, AdapterRole.ActivationProvider) {
+        public Type ActivationProviderType {
+            get {
+                return AdapterType;
+            }
+        }
+
+        public ActivationProviderAttribute(Type adapterType) : base(adapterType) {
             CheckType();
         }
 
-        public ActivationProviderAttribute(string adapterType)
-            : base(adapterType, AdapterRole.ActivationProvider) {
+        public ActivationProviderAttribute(string adapterType) : base(adapterType) {
             CheckType();
         }
 

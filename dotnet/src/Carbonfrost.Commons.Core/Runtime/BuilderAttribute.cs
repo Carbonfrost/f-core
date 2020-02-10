@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,13 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     | AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public sealed class BuilderAttribute : AdapterAttribute {
 
-        public BuilderAttribute(Type builderType) : base(builderType, AdapterRole.Builder) {}
-        public BuilderAttribute(string builderType) : base(builderType, AdapterRole.Builder) {}
+        public Type BuilderType {
+            get {
+                return AdapterType;
+            }
+        }
+
+        public BuilderAttribute(Type builderType) : base(builderType) {}
+        public BuilderAttribute(string builderType) : base(builderType) {}
     }
 }
