@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,10 @@ namespace Carbonfrost.Commons.Core {
                 || (exception is IndexOutOfRangeException)
                 || (exception is SecurityException)
                 || (exception is SEHException);
+        }
+
+        public static ArgumentException NullOrEmptyString(string argumentName) {
+            return Failure.Prepare(new ArgumentException(SR.NullOrEmptyStringNotValid(), argumentName));
         }
 
         public static ArgumentException AllWhitespace(string argumentName) {
@@ -342,8 +346,9 @@ namespace Carbonfrost.Commons.Core {
         public static T Prepare<T>(T exception)
             where T : Exception {
 
-            if (exception == null)
+            if (exception == null) {
                 return null;
+            }
 
             if (exception.HelpLink == null) {
                 // TODO Set the correct HelpURL

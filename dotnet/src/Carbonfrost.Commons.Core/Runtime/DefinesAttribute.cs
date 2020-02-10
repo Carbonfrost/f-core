@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,11 +24,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public string AdapterName { get; private set; }
 
         public DefinesAttribute(string adapterName) {
-            if (adapterName == null) {
-                throw new ArgumentNullException("adapterName");
-            }
             if (string.IsNullOrEmpty(adapterName)) {
-                throw Failure.EmptyString("adapterName");
+                throw Failure.NullOrEmptyString(nameof(adapterName));
             }
             AdapterName = adapterName;
         }

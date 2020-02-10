@@ -1,5 +1,5 @@
 //
-// Copyright 2010, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2010, 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
+
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -97,16 +96,11 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         protected virtual string GetNameForItem(T item) {
-            try {
-                PropertyInfo pi = typeof(T).GetProperty("Name");
-                if (pi != null) {
-                    return Convert.ToString(pi.GetValue(item, null));
-                }
-
-            } catch (AmbiguousMatchException) {
+            string name = Utility.LateBoundProperty<string>(item, "Name");
+            if (name == null) {
+                return null;
             }
-
-            return null;
+            return name.ToString();
         }
 
         protected override void InsertItem(int index, T item) {
@@ -157,10 +151,21 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public T this[string name] {
             get {
-                if (name == null)
-                    throw new ArgumentNullException("name");
+                if (name == null) {
+                    throw new ArgumentNullException(nameof(name));
+                }
 
                 return Dictionary.GetValueOrDefault(name);
+            }
+            set {
+                if (name == null) {
+                    throw new ArgumentNullException(nameof(name));
+                }
+                if (value == null) {
+                    throw new ArgumentNullException(nameof(value));
+                }
+                Remove(name);
+                Add(name, value);
             }
         }
 
@@ -172,19 +177,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public bool TryGetValue(string key, out T value) {
-            if (Dictionary == null) {
-                value = default(T);
-
-                foreach (var t in this.Items) {
-                    if (CompareNames(key, GetNameForItem(t))) {
-                        value = t;
-                        return true;
-                    }
-                }
-
-                return false;
-            } else
-                return Dictionary.TryGetValue(key, out value);
+            return Dictionary.TryGetValue(key, out value);
         }
 
         public bool Remove(string key) {

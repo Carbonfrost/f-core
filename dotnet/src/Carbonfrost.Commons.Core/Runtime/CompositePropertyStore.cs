@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2019-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ using System.Linq;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    class CompositePropertyStore : PropertyProviderBase, IPropertyStore {
+    sealed class CompositePropertyStore : DisposableObject, IPropertyStore {
 
         private readonly IReadOnlyCollection<IPropertyStore> _items;
 
@@ -34,41 +34,58 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        protected override bool TryGetPropertyCore(string property, Type propertyType, out object value) {
-            CheckProperty(property);
+        public Type GetPropertyType(string property) {
+            if (TryGetProperty(property, typeof(object), out var result)) {
+                return result == null ? typeof(object) : result.GetType();
+            }
+            return null;
+        }
+
+        public bool TryGetProperty(string property, Type propertyType, out object value) {
+            PropertyProvider.CheckProperty(property);
             value = null;
             foreach (var pp in _items) {
-                if (pp.TryGetProperty(property, propertyType, out value))
+                if (pp.TryGetProperty(property, propertyType, out value)) {
                     return true;
+                }
             }
             return false;
         }
 
-        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e) {
+        private void OnPropertyChanged(PropertyChangedEventArgs e) {
             var handler = PropertyChanged;
             if (handler != null) {
                 handler(this, e);
             }
         }
 
-        void ps_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        private void ps_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             OnPropertyChanged(e);
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
-            return _items.SelectMany(t => t).GetEnumerator();
+            return _items.SelectMany(t => t).Distinct(new UniqueKeys()).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
 
-        static void CheckProperty(string property) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
+        protected override void Dispose(bool manualDispose) {
+            if (manualDispose) {
+                foreach (var item in _items) {
+                    item.PropertyChanged -= ps_PropertyChanged;
+                }
             }
-            if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
+        }
+
+        sealed class UniqueKeys : IEqualityComparer<KeyValuePair<string, object>> {
+            public bool Equals(KeyValuePair<string, object> x, KeyValuePair<string, object> y) {
+                return x.Key == y.Key;
+            }
+
+            public int GetHashCode(KeyValuePair<string, object> obj) {
+                return obj.Key.GetHashCode();
             }
         }
     }

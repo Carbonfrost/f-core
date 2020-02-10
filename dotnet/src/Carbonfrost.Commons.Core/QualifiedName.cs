@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2012, 2017, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2012, 2017, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -108,12 +108,8 @@ namespace Carbonfrost.Commons.Core {
             serviceProvider = serviceProvider ?? ServiceProvider.Null;
             result = null;
 
-            if (text == null) {
-                return new ArgumentNullException("text");
-            }
-
-            if (text.Length == 0) {
-                return Failure.EmptyString("text");
+            if (string.IsNullOrEmpty(text)) {
+                throw Failure.NullOrEmptyString(nameof(text));
             }
 
             // Remove decorations:  [prefix:b] ==> prefix:b
@@ -255,10 +251,12 @@ namespace Carbonfrost.Commons.Core {
         }
 
         internal static void VerifyLocalName(string argName, string value) {
-            if (value == null)
+            if (value == null) {
                 throw new ArgumentNullException(argName);
-            if (value.Length == 0)
+            }
+            if (value.Length == 0) {
                 throw Failure.EmptyString(argName);
+            }
 
             foreach (char c in value) {
                 if (!IsValidChar(c))

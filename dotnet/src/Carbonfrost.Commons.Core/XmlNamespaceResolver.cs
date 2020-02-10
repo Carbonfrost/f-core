@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2017, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2017, 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Xml;
-using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.Core {
@@ -45,8 +43,7 @@ namespace Carbonfrost.Commons.Core {
         public IDictionary<string, string> GetNamespacesInScope(XmlNamespaceScope scope) {
             switch (scope) {
                 case XmlNamespaceScope.Local:
-                    // TODO Should be the read-only wrapper instead (design)
-                    return _prefixesToXmlns;
+                    return new ReadOnlyDictionary<string, string>(_prefixesToXmlns);
                 case XmlNamespaceScope.All:
                 case XmlNamespaceScope.ExcludeXml:
                     return GetMergedScope();
@@ -77,7 +74,7 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
-        internal void Add(string prefix, Uri xmlns) {
+        internal void Add(string prefix, string xmlns) {
             NamespaceUri nu = NamespaceUri.Default;
             if (xmlns != null) {
                 nu = NamespaceUri.Create(xmlns);

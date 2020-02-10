@@ -1,5 +1,5 @@
 //
-// Copyright 2013, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public Type GetPropertyType(string property) {
+            PropertyProvider.CheckProperty(property);
             object result;
             if (TryGetProperty(property, typeof(object), out result)) {
                 return (result == null) ? _items.GetType().GetElementType() : result.GetType();
@@ -40,6 +41,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public bool TryGetProperty(string property, Type propertyType, out object value) {
+            PropertyProvider.CheckProperty(property);
             value = null;
             int index;
             if (!int.TryParse(property, out index) || index < 0 || index >= _items.Length) {
@@ -47,12 +49,13 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             value = _items[index];
-            return propertyType.GetTypeInfo().IsInstanceOfType(value);
+            return value == null || propertyType.GetTypeInfo().IsInstanceOfType(value);
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
             return _items.Select(
-                (t, i) => new KeyValuePair<string, object>(i.ToString(), t)).GetEnumerator();
+                (t, i) => new KeyValuePair<string, object>(i.ToString(), t)
+            ).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

@@ -63,6 +63,22 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return Convert.ToDateTime(source.GetProperty(property));
         }
 
+        public static DateTimeOffset GetDateTimeOffset(this IPropertyProvider source, string property) {
+            if (source == null) {
+                throw new ArgumentNullException("source");
+            }
+            object value = source.GetProperty(property);
+            switch (value) {
+                case DateTime dt:
+                    return new DateTimeOffset(dt);
+                case DateTimeOffset res:
+                    return res;
+                default:
+                    return DateTimeOffset.Parse(value.ToString());
+
+            }
+        }
+
         public static decimal GetDecimal(this IPropertyProvider source, string property) {
             if (source == null) {
                 throw new ArgumentNullException("source");

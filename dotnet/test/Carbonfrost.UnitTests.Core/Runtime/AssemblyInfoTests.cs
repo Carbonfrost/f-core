@@ -21,7 +21,6 @@ using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 using Carbonfrost.Commons.Spec;
 
-[assembly: AssemblyMetadata("[shareable:BuildDate]", "1970-01-01T00:00 +0800")]
 [assembly: AssemblyMetadata("BuildLabel", "abc")]
 [assembly: AssemblyMetadata("", "abc")] // invalid - empty string
 
@@ -47,17 +46,17 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Fact]
-        public void ClrNamespaces_should_get_known_namespaces() {
+        public void Namespaces_should_get_known_namespaces() {
             Assembly a = typeof(TypeReference).GetTypeInfo().Assembly;
             var info = AssemblyInfo.GetAssemblyInfo(a);
 
             // Notice that default ns isn't included
-            // Exclude System
+            // Exclude System (and coverlet when coverage is running)
             Assert.SetEqual(new [] {
                             "Carbonfrost.Commons.Core.Resources",
                             "Carbonfrost.Commons.Core",
                             "Carbonfrost.Commons.Core.Runtime",
-                        }, info.ClrNamespaces.Except(new[] { "System" }));
+                        }, info.Namespaces.Except(new[] { "System", "Coverlet.Core.Instrumentation.Tracker" }));
         }
 
         [Fact]
@@ -68,6 +67,24 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Equal(new [] {
                             NamespaceUri.Parse(Xmlns.Core2008)
                         }, info.XmlNamespaces.ToArray());
+        }
+
+        [Fact]
+        public void BuildDate_should_derive_from_metadata() {
+            var a = AssemblyInfo.GetAssemblyInfo(typeof(AssemblyInfoTests).GetTypeInfo().Assembly);
+
+            var attr = typeof(AssemblyInfoTests).GetTypeInfo().Assembly.GetCustomAttributes(typeof(AssemblyMetadataAttribute))
+                .Cast<AssemblyMetadataAttribute>()
+                .First(n => n.Key == "[share:BuildDate]");
+            var expected = DateTimeOffset.Parse(attr.Value);
+            Assert.Equal(expected, a.BuildDate);
+        }
+
+        [Theory]
+        [InlineData("{https://ns.typedescriptor.org/2011/share} buildDate")]
+        public void Properties_should_contain_expected_properties(string name) {
+            var a = AssemblyInfo.GetAssemblyInfo(typeof(AssemblyInfoTests).GetTypeInfo().Assembly);
+            Assert.True(a.Metadata.HasProperty(name));
         }
     }
 }

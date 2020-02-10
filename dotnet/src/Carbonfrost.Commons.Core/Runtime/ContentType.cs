@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -82,17 +82,15 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         static Exception CheckArguments(string type, string subtype,
                                         IEnumerable<KeyValuePair<string, string>> parameters) {
-            if (type == null)
-                return new ArgumentNullException("type");
-            if (type.Length == 0)
-                return Failure.EmptyString("type");
+            if (string.IsNullOrEmpty(type)) {
+                throw Failure.NullOrEmptyString(nameof(type));
+            }
             if (!VALID_TYPES.Contains(type))
                 return RuntimeFailure.ContentTypeNotStandard("type", type);
 
-            if (subtype == null)
-                return new ArgumentNullException("subtype");
-            if (subtype.Length == 0)
-                return Failure.EmptyString("subtype");
+            if (string.IsNullOrEmpty(subtype)) {
+                throw Failure.NullOrEmptyString(nameof(subtype));
+            }
 
             return null;
         }
@@ -116,8 +114,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 return new ArgumentNullException("text");
 
             text = text.Trim();
-            if (string.IsNullOrEmpty(text))
-                return Failure.EmptyString("text");
+            if (string.IsNullOrEmpty(text)) {
+                return Failure.AllWhitespace("text");
+            }
 
             string[] split = text.Split(';');
             string[] mediaType = split[0].Split('/');

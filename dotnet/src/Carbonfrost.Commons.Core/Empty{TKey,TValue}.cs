@@ -1,5 +1,5 @@
 //
-// Copyright 2010, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,94 +14,16 @@
 // limitations under the License.
 //
 
-
-using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Carbonfrost.Commons.Core {
 
     static class Empty<TKey, TValue> {
 
-        public static readonly IDictionary<TKey, TValue> Dictionary = new NullDictionary();
-
-        sealed class NullDictionary : IDictionary<TKey, TValue> {
-
-            TValue IDictionary<TKey, TValue>.this[TKey key] {
-                get {
-                    throw new KeyNotFoundException();
-                }
-                set {
-                    throw Failure.ReadOnlyCollection();
-                }
-            }
-
-            ICollection<TKey> IDictionary<TKey, TValue>.Keys {
-                get {
-                    return Array.Empty<TKey>();
-                }
-            }
-
-            ICollection<TValue> IDictionary<TKey, TValue>.Values {
-                get {
-                    return Array.Empty<TValue>();
-                }
-            }
-
-            int ICollection<KeyValuePair<TKey, TValue>>.Count {
-                get {
-                    return 0;
-                }
-            }
-
-            bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly {
-                get {
-                    return true;
-                }
-            }
-
-            bool IDictionary<TKey, TValue>.ContainsKey(TKey key) {
-                return false;
-            }
-
-            void IDictionary<TKey, TValue>.Add(TKey key, TValue value) {
-                throw Failure.ReadOnlyCollection();
-            }
-
-            bool IDictionary<TKey, TValue>.Remove(TKey key) {
-                return false;
-            }
-
-            bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value) {
-                value = default(TValue);
-                return false;
-            }
-
-            void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item) {
-                throw Failure.ReadOnlyCollection();
-            }
-
-            void ICollection<KeyValuePair<TKey, TValue>>.Clear() {
-                throw Failure.ReadOnlyCollection();
-            }
-
-            bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item) {
-                return false;
-            }
-
-            void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) {
-            }
-
-            bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item) {
-                throw Failure.ReadOnlyCollection();
-            }
-
-            IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator() {
-                yield break;
-            }
-
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-                yield break;
-            }
-        }
+        public static readonly IDictionary<TKey, TValue> Dictionary =
+            new ReadOnlyDictionary<TKey, TValue>(
+                new Dictionary<TKey, TValue>()
+            );
     }
 }

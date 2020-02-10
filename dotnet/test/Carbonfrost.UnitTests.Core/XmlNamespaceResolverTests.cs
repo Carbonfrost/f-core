@@ -26,16 +26,16 @@ namespace Carbonfrost.UnitTests.Core {
         [Fact]
         public void GetNamespacesInScope_should_contain_all_xmlns() {
             var xr = new XmlNamespaceResolver {
-                { "runtime", new Uri(Xmlns.Core2008) },
-                { "shareable", new Uri(Xmlns.ShareableCodeMetadata2011) },
+                { "runtime", (Xmlns.Core2008) },
+                { "share", (Xmlns.ShareableCodeMetadata2011) },
             };
 
             var all = xr.GetNamespacesInScope(XmlNamespaceScope.Local);
             Assert.Equal(2, all.Count);
             Assert.Contains("runtime", all.Keys);
             Assert.Equal(Xmlns.Core2008, all["runtime"]);
-            Assert.Contains("shareable", all.Keys);
-            Assert.Equal(Xmlns.ShareableCodeMetadata2011, all["shareable"]);
+            Assert.Contains("share", all.Keys);
+            Assert.Equal(Xmlns.ShareableCodeMetadata2011, all["share"]);
         }
 
         // TODO The resolver should resolve prefixes in the correct order if
@@ -43,8 +43,8 @@ namespace Carbonfrost.UnitTests.Core {
         [Fact]
         public void LookupNamespace_should_return_prefix_name() {
             var xr = new XmlNamespaceResolver {
-                { "runtime", new Uri(Xmlns.Core2008) },
-                { "shareable", new Uri(Xmlns.ShareableCodeMetadata2011) },
+                { "runtime", (Xmlns.Core2008) },
+                { "share", (Xmlns.ShareableCodeMetadata2011) },
             };
             var all = xr.LookupNamespace("runtime");
             Assert.Equal(Xmlns.Core2008, all);
@@ -53,8 +53,8 @@ namespace Carbonfrost.UnitTests.Core {
         [Fact]
         public void LookupPrefix_should_return_ns_name() {
             var xr = new XmlNamespaceResolver {
-                { "runtime", new Uri(Xmlns.Core2008) },
-                { "shareable", new Uri(Xmlns.ShareableCodeMetadata2011) },
+                { "runtime", (Xmlns.Core2008) },
+                { "share", (Xmlns.ShareableCodeMetadata2011) },
             };
             var all = xr.LookupPrefix(Xmlns.Core2008);
             Assert.Equal("runtime", all);
@@ -63,8 +63,8 @@ namespace Carbonfrost.UnitTests.Core {
         [Fact]
         public void Add_should_allow_and_apply_duplicates() {
             var xr = new XmlNamespaceResolver {
-                { "runtime", new Uri(Xmlns.Core2008) },
-                { "runtime", new Uri(Xmlns.Core2008 + "S") },
+                { "runtime", Xmlns.Core2008 },
+                { "runtime", Xmlns.Core2008 + "S" },
             };
 
             var all = xr.GetNamespacesInScope(XmlNamespaceScope.Local);

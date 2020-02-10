@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2019-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,12 +25,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     [Providers]
     public static partial class Activation {
-
-        static readonly Expression<Func<string, object>> Parse
-            = (a) => (default(object));
-
-        static readonly Expression<Func<string, CultureInfo, object>> ParseWithCulture
-            = (a, b) => (default(object));
 
         public static T CreateInstance<T>(QualifiedName typeName,
                                           IEnumerable<KeyValuePair<string, object>> values = null,
@@ -163,11 +157,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (componentType == null) {
                 throw new ArgumentNullException("componentType");
             }
-            if (fileName == null) {
-                throw new ArgumentNullException("fileName");
-            }
-            if (fileName.Length == 0) {
-                throw Failure.EmptyString("fileName");
+            if (string.IsNullOrEmpty(fileName)) {
+                throw Failure.NullOrEmptyString(nameof(fileName));
             }
 
             return FromStreamContext(componentType, StreamContext.FromFile(fileName));
@@ -270,11 +261,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public static T FromProvider<T>(string name,
                                         IEnumerable<KeyValuePair<string, object>> values = null,
                                         IServiceProvider serviceProvider = null) {
-            if (name == null) {
-                throw new ArgumentNullException("name");
-            }
-            if (name.Length == 0) {
-                throw Failure.EmptyString("name");
+            if (string.IsNullOrEmpty(name)) {
+                throw Failure.NullOrEmptyString(nameof(name));
             }
 
             return (T) ProviderData.GetProvidersByLocalName(typeof(T), name,

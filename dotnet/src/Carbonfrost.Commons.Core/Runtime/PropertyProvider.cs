@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2016, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2016, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     public abstract partial class PropertyProvider : IPropertyProvider {
 
+        private readonly IPropertyProvider _reflection;
+
         protected PropertyProvider() {
+            _reflection = PropertyProvider.FromValue(this);
         }
 
         protected virtual bool TryGetPropertyCore(
@@ -44,12 +47,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             object objValue;
             if (TryGetProperty(property, typeof(object), out objValue)) {
-                if (objValue == null)
-                    return typeof(object);
-                else
-                    return objValue.GetType();
-            } else
-                throw RuntimeFailure.PropertyNotFound("property", property); // $NON-NLS-1
+                return objValue == null ? typeof(object) : objValue.GetType();
+            }
+
+            throw RuntimeFailure.PropertyNotFound("property", property);
         }
 
         public bool TryGetProperty(string property, Type propertyType, out object value) {
@@ -77,13 +78,17 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return result;
         }
 
-        static void CheckProperty(string property) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
+        internal static void CheckProperty(string property) {
             if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
+                throw Failure.NullOrEmptyString(nameof(property));
             }
+        }
+
+        internal static Type InferPropertyType(IPropertyProvider self, string property) {
+            if (self.TryGetProperty(property, typeof(object), out object value)) {
+                return value == null ? typeof(object) : value.GetType();
+            }
+            return null;
         }
     }
 }

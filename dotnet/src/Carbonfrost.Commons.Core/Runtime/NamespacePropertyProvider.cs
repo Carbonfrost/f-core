@@ -1,12 +1,11 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc.
-// (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,56 +21,34 @@ using System.Linq;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    sealed class NamespacePropertyProvider : PropertyProviderBase {
+    sealed class NamespacePropertyProvider : IPropertyProvider {
 
-        private readonly IDictionary<string, IPropertyProvider> items
-            = new Dictionary<string, IPropertyProvider>();
+        private readonly IDictionary<string, IPropertyProvider> _items;
 
-        public NamespacePropertyProvider(
-            IEnumerable<KeyValuePair<string, IPropertyProvider>> elements) {
-
-            foreach (var grouping in elements.GroupBy(l => l.Key, l => l.Value)) {
-                items.Add(grouping.Key, (IPropertyProvider) PropertyProvider.Compose(grouping));
-            }
+        public NamespacePropertyProvider(IEnumerable<KeyValuePair<string, IPropertyProvider>> elements) {
+            _items = elements.GroupBy(l => l.Key, l => l.Value).ToDictionary(
+                grouping => grouping.Key,
+                grouping => PropertyProvider.Compose(grouping)
+            );
         }
 
-        protected override bool TryGetPropertyCore(string property, Type propertyType, out object value) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
-            if (property.Length == 0) {
-                throw Failure.EmptyString("property");
-            }
-            string internalKey;
-            var result = GetCandidates(property, out internalKey);
+        public Type GetPropertyType(string property) {
+            return PropertyProvider.InferPropertyType(this, property);
+        }
+
+        public bool TryGetProperty(string property, Type propertyType, out object value) {
+            PropertyProvider.CheckProperty(property);
 
             value = null;
-            if (result == null) {
+            if (!property.Contains(':')) {
                 return false;
             }
 
-            return result.TryGetProperty(internalKey, propertyType, out value);
-        }
-
-        IPropertyProvider GetCandidates(string key, out string internalKey) {
-            // Use the prefix and index method to pick the category
-            string[] items = key.Split(new []{':'}, 2);
-            string prefix = string.Empty;
-            internalKey = string.Empty;
-
-            if (items.Length == 1) {
-                prefix = items[0];
-            } else {
-                internalKey = items[1];
-            }
-
-            // Look up the composite provider using the key
-            IPropertyProvider pp;
-            if (this.items.TryGetValue(prefix, out pp)) {
-                return pp;
-            }
-
-            return null;
+            string[] items = property.Split(new []{':'}, 2);
+            string prefix = items[0];
+            string myProp = items[1];
+            var pp = _items.GetValueOrDefault(prefix) ?? PropertyProvider.Null;
+            return pp.TryGetProperty(myProp, propertyType, out value);
         }
     }
 }

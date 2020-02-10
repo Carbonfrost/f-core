@@ -1,12 +1,12 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc.
-// (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2019-2020 Carbonfrost Systems, Inc.
+// (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,12 +22,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     public sealed class XmlnsAttribute : Attribute {
 
-        public Uri Xmlns {
+        public string Xmlns {
             get;
             private set;
         }
 
-        public string ClrNamespace {
+        public string Namespace {
             get;
             set;
         }
@@ -38,7 +38,11 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public XmlnsAttribute(string xmlns) {
-            Xmlns = new Uri(xmlns);
+            if (string.IsNullOrEmpty(xmlns)) {
+                throw Failure.NullOrEmptyString(nameof(xmlns));
+            }
+
+            Xmlns = xmlns;
         }
     }
 }

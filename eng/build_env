@@ -11,6 +11,10 @@ if [[ -z "$tag_version" ]]; then
   tag_version="0.0.0"
 fi
 
+if [[ -z "$ENG_VERSION" ]]; then
+  echo export ENG_VERSION="$tag_version"
+fi
+
 echo export ENG_GIT_VERSION="$tag_version"
 echo export ENG_GIT_HEAD_REVISION="$(git rev-parse HEAD)"
 echo export ENG_GIT_BUILD_DATE="$(date +%Y-%m-%dT%H:%M:%S)"

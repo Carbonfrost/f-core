@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,17 @@
 // limitations under the License.
 //
 
-using System.Reflection;
+using Carbonfrost.Commons.Core.Runtime;
+using Carbonfrost.Commons.Spec;
 
-namespace Carbonfrost.Commons.Core.Runtime {
+namespace Carbonfrost.UnitTests.Core.Runtime {
 
-    static class RuntimeUtility {
+    public class PlatformTests {
 
-        public static AssemblyName GetAssemblyName(string file) {
-            return AssemblyName.GetAssemblyName(file);
+        [Fact]
+        public void Current_should_provide_nonempty_string_all_platforms() {
+            Assert.NotEmpty(Platform.Current.UserAgent);
         }
     }
 }
+

@@ -28,14 +28,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static readonly IPropertyProvider Null = Properties.Null;
 
-        private static MethodInfo _enumerateMethod;
-
-        private static MethodInfo EnumerateMethod {
-            get {
-                return _enumerateMethod ?? (_enumerateMethod = typeof(PropertyProvider).GetMethod("Enumerate", BindingFlags.Static | BindingFlags.NonPublic));
-            }
-        }
-
         public static IPropertyProvider LateBound(TypeReference type) {
             if (type == null) {
                 throw new ArgumentNullException("type");
@@ -58,8 +50,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static IPropertyProvider Compose(
             IEnumerable<KeyValuePair<string, object>> propertyProviders) {
-            if (propertyProviders == null)
-                throw new ArgumentNullException("propertyProviders"); // $NON-NLS-1
+            if (propertyProviders == null) {
+                throw new ArgumentNullException("propertyProviders");
+            }
 
             return Compose(propertyProviders.Select(
                 s => new KeyValuePair<string, IPropertyProvider>(s.Key, PropertyProvider.FromValue(s.Value))));
@@ -91,43 +84,19 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static IPropertyProvider FromValue(object context) {
-            if (context == null)
+            if (context == null) {
                 return PropertyProvider.Null;
+            }
 
             IPropertyProvider pp = context as IPropertyProvider;
-            if (pp != null)
+            if (pp != null) {
                 return pp;
-
-            var indexer = FindIndexerProperty(context.GetType());
-            if (indexer != null)
-                return new ReflectionPropertyProviderUsingIndexer(context, indexer);
-
-            // Any IEnumerable<KeyValuePair<,>>
-            var inter = context.GetType().GetTypeInfo().GetInterfaces().FirstOrDefault(IsKeyValuePairEnum);
-            if (inter != null) {
-                var tValue = inter.GetGenericArguments()[0].GetGenericArguments()[1];
-                var myItems = (IEnumerable<KeyValuePair<string, object>>)
-                    EnumerateMethod.MakeGenericMethod(tValue).Invoke(null, new [] { context });
-                return new Properties(myItems);
             }
 
-            return new ReflectionPropertyProvider(context);
-        }
-
-        private static IEnumerable<KeyValuePair<string, object>> Enumerate<TValue>(IEnumerable<KeyValuePair<string, TValue>> items) {
-            return items.Select(t => new KeyValuePair<string, object>(t.Key, t.Value));
-        }
-
-        private static bool IsKeyValuePairEnum(Type type) {
-            var t = type.GetTypeInfo();
-            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>)) {
-                var itemType = t.GetGenericArguments()[0];
-                if (itemType.GetTypeInfo().IsGenericType && itemType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>)) {
-                    return itemType.GetGenericArguments()[0] == typeof(string);
-                }
-            }
-
-            return false;
+            return Compose(
+                ReflectionPropertyProviderUsingIndexer.TryCreate(context),
+                new ReflectionPropertyProvider(context)
+            );
         }
 
         public static IPropertyProvider FromArray(params object[] values) {
@@ -139,11 +108,13 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static string Format(string format, object args) {
-            if (string.IsNullOrEmpty(format))
+            if (string.IsNullOrEmpty(format)) {
                 return string.Empty;
+            }
 
-            if (args == null)
+            if (args == null) {
                 return format;
+            }
 
             return Format(format, (IPropertyProvider) Properties.FromValue(args));
         }
@@ -154,61 +125,23 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (string.IsNullOrEmpty(format)) {
                 return string.Empty;
             }
-
-            if (propertyProvider == null) {
-                return format;
-            }
             var ppf = PropertyProviderFormat.Parse(format);
             return ppf.Format(propertyProvider);
         }
 
         public static string Format(string format,
-                                    IEnumerable<KeyValuePair<string, object>> propertyProvider) {
-            if (string.IsNullOrEmpty(format))
+                                    IEnumerable<KeyValuePair<string, object>> propertyProviders) {
+            if (string.IsNullOrEmpty(format)) {
                 return string.Empty;
+            }
 
-            if (propertyProvider == null)
-                return format;
-
-            return Format(format, PropertyProvider.Compose(propertyProvider));
+            return Format(format, PropertyProvider.Compose(propertyProviders));
         }
 
         static IPropertyProvider ComposeCore(IEnumerable<IPropertyProvider> providers) {
             return Utility.OptimalComposite(providers,
                                             t => new CompositePropertyProvider(t),
                                             Null);
-        }
-
-        private static string CollectTokenName(TextReader reader) {
-            reader.Read();
-            StringBuilder result = new StringBuilder();
-            int i;
-
-            while ((i = reader.Read()) > 0) {
-                char c = (char) i;
-
-                if (c == '}') {
-                    if (result.Length == 0) {
-                        throw RuntimeFailure.ExpectedIdentifier();
-                    }
-
-                    string value = result.ToString();
-                    return value;
-                } else {
-                    result.Append(c);
-                }
-            }
-
-            throw RuntimeFailure.ExpectedRightBrace();
-        }
-
-        private static PropertyInfo FindIndexerProperty(Type type) {
-            foreach (PropertyInfo pi in type.GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
-                var parameters = pi.GetIndexParameters();
-                if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string))
-                    return pi;
-            }
-            return null;
         }
     }
 }

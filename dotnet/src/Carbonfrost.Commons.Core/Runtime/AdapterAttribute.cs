@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2016, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2016, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -39,45 +40,61 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        public AdapterAttribute(string adapterType, string role) {
+        private string ImpliedRoleName {
+            get {
+                return Regex.Replace(GetType().Name, "Attribute$" , "");
+            }
+        }
+
+        public AdapterAttribute(string adapterType) {
+            if (string.IsNullOrEmpty(adapterType)) {
+                throw Failure.NullOrEmptyString(nameof(adapterType));
+            }
+
+            _adapterType = Type.GetType(adapterType);
+            _role = ImpliedRoleName;
+        }
+
+        public AdapterAttribute(Type adapterType) {
             if (adapterType == null) {
-                throw new ArgumentNullException("adapterType");
+                throw new ArgumentNullException(nameof(adapterType));
             }
 
-            adapterType = adapterType.Trim();
-            if (adapterType.Length == 0) {
-                throw Failure.AllWhitespace("adapterType");
-            }
+            _adapterType = adapterType;
+            _role = ImpliedRoleName;
+        }
 
-            if (role == null) {
-                throw new ArgumentNullException("role");
-            }
-
-            role = role.Trim();
-            if (role.Length == 0) {
-                throw Failure.AllWhitespace("role");
+        public AdapterAttribute(string role, string adapterType) {
+            role = CheckRole(role);
+            if (string.IsNullOrEmpty(adapterType)) {
+                throw Failure.NullOrEmptyString(nameof(adapterType));
             }
 
             _adapterType = Type.GetType(adapterType);
             _role = role;
         }
 
-        public AdapterAttribute(Type adapterType, string role) {
+        public AdapterAttribute(string role, Type adapterType) {
+            role = CheckRole(role);
+
             if (adapterType == null) {
-                throw new ArgumentNullException("adapterType");
-            }
-
-            if (role == null) {
-                throw new ArgumentNullException("role");
-            }
-
-            role = role.Trim();
-            if (role.Length == 0) {
-                throw Failure.AllWhitespace("role");
+                throw new ArgumentNullException(nameof(adapterType));
             }
 
             _adapterType = adapterType;
             _role = role;
+        }
+
+        private static string CheckRole(string role) {
+            if (role == null) {
+                throw new ArgumentNullException(nameof(role));
+            }
+
+            role = role.Trim();
+            if (role.Length == 0) {
+                throw Failure.AllWhitespace(nameof(role));
+            }
+            return role;
         }
 
     }

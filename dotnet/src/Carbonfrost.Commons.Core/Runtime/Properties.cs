@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -204,11 +204,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         bool IDictionary<string, object>.Remove(string key) {
-            if (key == null) {
-                throw new ArgumentNullException("key");
-            }
             if (string.IsNullOrEmpty(key)) {
-                throw Failure.EmptyString("key");
+                throw Failure.NullOrEmptyString(nameof(key));
             }
 
             bool hasKey = InnerMap.ContainsKey(key);
@@ -340,15 +337,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
         private void SaveCore(PropertiesWriter writer) {
             foreach (KeyValuePair<string, object> prop in InnerMap) {
                 writer.WriteProperty(prop.Key, prop.Value);
-            }
-        }
-
-        private void CheckProperty(string property) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
-            if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
             }
         }
     }

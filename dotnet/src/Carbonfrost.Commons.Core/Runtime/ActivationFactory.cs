@@ -80,7 +80,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 throw new ArgumentNullException("type");
             }
 
-            return type.GetConcreteClass() ?? type;
+            return type.GetConcreteClass();
         }
 
         internal void InitializeCoreHelper(object result,
@@ -108,10 +108,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
                     m.ActivateComponent(serviceProvider, component);
                 } catch (Exception ex) {
-                    if (exceptionHandler == null || Failure.IsCriticalException(ex))
+                    if (exceptionHandler == null || Failure.IsCriticalException(ex)) {
                         throw;
-                    else
-                        exceptionHandler(m, ex);
+                    }
+                    exceptionHandler(m, ex);
                 }
             }
         }

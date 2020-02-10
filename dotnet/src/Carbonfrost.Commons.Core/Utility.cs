@@ -28,7 +28,6 @@ namespace Carbonfrost.Commons.Core {
 
     static class Utility {
 
-        const string BASE_64_PREFIX = "base64:";
         static readonly Assembly THIS_ASSEMBLY = typeof(Utility).GetTypeInfo().Assembly;
         static readonly byte[][] SYSTEM_PKT = new [] {
             typeof(object).GetTypeInfo().Assembly.GetName().GetPublicKeyToken(),
@@ -36,7 +35,6 @@ namespace Carbonfrost.Commons.Core {
         };
         static readonly Dictionary<Assembly, bool> SCANNABLE = new Dictionary<Assembly, bool>();
 
-        public static readonly IXmlNamespaceResolver NullNamespaceResolver = new NullNamespaceResolverImpl();
         public static readonly IEqualityComparer<Type> EquivalentComparer = new ExtendedTypeComparer();
 
         private class ExtendedTypeComparer : IEqualityComparer<Type> {
@@ -58,52 +56,8 @@ namespace Carbonfrost.Commons.Core {
 
         }
 
-        class NullNamespaceResolverImpl : IXmlNamespaceResolver {
-
-            public IDictionary<string, string> GetNamespacesInScope(XmlNamespaceScope scope) {
-                return new Dictionary<string, string>();
-            }
-
-            public string LookupNamespace(string prefix) {
-                return null;
-            }
-
-            public string LookupPrefix(string namespaceName) {
-                return null;
-            }
-        }
-
         public static string Camel(string name) {
             return char.ToLowerInvariant(name[0]) + name.Substring(1);
-        }
-
-        public static IEnumerable<string> ReadAllLines(TextReader r) {
-            string line;
-            while ((line = r.ReadLine()) != null) {
-                yield return line;
-            }
-        }
-
-        public static byte[] ConvertHexToBytes(string hex, bool allowBase64 = true) {
-            if (allowBase64 && hex.StartsWith(BASE_64_PREFIX, StringComparison.OrdinalIgnoreCase))
-                return Convert.FromBase64String(hex.Substring(BASE_64_PREFIX.Length));
-
-            if ((hex.Length % 2) == 1)
-                throw RuntimeFailure.NotValidHexString();
-
-            byte[] result = new byte[hex.Length / 2];
-
-            for (int i = 0; i < result.Length; i++) {
-                result[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
-            }
-            return result;
-        }
-
-        public static string Display(object value) {
-            if (object.ReferenceEquals(value, null))
-                return "<null>";
-            else
-                return string.Concat("`", value, "'");
         }
 
         public static StreamReader MakeStreamReader(Stream stream, Encoding encoding) {
@@ -111,98 +65,6 @@ namespace Carbonfrost.Commons.Core {
                 return new StreamReader(stream);
             else
                 return new StreamReader(stream, encoding);
-        }
-
-        public static string Unescape(string text) {
-            StringBuilder result = new StringBuilder();
-
-            using (StringReader reader = new StringReader(text)) {
-                int i;
-
-                while ((i = reader.Read()) != -1) {
-                    char c = (char) i;
-
-                    if (c == '\\') {
-                        i = reader.Read();
-                        if (i == -1) {
-                            result.Append('\\');
-                            break;
-                        }
-
-                        char ch = (char) i;
-                        switch (ch) {
-                            case 'b':
-                                ch = '\b';
-                                break;
-
-                            case 't':
-                                ch = '\t';
-                                break;
-
-                            case 'n':
-                                ch = '\n';
-                                break;
-
-                            case 'f':
-                                ch = '\f';
-                                break;
-
-                            case 'r':
-                                ch = '\r';
-                                break;
-
-                            case 'u':
-                                string unicodeValue = new String(_ReadOrThrow(reader, 4));
-                                result.Append(UnescapeUnicode(unicodeValue));
-                                break;
-
-                            case 'x':
-                                string hexValue = new String(_ReadOrThrow(reader, 2));
-                                result.Append(UnescapeHex(hexValue));
-                                break;
-
-                            default:
-                                break;
-                        }
-
-                        result.Append(ch);
-                    } else {
-                        result.Append(c);
-                    }
-
-                } // end while
-
-            } // end using
-
-            return result.ToString();
-        }
-
-        public static char UnescapeUnicode(string chars) {
-            if (chars == null)
-                throw RuntimeFailure.IncompleteEscapeSequence();
-            int unicodeValue = Convert.ToInt32(chars, 16);
-            return Convert.ToChar(unicodeValue);
-        }
-
-        public static char UnescapeHex(string chars) {
-            if (chars == null)
-                throw RuntimeFailure.IncompleteEscapeSequence();
-
-            int hexValue = Convert.ToInt32(chars, 16);
-            return Convert.ToChar(hexValue);
-        }
-
-        private static char[] _ReadOrThrow(TextReader reader, int count) {
-            char[] result = new char[count];
-            for (int i = 0; i < count; i++) {
-                int character = reader.Read();
-                if (character == -1)
-                    throw RuntimeFailure.IncompleteEscapeSequence();
-
-                result[i] = (char) character;
-            }
-
-            return result;
         }
 
         public static bool IsScannableAssembly(Assembly a) {

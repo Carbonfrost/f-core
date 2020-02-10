@@ -25,10 +25,10 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
     public class AdaptableBuilderTests {
 
         [Builder(typeof(ABuilder3))]
-        [Adapter(typeof(ABuilder4), "builder")]
+        [Adapter("builder", typeof(ABuilder4))]
         class A {}
 
-        [Adapter(typeof(ABuilder3), "Builder")]
+        [Adapter("Builder", typeof(ABuilder3))]
         class B {}
         class ABuilder3 {
             public object Build() { return null; }

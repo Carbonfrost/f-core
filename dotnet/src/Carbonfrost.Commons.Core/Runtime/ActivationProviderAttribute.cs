@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,19 +23,24 @@ namespace Carbonfrost.Commons.Core.Runtime {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
     public sealed class ActivationProviderAttribute : AdapterAttribute {
 
-        public ActivationProviderAttribute(Type adapterType)
-            : base(adapterType, AdapterRole.ActivationProvider) {
+        public Type ActivationProviderType {
+            get {
+                return AdapterType;
+            }
+        }
+
+        public ActivationProviderAttribute(Type adapterType) : base(adapterType) {
             CheckType();
         }
 
-        public ActivationProviderAttribute(string adapterType)
-            : base(adapterType, AdapterRole.ActivationProvider) {
+        public ActivationProviderAttribute(string adapterType) : base(adapterType) {
             CheckType();
         }
 
-        void CheckType() {
-            if (this.AdapterType == null || !typeof(IActivationProvider).GetTypeInfo().IsAssignableFrom(this.AdapterType))
+        private void CheckType() {
+            if (AdapterType == null || !typeof(IActivationProvider).GetTypeInfo().IsAssignableFrom(AdapterType)) {
                 throw Failure.NotInstanceOf("adapterType", AdapterType, typeof(IActivationProvider));
+            }
         }
     }
 }

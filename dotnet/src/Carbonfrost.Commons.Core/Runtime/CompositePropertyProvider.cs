@@ -1,6 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2019 Carbonfrost Systems, Inc.
-// (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,26 +20,28 @@ using System.Collections.Generic;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    sealed class CompositePropertyProvider : PropertyProviderBase {
+    sealed class CompositePropertyProvider : IPropertyProvider {
 
-        private readonly IReadOnlyCollection<IPropertyProvider> items;
+        private readonly IReadOnlyCollection<IPropertyProvider> _items;
 
         public CompositePropertyProvider(IReadOnlyCollection<IPropertyProvider> items) {
-            this.items = items;
+            _items = items;
         }
 
-        protected override bool TryGetPropertyCore(string property, Type propertyType, out object value) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
+        public Type GetPropertyType(string property) {
+            return PropertyProvider.InferPropertyType(this, property);
+        }
+
+        public bool TryGetProperty(string property, Type propertyType, out object value) {
             if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
+                throw Failure.NullOrEmptyString(nameof(property));
             }
             value = null;
 
-            foreach (var pp in items) {
-                if (pp.TryGetProperty(property, propertyType, out value))
+            foreach (var pp in _items) {
+                if (pp.TryGetProperty(property, propertyType, out value)) {
                     return true;
+                }
             }
             return false;
         }

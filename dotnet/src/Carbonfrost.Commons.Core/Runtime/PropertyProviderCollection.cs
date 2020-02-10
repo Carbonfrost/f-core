@@ -1,5 +1,5 @@
 //
-// Copyright 2014 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,10 +39,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         Type IPropertyProvider.GetPropertyType(string property) {
-            if (property == null)
-                throw new ArgumentNullException("property");
-            if (string.IsNullOrEmpty(property))
-                throw Failure.EmptyString("property");
+            if (string.IsNullOrEmpty(property)) {
+                throw Failure.NullOrEmptyString(nameof(property));
+            }
 
             foreach (var p in this) {
                 var result = p.GetPropertyType(property);
@@ -56,10 +55,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         bool IPropertyProvider.TryGetProperty(string property, Type propertyType, out object value) {
             value = null;
 
-            if (property == null)
-                throw new ArgumentNullException("property");
-            if (string.IsNullOrEmpty(property))
-                throw Failure.EmptyString("property");
+            if (string.IsNullOrEmpty(property)) {
+                throw Failure.NullOrEmptyString(nameof(property));
+            }
 
             foreach (var p in this) {
                 bool result =  p.TryGetProperty(property, propertyType, out value);

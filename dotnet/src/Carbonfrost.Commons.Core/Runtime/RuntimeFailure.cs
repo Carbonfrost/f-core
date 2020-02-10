@@ -16,6 +16,7 @@
 
 
 using System;
+using System.IO;
 using System.Reflection;
 using System.Security;
 
@@ -29,12 +30,15 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return Failure.Prepare(new ArgumentException(SR.TemplateDoesNotSupportOperand(), argumentName));
         }
 
-        public static ArgumentException PropertyNotFound(string propertyNameArgument, string propertyName) {
-            return Failure.Prepare(new ArgumentException(SR.PropertyNotFound(propertyName), propertyNameArgument));
+        public static Exception UnableToLoadRelatedAssembly(string related, AssemblyName requestor, string[] searchLocations, string relatedAssemblyLocation) {
+            return Failure.Prepare(new FileNotFoundException(
+                SR.UnableToLoadRelatedAssembly(related, requestor, string.Join(";", searchLocations)),
+                relatedAssemblyLocation
+            ));
         }
 
-        public static FormatException NotValidHexString() {
-            return Failure.Prepare(new FormatException(SR.NotValidHexString()));
+        public static ArgumentException PropertyNotFound(string propertyNameArgument, string propertyName) {
+            return Failure.Prepare(new ArgumentException(SR.PropertyNotFound(propertyName), propertyNameArgument));
         }
 
         public static NotSupportedException SeekNotSupportedByBase() {
@@ -52,6 +56,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static ArgumentException CannotActivateNoConstructor(string argName, Type type) {
             return Failure.Prepare(new ArgumentException(SR.CannotActivateNoConstructor(type), argName));
+        }
+
+        public static Exception InvalidSelfRelatedAssembly(string assemblyName) {
+            return Failure.Prepare(new ArgumentException(SR.InvalidSelfRelatedAssembly(assemblyName)));
         }
 
         public static ArgumentException CannotActivateNoConstructorOrBuilder(string argName, Type type) {

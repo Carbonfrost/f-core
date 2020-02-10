@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010, 2014, 2016, 2019 Carbonfrost Systems, Inc.
+// Copyright 2005, 2006, 2010, 2014, 2016, 2019-2020 Carbonfrost Systems, Inc.
 // (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,6 +106,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 throw new ArgumentNullException("type");
             }
             return type.GetTypeInfo().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static)
+                .OrderByDescending(m => m.GetParameters().Length)
                 .FirstOrDefault(m => m.Name == "Parse" && !m.IsGenericMethod);
         }
 
@@ -218,13 +219,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static object TryAdapt(this object source, string adapterRoleName, IServiceProvider serviceProvider = null) {
             if (source == null) {
-                throw new ArgumentNullException("source"); // $NON-NLS-1
-            }
-            if (adapterRoleName == null) {
-                throw new ArgumentNullException("adapterRoleName");
+                throw new ArgumentNullException("source");
             }
             if (string.IsNullOrEmpty(adapterRoleName)) {
-                throw Failure.EmptyString("adapterRoleName");
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
             }
             var af = (serviceProvider ?? ServiceProvider.Null)
                 .GetServiceOrDefault<IAdapterFactory>(AdapterFactory.Default);
@@ -270,49 +268,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static Type GetAdapterType(this Type adapteeType, string adapterRoleName) {
             return AdapterFactory.Default.GetAdapterType(adapteeType, adapterRoleName);
-        }
-
-        public static MethodInfo GetMethodBySignature<TDelegate>(this Type instanceType, string name, Expression<TDelegate> signature)
-            where TDelegate : class
-        {
-            return GetMethodBySignatureCore<TDelegate>(
-                instanceType,
-                name,
-                signature);
-        }
-
-        public static MethodInfo GetStaticMethodBySignature<TDelegate>(this Type instanceType, string name, Expression<TDelegate> signature)
-            where TDelegate : class
-        {
-            return GetMethodBySignatureCore<TDelegate>(
-                instanceType,
-                name,
-                signature);
-        }
-
-        static MethodInfo GetMethodBySignatureCore<TDelegate>(Type instanceType,
-                                                              string name,
-                                                              Expression<TDelegate> signature)
-            where TDelegate : class
-        {
-            if (instanceType == null)
-                throw new ArgumentNullException("instanceType"); // $NON-NLS-1
-            if (name == null)
-                throw new ArgumentNullException("name"); // $NON-NLS-1
-
-            if (name.Length == 0)
-                throw Failure.EmptyString("name");
-
-            Type[] argTypes = signature.Parameters.Select(p => p.Type).ToArray();
-            MethodInfo mi = instanceType.GetTypeInfo().GetMethod(name, argTypes, null);
-            if (mi == null)
-                return null;
-            if (signature.ReturnType == null)
-                return mi.ReturnType == null ? mi : null;
-            if (signature.ReturnType.IsAssignableFrom(mi.ReturnType))
-                return mi;
-            else
-                return null;
         }
 
         public static Type GetBuilderType(this Type adapteeType) {
@@ -404,10 +359,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 return string.Concat(QualName(type.DeclaringType), '.', name);
             else
                 return name;
-        }
-
-        static IActivationProvider MakeActivationProvider(Type type) {
-            return (IActivationProvider) Activator.CreateInstance(type);
         }
 
         static bool IsActivationConstructor(ConstructorInfo t) {

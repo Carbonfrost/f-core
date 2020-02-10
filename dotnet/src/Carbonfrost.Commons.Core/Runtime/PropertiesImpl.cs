@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
     internal abstract class PropertiesImpl : PropertyProvider, IProperties {
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual bool IsReadOnly {
+            get {
+                return false;
+            }
+        }
 
         protected PropertiesImpl() : this(null) {}
 
@@ -57,16 +64,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         protected abstract void SetPropertyCore(string key, object defaultValue);
 
-        public virtual bool IsReadOnly(string key) {
-            return false;
-        }
-
         public void SetProperty(string property, object value) {
-            if (property == null) {
-                throw new ArgumentNullException("property");
-            }
             if (string.IsNullOrEmpty(property)) {
-                throw Failure.EmptyString("property");
+                throw Failure.NullOrEmptyString(nameof(property));
             }
 
             object currentValue;
@@ -79,10 +79,19 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public bool TrySetProperty(string property, object value) {
-            if (IsReadOnly(property)) {
+            if (IsReadOnly) {
                 return false;
             }
-            SetProperty(property, value);
+            try {
+                SetProperty(property, value);
+            } catch (TargetInvocationException ex) {
+                if (ex.InnerException is KeyNotFoundException
+                    || ex.InnerException is ArgumentException) {
+                    return false;
+                }
+
+                throw;
+            }
             return true;
         }
 

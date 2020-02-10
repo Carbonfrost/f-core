@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 
+using System.IO;
 using Carbonfrost.Commons.Core.Runtime;
 using Carbonfrost.Commons.Spec;
 
@@ -26,6 +27,15 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             var sc = StreamingSource.Properties;
             var properties = new Properties();
             sc.Load(StreamContext.FromText("a=b\nc=d"), properties);
+            Assert.Equal("b", properties["a"]);
+            Assert.Equal("d", properties["c"]);
+        }
+
+        [Fact]
+        public void Load_should_initialize_from_text_reader() {
+            var sc = (TextSource) StreamingSource.Properties;
+            var properties = new Properties();
+            sc.Load(new StringReader("a=b\nc=d"), properties);
             Assert.Equal("b", properties["a"]);
             Assert.Equal("d", properties["c"]);
         }

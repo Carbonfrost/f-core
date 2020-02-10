@@ -1,5 +1,5 @@
 //
-// Copyright 2013, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2016, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,11 +45,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (adapteeType == null) {
                 throw new ArgumentNullException("adapteeType");
             }
-            if (adapterRoleName == null) {
-                throw new ArgumentNullException("adapterRoleName");
-            }
-            if (adapterRoleName.Length == 0) {
-                throw Failure.EmptyString("adapterRoleName");
+            if (string.IsNullOrEmpty(adapterRoleName)) {
+                throw Failure.NullOrEmptyString(nameof(adapterRoleName));
             }
 
             if (adapteeType.GetTypeInfo().Assembly != _assembly) {

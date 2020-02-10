@@ -135,13 +135,28 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.True(n.Equals(n));
         }
 
+        [Fact]
+        public void ChangeNamespace_should_change_nominal() {
+            QualifiedName n = QualifiedName.Create(NamespaceUri.Default, "default");
+            NamespaceUri nu = NamespaceUri.Create("https://example.com");
+            n = n.ChangeNamespace(nu);
+            Assert.Same(nu, n.Namespace);
+        }
+
+        [Fact]
+        public void ChangeLocalName_should_change_nominal() {
+            QualifiedName n = QualifiedName.Create(NamespaceUri.Default, "default");
+            n = n.ChangeLocalName("name");
+            Assert.Same("name", n.LocalName);
+        }
+
         static IServiceProvider MakeResolver(IDictionary<string, string> prefixesToNS) {
             var r = new XmlNamespaceResolver();
             foreach (var kvp in prefixesToNS) {
                 if (string.IsNullOrEmpty(kvp.Value)) {
                     r.Add(kvp.Key, null);
                 } else {
-                    r.Add(kvp.Key, new Uri(kvp.Value));
+                    r.Add(kvp.Key, (kvp.Value));
                 }
             }
             return ServiceProvider.FromValue(r);
