@@ -1,3 +1,5 @@
 dotnet/*/*/obj
 dotnet/*/*/bin
 lcov.info
+
+.mypy_cache

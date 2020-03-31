@@ -4,8 +4,8 @@
 #
 # Structure of the repository should be:
 #
-#    dotnet
-#    ├── Build.props   -- (Optional) Shared build attributes controlling version, etc.
+#    dotnet  (default root directory, configured with $ENG_DOTNET_DIR)
+#    ├── Directory.Build.props   -- (Optional) Shared build attributes controlling version, etc.
 #    ├── solution.sln
 #    ├── src
 #    │   └── Project1
@@ -21,18 +21,37 @@
 #            │   └── ...
 #            └── (source files)
 #
-.PHONY: dotnet/restore dotnet/build dotnet/test dotnet/publish dotnet/push
 
-# The configuration to build (probably "Debug" or "Release")
-CONFIGURATION?=Release
+.PHONY: \
+	-dotnet/build \
+	-dotnet/pack \
+	-dotnet/publish \
+	-dotnet/push \
+	dotnet/build \
+	dotnet/clean \
+	dotnet/configure \
+	dotnet/pack \
+	dotnet/publish \
+	dotnet/push \
+	dotnet/restore \
+	dotnet/test \
 
-# The location of the NuGet configuration file
-NUGET_CONFIG_FILE?=./nuget.config
+## Add support for .NET to the project
+use/dotnet: | -dotnet/init -dotnet/solution
+
+# Enable the tasks if we are using dotnet
+ifeq (1, $(ENG_USING_DOTNET))
+
+## Install .NET  and project dependencies
+dotnet/init: -dotnet/init dotnet/restore
+else
+dotnet/init: -hint-unsupported-dotnet
+endif
 
 ## Set up dotnet configuration for NuGet
-dotnet/configure: -check-env-NUGET_SOURCE_URL -check-env-NUGET_PASSWORD -check-env-NUGET_USER_NAME -check-env-NUGET_CONFIG_FILE
-	@ test -e $(NUGET_CONFIG_FILE) || echo "<configuration />" > $(NUGET_CONFIG_FILE)
-	@ nuget sources add -Name "Carbonfrost" \
+dotnet/configure: -requirements-dotnet -check-env-NUGET_SOURCE_URL -check-env-NUGET_PASSWORD -check-env-NUGET_USER_NAME -check-env-NUGET_CONFIG_FILE
+	$(Q) test -e $(NUGET_CONFIG_FILE) || echo "<configuration />" > $(NUGET_CONFIG_FILE)
+	$(Q) $(OUTPUT_COLLAPSED) nuget sources add -Name "Carbonfrost" \
 		-Source $(NUGET_SOURCE_URL) \
 		-Password $(NUGET_PASSWORD) \
 		-Username $(NUGET_USER_NAME) \
@@ -40,8 +59,9 @@ dotnet/configure: -check-env-NUGET_SOURCE_URL -check-env-NUGET_PASSWORD -check-e
 		-ConfigFile $(NUGET_CONFIG_FILE)
 
 ## Restore package dependencies
-dotnet/restore:
-	@ dotnet restore ./dotnet
+dotnet/restore: -requirements-dotnet
+	$(Q) $(OUTPUT_COLLAPSED) dotnet restore $(ENG_DOTNET_DIR)
+	$(Q) $(OUTPUT_COLLAPSED) dotnet tool restore
 
 ## Build the dotnet solution
 dotnet/build: dotnet/restore -dotnet/build
@@ -57,23 +77,35 @@ dotnet/publish: dotnet/build -dotnet/publish
 
 ## Executes dotnet clean
 dotnet/clean:
-	@ rm -rdf dotnet/{src,test}/*/{bin,obj}/*
+	$(Q) rm $(_STANDARD_VERBOSE_FLAG) -rdf $(ENG_DOTNET_DIR)/{src,test}/*/{bin,obj}/*
 
--dotnet/build:
-	@ eval $(shell eng/build_env); \
-		dotnet build --configuration $(CONFIGURATION) --no-restore ./dotnet
+-dotnet/init:
+	$(Q) $(OUTPUT_COLLAPSED) brew cask install dotnet-sdk
 
--dotnet/pack:
-	@ eval $(shell eng/build_env); \
-		dotnet pack --configuration $(CONFIGURATION) --no-build ./dotnet
+-dotnet/solution:
+	$(Q) mkdir $(_STANDARD_VERBOSE_FLAG) -p $(ENG_DOTNET_DIR)/{src,test}
+	$(Q) $(OUTPUT_COLLAPSED) dotnet new sln -o $(ENG_DOTNET_DIR) -n $(shell basename $$(pwd))
 
--dotnet/publish:
-	@ eval $(shell eng/build_env); \
-		dotnet publish --configuration $(CONFIGURATION) --no-build ./dotnet
+-dotnet/build: -requirements-dotnet -check-env-CONFIGURATION
+	$(Q) eval $(shell eng/build_env); \
+		$(OUTPUT_COLLAPSED) dotnet build --configuration $(CONFIGURATION) --no-restore $(ENG_DOTNET_DIR)
+
+-dotnet/pack: -requirements-dotnet -check-env-CONFIGURATION
+	$(Q) eval $(shell eng/build_env); \
+		$(OUTPUT_COLLAPSED) dotnet pack --configuration $(CONFIGURATION) --no-build $(ENG_DOTNET_DIR)
+
+-dotnet/publish: -requirements-dotnet -check-env-CONFIGURATION
+	$(Q) eval $(shell eng/build_env); \
+		$(OUTPUT_COLLAPSED) dotnet publish --configuration $(CONFIGURATION) --no-build $(ENG_DOTNET_DIR)
 
 # Nuget CLI doesn't work with GitHub package registry for some reason, so we're using a curl directly
--dotnet/push:
-	@ for f in dotnet/src/*/bin/Release/*.nupkg; do \
+-dotnet/push: -requirements-dotnet -check-env-NUGET_PASSWORD -check-env-NUGET_USER_NAME -check-env-NUGET_UPLOAD_URL
+	$(Q) for f in dotnet/src/*/bin/Release/*.nupkg; do \
 		curl -X PUT -u "$(NUGET_USER_NAME):$(NUGET_PASSWORD)" -F package=@$$f $(NUGET_UPLOAD_URL); \
 	done
 
+-requirements-dotnet: -check-command-dotnet
+
+-hint-unsupported-dotnet:
+	@ echo $(_HIDDEN_IF_BOOTSTRAPPING) "$(_WARNING) Nothing to do" \
+		"because $(_MAGENTA).NET$(_RESET) is not enabled (Investigate $(_CYAN)\`make use/dotnet\`$(_RESET))"

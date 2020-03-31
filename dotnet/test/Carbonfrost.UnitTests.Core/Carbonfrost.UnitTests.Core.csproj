@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../Build.props" />
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <RootNamespace></RootNamespace>
+    <Copyright>Copyright 2005-2020 Carbonfrost Systems, Inc.</Copyright>
+    <Authors>Carbonfrost</Authors>
+    <Description>Unit tests for Carbonfrost.Commons.Core</Description>
+    <RepositoryUrl>https://github.com/Carbonfrost/f-core</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
