@@ -1,11 +1,11 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,16 +21,16 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    class TemplateData {
+    class TemplateData : ITemplateInfoDescription {
 
-        private readonly BufferDictionary<TemplateKey, ProviderField> providers;
+        private readonly BufferDictionary<TemplateKey, ProviderField> _providers;
 
         // TODO Optimize by memoizing lookups on local names
 
-        private static readonly TemplateData Instance = new TemplateData();
+        internal static readonly TemplateData Instance = new TemplateData();
 
         private TemplateData() {
-            providers = new BufferDictionary<TemplateKey, ProviderField>(
+            _providers = new BufferDictionary<TemplateKey, ProviderField>(
                 App.DescribeAssemblies(t => ExtractFromTypes(t)));
         }
 
@@ -53,6 +53,40 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     }
                 }
             }
+        }
+
+        public IEnumerable<QualifiedName> GetTemplateNames(Type templateType) {
+            if (templateType == null) {
+                throw new ArgumentNullException(nameof(templateType));
+            }
+
+            return _providers.Where(t => t.Key.TemplateType == templateType)
+                .Select(t => t.Key.Name);
+        }
+
+        public ITemplate GetTemplate(Type templateType, QualifiedName name) {
+            if (templateType == null) {
+                throw new ArgumentNullException(nameof(templateType));
+            }
+
+            ProviderField f = _providers[new TemplateKey(templateType, name)];
+            if (f == null) {
+                return null;
+            }
+            return (ITemplate) f.GetValue();
+        }
+
+        public IEnumerable<ITemplate> GetTemplates(Type templateType, string localName) {
+            if (templateType == null) {
+                throw new ArgumentNullException(nameof(templateType));
+            }
+            return GetTemplatesByLocalName(templateType, localName);
+        }
+
+        internal IEnumerable<ITemplate> GetTemplatesByLocalName(Type templateType, string localName) {
+            return _providers.Where(t => t.Key.TemplateType == templateType
+                                     && t.Key.Name.LocalName == localName)
+                             .Select(t => t.Value.GetValue());
         }
 
         internal class ProviderField {
@@ -112,28 +146,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public QualifiedName QualifiedName { get { return _name; } }
-        }
-
-        internal static ITemplate GetTemplate(Type templateType, QualifiedName name) {
-            var s = Instance;
-            ProviderField f = s.providers[new TemplateKey(templateType, name)];
-            if (f == null)
-                return null;
-            else
-                return (ITemplate) f.GetValue();
-        }
-
-        internal static IEnumerable<ITemplate> GetTemplatesByLocalName(Type templateType, string localName) {
-            var s = Instance;
-            return s.providers.Where(t => t.Key.TemplateType == templateType
-                                     && t.Key.Name.LocalName == localName)
-                .Select(t => t.Value.GetValue());
-        }
-
-        internal static IEnumerable<QualifiedName> GetTemplateNames(Type templateType) {
-            var s = Instance;
-            return s.providers.Where(t => t.Key.TemplateType == templateType)
-                .Select(t => t.Key.Name);
         }
 
         internal struct TemplateKey {

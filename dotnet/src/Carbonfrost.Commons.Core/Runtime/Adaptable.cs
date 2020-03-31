@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
@@ -86,12 +85,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         private static T GetDefaultValue_<T>() {
             return default(T);
-        }
-
-        public static IEnumerable<string> GetAdapterRoleNames(this Assembly assembly) {
-            return assembly.GetCustomAttributes(typeof(DefinesAttribute))
-                .Select(t => ((DefinesAttribute) t).AdapterName)
-                .Distinct();
         }
 
         public static MethodInfo GetTemplateMethod(this Type type) {
@@ -231,15 +224,20 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static object TryAdapt(this object source, Type adapterType, IServiceProvider serviceProvider = null) {
-            if (source == null)
-                throw new ArgumentNullException("source"); // $NON-NLS-1
-            if (adapterType == null)
-                throw new ArgumentNullException("adapterType"); // $NON-NLS-1
+            if (source == null) {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (adapterType == null) {
+                throw new ArgumentNullException(nameof(adapterType));
+            }
 
             if (adapterType.IsInstanceOfType(source)) {
                 return source;
             }
-
+            var ari = App.GetAdapterRoleInfo(adapterType);
+            if (ari != null) {
+                return TryAdapt(source, ari.Name, serviceProvider);
+            }
             return null;
         }
 

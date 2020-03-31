@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,28 +15,31 @@
 //
 
 using System;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-    public class DefinesAttribute : Attribute {
+    public class AdapterRoleInfo {
 
-        public string AdapterRole {
+        public string Name {
             get;
             private set;
         }
 
         public Type AdapterType {
             get;
-            set;
+            private set;
         }
 
-        public DefinesAttribute(string adapterRole) {
-            if (string.IsNullOrEmpty(adapterRole)) {
-                throw Failure.NullOrEmptyString(nameof(adapterRole));
-            }
-            AdapterRole = adapterRole;
+        public Assembly DefiningAssembly {
+            get;
+            private set;
+        }
+
+        internal AdapterRoleInfo(string name, Type adapterType, Assembly definingAssembly) {
+            Name = name;
+            AdapterType = adapterType;
+            DefiningAssembly = definingAssembly;
         }
     }
-
 }

@@ -42,10 +42,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        public static IEnumerable<string> GetAdapterRoleNames() {
-            return DescribeAssemblies(t => t.GetAdapterRoleNames());
-        }
-
         public static IEnumerable<Type> GetStartClasses(string className) {
             return DescribeAssemblies().SelectMany(a => a.GetStartClasses(className));
         }

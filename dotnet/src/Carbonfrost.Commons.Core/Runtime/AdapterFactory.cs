@@ -27,8 +27,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         private static readonly IDictionary<Assembly, IAdapterFactory> cache
             = new Dictionary<Assembly, IAdapterFactory>();
-        private static readonly IDictionary<string, Assembly> _roleAssemblyCache
-            = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
 
         public static readonly IAdapterFactory Default = new DefaultAdapterFactoryImpl();
 
@@ -95,16 +93,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         internal static Assembly GetAssemblyThatDefines(string role) {
-            Assembly asm;
-            if (!_roleAssemblyCache.TryGetValue(role, out asm)) {
-                asm = App.DescribeAssemblies()
-                    .FirstOrDefault(t => t.GetAdapterRoleNames().Contains(role));
-                if (asm != null) {
-                    _roleAssemblyCache[role] = asm;
-                }
-            }
-
-            return asm;
+            return App.DescribeAdapterRoles().GetAdapterRoleInfo(role).DefiningAssembly;
         }
 
         static IAdapterFactory FromAssemblyInternal(Assembly assembly) {

@@ -1,5 +1,5 @@
 //
-// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
+// Copyright 2012 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,25 +18,16 @@ using System;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-    public class DefinesAttribute : Attribute {
+    [AttributeUsage(AttributeTargets.Struct
+                    | AttributeTargets.Interface
+                    | AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+    public sealed class NullAttribute : AdapterAttribute {
 
-        public string AdapterRole {
-            get;
-            private set;
-        }
+        public NullAttribute(Type nullType)
+            : base(AdapterRole.Null, nullType) {}
 
-        public Type AdapterType {
-            get;
-            set;
-        }
-
-        public DefinesAttribute(string adapterRole) {
-            if (string.IsNullOrEmpty(adapterRole)) {
-                throw Failure.NullOrEmptyString(nameof(adapterRole));
-            }
-            AdapterRole = adapterRole;
-        }
+        public NullAttribute(string nullType)
+            : base(AdapterRole.Null, nullType) {}
     }
 
 }

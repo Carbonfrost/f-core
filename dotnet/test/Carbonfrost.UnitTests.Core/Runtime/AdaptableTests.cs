@@ -27,16 +27,6 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
     public class AdaptableTests {
 
-        [Fact]
-        public void TryAdapt_nominal() {
-            Properties p = new Properties();
-            var ps = p.TryAdapt("StreamingSource");
-            var pp = p.TryAdapt("Builder");
-
-            Assert.IsInstanceOf<PropertiesStreamingSource>(ps);
-            Assert.Null(pp);
-        }
-
         [Theory]
         [InlineData(typeof(List<int>), "Capacity")]
         public void GetTemplatingMode_should_hide_certain_properties(Type type, string property) {
@@ -136,6 +126,24 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         [InlineData(typeof(int), Name = "Primitives")]
         public void IsServiceType_should_detect_ineligible_service_types(Type serviceType) {
             Assert.False(Adaptable.IsServiceType(serviceType));
+        }
+
+        [Fact]
+        public void TryAdapt_obtains_registered_adapter_type() {
+            Properties p = new Properties();
+            var ps = p.TryAdapt("StreamingSource");
+            var pp = p.TryAdapt("Builder");
+
+            Assert.IsInstanceOf<PropertiesStreamingSource>(ps);
+            Assert.Null(pp);
+        }
+
+        [Fact]
+        public void TryAdapt_will_use_the_adapter_role_corresponding_to_adapter_type() {
+            Properties p = new Properties();
+            var pp = p.TryAdapt<StreamingSource>();
+
+            Assert.IsInstanceOf<PropertiesStreamingSource>(pp);
         }
 
         class S {

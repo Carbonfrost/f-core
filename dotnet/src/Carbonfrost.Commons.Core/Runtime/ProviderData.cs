@@ -202,13 +202,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return ProviderData.GetProviderNames(providerType);
         }
 
-        IEnumerable<QualifiedName> IProviderInfoDescription.GetTemplateNames(Type templateType) {
-            if (templateType == null)
-                throw new ArgumentNullException("templateType");
-
-            return TemplateData.GetTemplateNames(templateType);
-        }
-
         IEnumerable<T> IProviderInfoDescription.GetProviders<T>() {
             return ProviderData.GetProviders(typeof(T)).Cast<T>();
         }
