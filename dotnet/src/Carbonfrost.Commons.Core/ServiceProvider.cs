@@ -84,7 +84,7 @@ namespace Carbonfrost.Commons.Core {
 
         public static IServiceProvider FromValue(object value) {
             if (value == null) {
-                throw new ArgumentNullException("value");
+                return Null;
             }
 
             IServiceProvider s = value as IServiceProvider;

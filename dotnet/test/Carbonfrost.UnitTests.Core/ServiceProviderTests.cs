@@ -54,6 +54,12 @@ namespace Carbonfrost.UnitTests.Core {
         }
 
         [Fact]
+        public void FromValue_returns_Null_when_argument_null() {
+            var actual = ServiceProvider.FromValue(null);
+            Assert.Same(ServiceProvider.Null, actual);
+        }
+
+        [Fact]
         public void Root_should_invoke_start_classes() {
             Assert.Equal(MyService.Instance, ServiceProvider.Root.GetServiceOrDefault<MyService>());
         }

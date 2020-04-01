@@ -41,6 +41,27 @@ namespace Carbonfrost.UnitTests.Core {
             }
         }
 
+        public IEnumerable<IPropertyProvider> PHasStringCoercibleValue {
+            get {
+                return new [] {
+                    PropertyProvider.FromArray("https://example.com/"),
+                    PropertyProvider.FromValue(new { a = "https://example.com/" }),
+                    PropertyProvider.FromValue(new Dictionary<string,string> { ["a"] = "https://example.com/" }),
+                    PropertyProvider.FromValue(new NameValueCollection {{ "a", "https://example.com/" }}),
+                };
+            }
+        }
+
+        public IEnumerable<IPropertyProvider> PHasAdapterCoercibleValue {
+            get {
+                return new [] {
+                    PropertyProvider.FromArray(new Properties()),
+                    PropertyProvider.FromValue(new { a = new Properties() }),
+                    PropertyProvider.FromValue(new Dictionary<string,object> { ["a"] = new Properties() }),
+                };
+            }
+        }
+
         [Fact]
         public void Compose_converts_null_to_Null_provider() {
             Assert.Same(PropertyProvider.Null, PropertyProvider.Compose(null, null));
@@ -172,6 +193,24 @@ namespace Carbonfrost.UnitTests.Core {
 
             Assert.Throws<ArgumentException>(() => pp.TryGetProperty("", typeof(object), out _));
             Assert.Throws<ArgumentException>(() => pp.TryGetProperty(null, typeof(object), out _));
+        }
+
+        [Fact]
+        public void TryGetProperty_applies_type_coercion_from_strings() {
+            var props = new Properties {
+                { "u", "https://example.com/" }
+            };
+            Assert.Equal(new Uri("https://example.com"), props.GetProperty<Uri>("u"));
+        }
+
+        [Fact]
+        public void GetPropertyType_for_missing_property_is_null() {
+            var pp = new DefaultPropertyProvider();
+            Assert.Null(pp.GetPropertyType("missing"));
+        }
+
+        class DefaultPropertyProvider : PropertyProvider {
+            public string U { get; set; }
         }
 
         class PPropertiesContainer : IPropertiesContainer {
