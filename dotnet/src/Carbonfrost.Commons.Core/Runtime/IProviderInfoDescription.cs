@@ -22,10 +22,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     public interface IProviderInfoDescription {
 
-        IProviderInfo GetProviderInfo(Type providerType, object criteria);
-        IProviderInfo GetProviderInfo(Type providerType, string name);
-        IProviderInfo GetProviderInfo(Type providerType, QualifiedName name);
-        IEnumerable<IProviderInfo> GetProviderInfos(Type providerType);
+        ProviderInfo GetProviderInfo(Type providerType, object criteria);
+        ProviderInfo GetProviderInfo(Type providerType, string name);
+        ProviderInfo GetProviderInfo(Type providerType, QualifiedName name);
+        IEnumerable<ProviderInfo> GetProviderInfos(Type providerType);
 
         IEnumerable<MemberInfo> GetProviderMembers(Type providerType);
         IEnumerable<object> GetProviders(Type providerType);

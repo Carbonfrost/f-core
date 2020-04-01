@@ -1,11 +1,11 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,10 +21,10 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    public class ProviderInfoCollection : ICollection<IProviderInfo> {
+    public class ProviderInfoCollection : ICollection<ProviderInfo> {
 
         private readonly Dictionary<MemberInfo, ProviderValueSource> _valueSources = new Dictionary<MemberInfo, ProviderValueSource>();
-        private readonly List<IProviderInfo> _items = new List<IProviderInfo>();
+        private readonly List<ProviderInfo> _items = new List<ProviderInfo>();
 
         public void DefineProvider(QualifiedName name,
                                    Type providerType,
@@ -43,8 +43,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             var qn = GetName(name, providerInstanceType, providerInstanceType.Name);
 
             var tr = new ProviderType(providerInstanceType, providerType, qn);
-            tr.Metadata = ProviderMetadataWrapper.Create(ApplyCompleter(providerInstanceType, providerType, metadata));
-            tr.Metadata.Source = tr;
+            tr.ProviderMetadata = ProviderMetadataWrapper.Create(ApplyCompleter(providerInstanceType, providerType, metadata));
+            tr.ProviderMetadata.Source = tr;
             AppendResult(tr);
         }
 
@@ -65,8 +65,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             var qn = GetName(name, field.DeclaringType, field.Name);
             var fieldResult = new ProviderField(field, providerType, qn);
-            fieldResult.Metadata = ProviderMetadataWrapper.Create(metadata);
-            fieldResult.Metadata.Source = fieldResult;
+            fieldResult.ProviderMetadata = ProviderMetadataWrapper.Create(metadata);
+            fieldResult.ProviderMetadata.Source = fieldResult;
             AppendResult(fieldResult);
         }
 
@@ -89,8 +89,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             var methodResult = new ProviderMethod(factoryMethod,
                                                   providerType,
                                                   qn);
-            methodResult.Metadata = ProviderMetadataWrapper.Create(metadata);
-            methodResult.Metadata.Source = methodResult;
+            methodResult.ProviderMetadata = ProviderMetadataWrapper.Create(metadata);
+            methodResult.ProviderMetadata.Source = methodResult;
             AppendResult(methodResult);
         }
 
@@ -133,7 +133,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        public void Add(IProviderInfo item) {
+        public void Add(ProviderInfo item) {
             if (item == null) {
                 throw new ArgumentNullException("item");
             }
@@ -145,7 +145,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             _valueSources.Clear();
         }
 
-        public bool Contains(IProviderInfo item) {
+        public bool Contains(ProviderInfo item) {
             if (_items.Contains(item)) {
                 return true;
             }
@@ -157,11 +157,11 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return false;
         }
 
-        public void CopyTo(IProviderInfo[] array, int arrayIndex) {
+        public void CopyTo(ProviderInfo[] array, int arrayIndex) {
             _valueSources.Values.Concat(_items).ToList().CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(IProviderInfo item) {
+        public bool Remove(ProviderInfo item) {
             throw new NotImplementedException();
         }
 
@@ -177,7 +177,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        public IEnumerator<IProviderInfo> GetEnumerator() {
+        public IEnumerator<ProviderInfo> GetEnumerator() {
             return _valueSources.Values.Concat(_items).GetEnumerator();
         }
 

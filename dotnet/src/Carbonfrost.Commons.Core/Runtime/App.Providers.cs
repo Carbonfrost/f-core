@@ -28,19 +28,19 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return ProviderData.Instance;
         }
 
-        public static IEnumerable<IProviderInfo> GetProviderInfos(Type providerType) {
+        public static IEnumerable<ProviderInfo> GetProviderInfos(Type providerType) {
             return DescribeProviders().GetProviderInfos(providerType);
         }
 
-        public static IProviderInfo GetProviderInfo(Type providerType, QualifiedName name) {
+        public static ProviderInfo GetProviderInfo(Type providerType, QualifiedName name) {
             return DescribeProviders().GetProviderInfo(providerType, name);
         }
 
-        public static IProviderInfo GetProviderInfo(Type providerType, string name) {
+        public static ProviderInfo GetProviderInfo(Type providerType, string name) {
             return DescribeProviders().GetProviderInfo(providerType, name);
         }
 
-        public static IProviderInfo GetProviderInfo(Type providerType, object criteria) {
+        public static ProviderInfo GetProviderInfo(Type providerType, object criteria) {
             return DescribeProviders().GetProviderInfo(providerType, criteria);
         }
 

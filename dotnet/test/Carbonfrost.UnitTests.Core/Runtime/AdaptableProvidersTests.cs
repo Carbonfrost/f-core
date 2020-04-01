@@ -43,27 +43,27 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
         [Fact]
         public void GetProviderInfo_using_local_name_should_obtain_one() {
-            IProviderInfo cs = App.GetProviderInfo(
+            var cs = App.GetProviderInfo(
                 typeof(IActivationFactory),
-                "default");
+                "default"
+            );
 
             Assert.Same(ActivationFactory.Default, cs.Activate(null, null));
         }
 
         [Fact]
         public void GetProviderInfo_should_have_ToString_using_name_and_curie() {
-            IProviderInfo cs = App.GetProviderInfo(
+            var cs = App.GetProviderInfo(
                 typeof(IActivationFactory),
-                "default");
+                "default"
+            );
 
             Assert.Equal("[runtime:default] IActivationFactory", cs.ToString());
         }
 
         [Fact]
         public void GetProviderInfo_using_type_criteria_should_find_names_and_in_order() {
-            IProviderInfo cs = App.GetProviderInfo(
-                typeof(TestProvider),
-                typeof(ATestProvider));
+            var cs = App.GetProviderInfo(typeof(TestProvider), typeof(ATestProvider));
 
             // Proper order is:
             // - explicitly specified Name= name

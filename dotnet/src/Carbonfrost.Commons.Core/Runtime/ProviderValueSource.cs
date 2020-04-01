@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2016, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2016, 2019-2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,32 +16,27 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    internal abstract class ProviderValueSource : IProviderInfo {
+    internal abstract class ProviderValueSource : ProviderInfo {
 
-        public abstract object GetValue();
-        public abstract object Activate(IEnumerable<KeyValuePair<string, object>> arguments,
-                                        IServiceProvider services);
+        // TODO Consider pushing up GetValue() and IsValue()
+
+        private readonly Type _providerType;
+        private readonly QualifiedName _name;
 
         public abstract Type ValueType { get; }
-        public abstract MemberInfo Member { get; }
 
-        public virtual Assembly Assembly {
+        public sealed override Type ProviderType {
             get {
-                return Member.DeclaringType.GetTypeInfo().Assembly;
+                return _providerType;
             }
         }
 
-        public Type ProviderType { get; private set; }
-        public IProviderMetadata Metadata { get; set; }
-
         protected ProviderValueSource(Type providerType, QualifiedName key) {
-            this.ProviderType = providerType;
-            this.Name = key;
+            _providerType = providerType;
+            _name = key;
         }
 
         public virtual ProviderValueSource AppendOne(ProviderValueSource item) {
@@ -49,10 +44,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public virtual ResultAndCriteria DoMatchCriteria(object criteria) {
-            return new ResultAndCriteria
-            {
+            return new ResultAndCriteria {
                 result = this,
-                criteria = Metadata == null ? 0 : Metadata.MatchCriteria(criteria)
+                criteria = Metadata == null ? 0 : ProviderMetadata.MatchCriteria(criteria)
             };
         }
 
@@ -73,21 +67,23 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return string.Equals(Name.LocalName, localName, StringComparison.OrdinalIgnoreCase);
         }
 
-        public QualifiedName Name { get; private set; }
-
-        public virtual IReadOnlyList<QualifiedName> Names {
+        public sealed override QualifiedName Name {
             get {
-                return new[] { Name };
+                return _name;
             }
         }
 
-        public Type Type { get { return ValueType; } }
+        public sealed override Type Type { get { return ValueType; } }
 
-        object IProviderInfo.Metadata {
+        public IProviderMetadata ProviderMetadata { get; set; }
+
+        public sealed override object Metadata {
             get {
-                return Metadata.Value;
+                return ProviderMetadata.Value;
             }
         }
+
+        public abstract object GetValue();
 
         public override string ToString() {
             return string.Format("{0:C} {1}", Name.ToString("C"), ProviderType.Name);

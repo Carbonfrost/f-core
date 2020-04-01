@@ -369,7 +369,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 typeof(T), name, t => t.GetValue()).SingleOrThrow(RuntimeFailure.MultipleProviders);
         }
 
-        IProviderInfo IProviderInfoDescription.GetProviderInfo(Type type, QualifiedName name) {
+        ProviderInfo IProviderInfoDescription.GetProviderInfo(Type type, QualifiedName name) {
             if (name == null) {
                 throw new ArgumentNullException("name");
             }
@@ -377,7 +377,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return ProviderData.GetProvider(type, name, t => t);
         }
 
-        IProviderInfo IProviderInfoDescription.GetProviderInfo(Type type, string name) {
+        ProviderInfo IProviderInfoDescription.GetProviderInfo(Type type, string name) {
             if (string.IsNullOrEmpty(name)) {
                 throw Failure.NullOrEmptyString(nameof(name));
             }
@@ -386,7 +386,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 type, name, t => t).SingleOrThrow(RuntimeFailure.MultipleProviders);
         }
 
-        IProviderInfo IProviderInfoDescription.GetProviderInfo(Type type, object criteria) {
+        ProviderInfo IProviderInfoDescription.GetProviderInfo(Type type, object criteria) {
             if (criteria == null) {
                 throw new ArgumentNullException("criteria");
             }
@@ -396,7 +396,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return them.SingleOrThrow(RuntimeFailure.MultipleProviders);
         }
 
-        IEnumerable<IProviderInfo> IProviderInfoDescription.GetProviderInfos(Type providerType) {
+        IEnumerable<ProviderInfo> IProviderInfoDescription.GetProviderInfos(Type providerType) {
             return ProviderData.GetProviders(providerType, t => t);
         }
 

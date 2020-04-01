@@ -32,6 +32,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public Buffer(IEnumerable<TElement> e) {
+            // Optimization if already a collection
+            if (e is ICollection<TElement> c) {
+                _source = null;
+                _cache = new List<TElement>(c);
+                return;
+            }
             _source = e.GetEnumerator();
             _cache = new List<TElement>();
         }
@@ -112,6 +118,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public void Reset() {
+                _index = -1;
             }
         }
     }
