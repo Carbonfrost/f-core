@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019-2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return new StreamWriter(Open(), encoding);
         }
 
-        public abstract StreamContext ChangePath(string relativePath);
+        public virtual StreamContext ChangePath(string relativePath) {
+            return FromSource(new Uri(Uri, relativePath));
+        }
 
         public virtual StreamContext ChangeContentType(ContentType contentType) {
             throw new NotSupportedException();

@@ -1,5 +1,5 @@
 //
-// Copyright 2005, 2006, 2010 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2005, 2006, 2010, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 using System;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -26,7 +26,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public UriStreamContext(Uri uri) {
             if (uri == null) {
-                throw new ArgumentNullException("uri");
+                throw new ArgumentNullException(nameof(uri));
             }
             _uri = uri;
         }
@@ -39,7 +39,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public override StreamContext ChangePath(string relativePath) {
             if (relativePath == null) {
-                throw new ArgumentNullException("relativePath");
+                throw new ArgumentNullException(nameof(relativePath));
             }
 
             UriBuilder baseUri = new UriBuilder(new Uri(_uri, relativePath));
@@ -47,10 +47,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public override Stream Open() {
-            using (WebClient client = new WebClient()) {
-                WebRequest request = WebRequest.CreateDefault(_uri);
-                WebResponse response = request.GetResponse();
-                return client.OpenRead(_uri);
+            using (var client = new HttpClient()) {
+                return client.GetStreamAsync(_uri).Result;
             }
         }
     }

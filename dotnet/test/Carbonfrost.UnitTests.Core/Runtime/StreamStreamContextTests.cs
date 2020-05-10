@@ -31,5 +31,32 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             var sc = StreamContext.FromStream(ms);
             Assert.Equal("stream:///", sc.Uri.ToString());
         }
+
+        [Fact]
+        public void FromStream_when_file_stream_should_have_Uri() {
+            var sc = StreamContext.FromStream(new FileStream(".gitignore", FileMode.Append));
+            string expected = "file://" + Path.GetFullPath(".gitignore");
+            Assert.Equal(expected, sc.Uri.ToString());
+        }
+
+        [Fact]
+        public void FromStream_when_nullstream_should_have_Uri() {
+            var sc = StreamContext.FromStream(Stream.Null);
+            Assert.Equal("null:///", sc.Uri.ToString());
+        }
+
+        [Fact]
+        public void ChangePath_should_apply_relative_path() {
+            var sc = StreamContext.FromStream(new FileStream(".gitignore", FileMode.Append));
+            sc = sc.ChangePath("./hello");
+            string expected = "file://" + Path.GetFullPath("hello");
+            Assert.Equal(expected, sc.Uri.ToString());
+        }
+
+        [Fact]
+        public void ChangePath_should_throw_by_default() {
+            var sc = StreamContext.FromStream(new MemoryStream());
+            Assert.Throws<NotSupportedException>(() => sc.ChangePath("./hello"));
+        }
     }
 }
