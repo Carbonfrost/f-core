@@ -27,7 +27,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static IPropertyProvider LateBound(TypeReference type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             return new LateBoundPropertyProvider(type);
@@ -46,7 +46,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static IPropertyProvider Compose(IEnumerable<KeyValuePair<string, IPropertyProvider>> providers) {
             if (providers == null) {
-                throw new ArgumentNullException("providers"); // $NON-NLS-1
+                throw new ArgumentNullException(nameof(providers));
             }
 
             return new NamespacePropertyProvider(providers);
@@ -55,23 +55,46 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public static IPropertyProvider Compose(
             IEnumerable<KeyValuePair<string, object>> propertyProviders) {
             if (propertyProviders == null) {
-                throw new ArgumentNullException("propertyProviders");
+                throw new ArgumentNullException(nameof(propertyProviders));
             }
 
             return Compose(propertyProviders.Select(
                 s => new KeyValuePair<string, IPropertyProvider>(s.Key, PropertyProvider.FromValue(s.Value))));
         }
 
+        public static IPropertyProvider Compose(params IPropertyProvider[] providers) {
+            return ComposeCore(providers);
+        }
+
+        public static IPropertyProvider Except(IPropertyProvider propertyProvider, params string[] properties) {
+            return Except(propertyProvider, (IEnumerable<string>) properties);
+        }
+
+        public static IPropertyProvider Except(IPropertyProvider propertyProvider, IEnumerable<string> properties) {
+            var props = new HashSet<string>(properties, StringComparer.OrdinalIgnoreCase);
+            return Filter(propertyProvider, p => !props.Contains(p));
+        }
+
+        public static IPropertyProvider Filter(IPropertyProvider propertyProvider, Func<string, bool> propertyFilter) {
+            if (propertyProvider == null) {
+                throw new ArgumentNullException(nameof(propertyProvider));
+            }
+            if (propertyFilter == null) {
+                throw new ArgumentNullException(nameof(propertyFilter));
+            }
+            return new FilterPropertyProvider(propertyProvider, propertyFilter);
+        }
+
         public static IPropertyProvider FromFactory(Func<IPropertyProvider> factory) {
             if (factory == null) {
-                throw new ArgumentNullException("factory");
+                throw new ArgumentNullException(nameof(factory));
             }
             return new ThunkPropertyProvider(factory);
         }
 
         public static IPropertyProvider FromFactory(Func<IPropertiesContainer> factory) {
             if (factory == null) {
-                throw new ArgumentNullException("factory");
+                throw new ArgumentNullException(nameof(factory));
             }
             Func<IPropertyProvider> _valueFactory = () => {
                 var result = factory();
@@ -81,10 +104,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 return result.Properties;
             };
             return FromFactory(_valueFactory);
-        }
-
-        public static IPropertyProvider Compose(params IPropertyProvider[] providers) {
-            return ComposeCore(providers);
         }
 
         public static IPropertyProvider FromValue(object context) {

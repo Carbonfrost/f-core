@@ -185,6 +185,40 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Same(existing, pp);
         }
 
+        [Fact]
+        public void Except_can_accept_properties() {
+            var props = new Properties {
+                { "accept", "me" },
+                { "reject", "others" },
+            };
+            var pp = PropertyProvider.Except(props, "reject");
+            Assert.True(pp.TryGetProperty("accept", null, out _));
+            Assert.True(pp.TryGetProperty("Accept", null, out _)); // case insensitive
+            Assert.False(pp.TryGetProperty("reject", null, out _));
+        }
+
+        [Fact]
+        public void Filter_can_accept_properties() {
+            var props = new Properties {
+                { "accept", "me" },
+                { "reject", "others" },
+            };
+            var pp = PropertyProvider.Filter(props, p => p == "accept");
+            Assert.Equal("me", pp.GetProperty("accept"));
+            Assert.Equal(typeof(string), pp.GetPropertyType("accept"));
+        }
+
+        [Fact]
+        public void Filter_can_reject_properties() {
+            var props = new Properties {
+                { "accept", "me" },
+                { "reject", "others" },
+            };
+            var pp = PropertyProvider.Filter(props, p => p == "accept");
+            Assert.False(pp.TryGetProperty("reject", null, out _));
+            Assert.Equal(null, pp.GetPropertyType("reject"));
+        }
+
         [Theory]
         [PropertyData(nameof(StrictPropertyProviders))]
         public void GetProperty_will_throw_on_invalid_property_name(IPropertyProvider pp) {
