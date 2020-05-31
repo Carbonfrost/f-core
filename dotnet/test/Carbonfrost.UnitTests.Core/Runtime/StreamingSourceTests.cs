@@ -61,12 +61,14 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
         [Fact]
         public void AppProviderNames_test_known_adapter_names() {
-            Assert.Equal(new [] {
-                                    "xmlFormatter",
-                                    "text",
-                                    "properties",
-                                },
-                        App.GetProviderNames(typeof(StreamingSource)).Select(t => t.LocalName));
+            Assert.SetEqual(
+                new [] {
+                        "xmlFormatter",
+                        "text",
+                        "properties",
+                    },
+                App.GetProviderNames(typeof(StreamingSource)).Select(t => t.LocalName)
+            );
         }
 
         [Fact]
