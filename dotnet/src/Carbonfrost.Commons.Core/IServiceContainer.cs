@@ -21,6 +21,7 @@ using Carbonfrost.Commons.Core.Runtime;
 namespace Carbonfrost.Commons.Core {
 
     public interface IServiceContainer : IServiceProvider, IActivationFactory, IDisposable {
+        IServiceProvider Parent { get; }
         void AddService(Type serviceType, object serviceInstance);
         void AddService(Type serviceType, Func<IServiceContainer, Type, object> creatorCallback);
 

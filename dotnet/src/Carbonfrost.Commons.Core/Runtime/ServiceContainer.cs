@@ -21,6 +21,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     public partial class ServiceContainer {
 
+        IServiceProvider IServiceContainer.Parent {
+            get {
+                return ParentProvider;
+            }
+        }
+
         protected IServiceProvider ParentProvider {
             get {
                 return _parentProvider;

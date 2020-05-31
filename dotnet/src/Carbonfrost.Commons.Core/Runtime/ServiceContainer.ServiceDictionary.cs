@@ -1,5 +1,5 @@
 //
-// Copyright 2014, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -37,44 +36,58 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
-        class ServiceDictionary : DisposableObject {
+        interface IServiceDictionary : IDisposable {
+            IEnumerable<object> Get(Type outputType);
+            void Clear();
+            void Add(IProviderMetadata serviceMetadata, object serviceInstanceOrFactory);
+        }
 
-            private readonly Type _type;
+        static class ServiceDictionary {
+
+            public static IServiceDictionary Create(ServiceContainer sc, Type serviceType) {
+                return (IServiceDictionary) Activator.CreateInstance(
+                    typeof(ServiceDictionary<>).MakeGenericType(serviceType),
+                    new [] { sc }
+                );
+            }
+
+        }
+
+        class ServiceDictionary<T> : DisposableObject, IServiceDictionary {
+
             private readonly ServiceContainer _container;
-            private readonly List<object> _services = new List<object>();
+            private readonly List<ServiceDescriptor> _services = new List<ServiceDescriptor>();
 
             private Type FuncType {
                 get {
-                    return typeof(Func<>).MakeGenericType(_type);
+                    return typeof(Func<T>);
                 }
             }
 
             private Type LazyType {
                 get {
-                    return typeof(Lazy<>).MakeGenericType(_type);
+                    return typeof(Lazy<T>);
                 }
             }
 
-            private Type OutputHelperType {
+            private Type ServiceType {
                 get {
-                    return typeof(OutputHelper<>).MakeGenericType(_type);
+                    return typeof(T);
                 }
             }
 
-            public ServiceDictionary(ServiceContainer container, Type type) {
-                _type = type;
+            public ServiceDictionary(ServiceContainer container) {
                 _container = container;
             }
 
             protected override void Dispose(bool manualDispose) {
                 foreach (var item in _services) {
-                    _container.ReleaseService(item);
+                    item.Release(_container);
                 }
             }
 
             public void Add(IProviderMetadata serviceMetadata, object serviceInstanceOrFactory) {
-                DemandType(serviceInstanceOrFactory);
-                _services.Add(serviceInstanceOrFactory);
+                _services.Add(DemandType(serviceInstanceOrFactory));
             }
 
             public void Clear() {
@@ -82,22 +95,22 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             public IEnumerable<object> Get(Type outputType) {
-                Func<object, object> convertForOutput = t => t;
-                if (outputType.GetTypeInfo().IsAssignableFrom(_type)) {
+                Func<object, object> convertForOutput = null;
+                if (outputType.GetTypeInfo().IsAssignableFrom(ServiceType)) {
                     convertForOutput = t => t;
 
                 } else if (FuncType == outputType) {
 
                     convertForOutput = t => {
-                        var helper = Activator.CreateInstance(OutputHelperType, t);
+                        var helper = new OutputHelper<T>(t);
                         return EmitFunc(helper);
                     };
 
                 } else if (LazyType == outputType) {
 
                     convertForOutput = t => {
-                        var helper = Activator.CreateInstance(OutputHelperType, t);
-                        return Activator.CreateInstance(LazyType, EmitFunc(helper));
+                        var helper = new OutputHelper<T>(t);
+                        return new Lazy<T>(EmitFunc(helper));
                     };
 
                 } else {
@@ -105,37 +118,28 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 }
 
                 foreach (var instanceOrFactory in _services) {
-                    var cache = Unwrap(instanceOrFactory);
+                    var cache = instanceOrFactory.Unwrap(_container);
                     yield return convertForOutput(cache);
                 }
             }
 
-            private Delegate EmitFunc(object closure) {
-                var method = closure.GetType().GetMethod("Convert");
-                return method.CreateDelegate(FuncType, closure);
+            private Func<T> EmitFunc(OutputHelper<T> closure) {
+                return () => closure.Convert();
             }
 
-            private object Unwrap(object service) {
-                var callback = service as Func<IServiceContainer, Type, object>;
-                if (callback != null) {
-                    service = callback(_container, _type);
-                    if (service != null && !_type.IsInstanceOfType(service)) {
-                        service = null;
-                    }
+            private ServiceDescriptor DemandType(object serviceInstance) {
+                if (serviceInstance is T) {
+                    return ServiceDescriptor.Singleton(serviceInstance);
                 }
-
-                return service;
-            }
-
-            private void DemandType(object serviceInstance) {
-                if (_type.IsInstanceOfType(serviceInstance))
-                    return;
-                if (serviceInstance is Func<IServiceContainer, Type, object>)
-                    return;
-                if (LazyType.IsInstanceOfType(serviceInstance))
-                    return;
-                if (FuncType.IsInstanceOfType(serviceInstance))
-                    return;
+                if (serviceInstance is Func<IServiceContainer, Type, object> ff) {
+                    return ServiceDescriptor.Factory(typeof(T), ff);
+                }
+                if (serviceInstance is Lazy<T> l) {
+                    return ServiceDescriptor.Lazy(l);
+                }
+                if (serviceInstance is Func<T> fac) {
+                    return ServiceDescriptor.Factory(fac);
+                }
 
                 throw new NotImplementedException();
             }

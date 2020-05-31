@@ -27,6 +27,12 @@ namespace Carbonfrost.Commons.Core {
         private readonly IEnumerator<Type> _startClasses;
         private ServiceContainer _services = new ServiceContainer();
 
+        public IServiceProvider Parent {
+            get {
+                return null;
+            }
+        }
+
         internal RootServiceProvider() {
             var all = App.DescribeAssemblies();
             _startClasses = all.SelectMany(t => t.GetStartClasses("ServiceRegistration")).GetEnumerator();

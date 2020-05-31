@@ -25,23 +25,23 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     public partial class ServiceContainer : DisposableObject, IServiceContainer, IActivationFactory {
 
-        private readonly Dictionary<Type, ServiceDictionary> _services = CreateTypeDictionary();
+        private readonly Dictionary<Type, IServiceDictionary> _services = CreateTypeDictionary();
         private readonly IServiceProvider _parentProvider;
         private readonly IActivationFactory _activationFactory;
 
-        private ServiceDictionary GetServiceDictionary(Type serviceType, bool create) {
+        private IServiceDictionary GetServiceDictionary(Type serviceType, bool create) {
             if (serviceType == null) {
                 throw new ArgumentNullException("serviceType");
             }
 
             var unwrappedServiceType = UnwrapServiceType(serviceType);
-            ServiceDictionary result;
+            IServiceDictionary result;
             if (_services.TryGetValue(unwrappedServiceType, out result)) {
                 return result;
             }
 
             if (create) {
-                return _services[unwrappedServiceType] = new ServiceDictionary(this, serviceType);
+                return _services[unwrappedServiceType] = ServiceDictionary.Create(this, serviceType);
             }
 
             return null;
@@ -123,8 +123,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             base.Dispose(manualDispose);
         }
 
-        private static Dictionary<Type, ServiceDictionary> CreateTypeDictionary() {
-            return new Dictionary<Type, ServiceDictionary>(Utility.EquivalentComparer);
+        private static Dictionary<Type, IServiceDictionary> CreateTypeDictionary() {
+            return new Dictionary<Type, IServiceDictionary>(Utility.EquivalentComparer);
         }
 
         private static Type UnwrapServiceType(Type serviceType) {

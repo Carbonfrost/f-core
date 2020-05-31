@@ -30,6 +30,31 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         class ServiceC : ServiceB {}
 
         [Fact]
+        public void AddService_should_throw_ArgumentNullException_on_serviceInstance_null() {
+            ServiceContainer c = new ServiceContainer();
+            Assert.Throws<ArgumentNullException>(() => c.AddService((object) null));
+        }
+
+        [Fact]
+        public void AddService_should_allow_lazy_value_on_service_add() {
+            ServiceContainer c = new ServiceContainer();
+            c.AddService(typeof(PService), new Lazy<PService>());
+
+            Assert.IsInstanceOf<PService>(c.GetService(typeof(PService)));
+        }
+
+        [Fact]
+        public void AddService_should_unwrap_creator_callback_instances() {
+            ServiceContainer c = new ServiceContainer();
+            ServiceA a = null;
+            Func<IServiceContainer, Type, object> callback = (container, t) => (a = new ServiceA());
+            c.AddService(typeof(ServiceA), callback);
+
+            Assert.NotNull(c.GetService(typeof(ServiceA)));
+            Assert.Same(a, c.GetService(typeof(ServiceA)));
+        }
+
+        [Fact]
         public void GetService_should_retrieve_singleton_service() {
             ServiceContainer c = new ServiceContainer();
             ServiceA a = new ServiceA();
@@ -53,10 +78,16 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             Assert.Same(c, c.GetService(typeof(ServiceContainer)));
         }
 
+        class PService {}
+
         [Fact]
-        public void AddService_should_throw_ArgumentNullException_on_serviceInstance_null() {
+        public void GetService_should_cache_service_creator_instance() {
             ServiceContainer c = new ServiceContainer();
-            Assert.Throws<ArgumentNullException>(() => c.AddService((object) null));
+            c.AddService(() => new PService());
+
+            var firstRetrieval = c.GetService<PService>();
+            var secondRetrieval = c.GetService<PService>();
+            Assert.Same(firstRetrieval, secondRetrieval);
         }
 
         [Fact]
