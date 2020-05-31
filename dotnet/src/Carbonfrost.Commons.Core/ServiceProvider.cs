@@ -41,47 +41,6 @@ namespace Carbonfrost.Commons.Core {
             }
         }
 
-        public static IServiceContainer AddService<T>(this IServiceContainer serviceContainer) {
-            if (serviceContainer == null) {
-                throw new ArgumentNullException("serviceContainer");
-            }
-
-            Func<IServiceContainer, Type, object> callback = (c, t) => Activation.CreateInstance(t, serviceProvider: c);
-            serviceContainer.AddService(typeof(T), callback);
-            return serviceContainer;
-        }
-
-        public static IServiceContainer AddService<T>(this IServiceContainer serviceContainer, Func<T> serviceFactory) {
-            if (serviceContainer == null) {
-                throw new ArgumentNullException("serviceContainer");
-            }
-
-            Func<IServiceContainer, Type, object> callback = (c, t) => serviceFactory();
-            serviceContainer.AddService(typeof(T), callback);
-            return serviceContainer;
-        }
-
-        public static void AddService<T>(this IServiceContainer serviceContainer, T serviceInstance) where T : class {
-            if (serviceContainer == null) {
-                throw new ArgumentNullException("serviceContainer");
-            }
-            if (serviceInstance == null) {
-                throw new ArgumentNullException("serviceInstance");
-            }
-
-            serviceContainer.AddService(typeof(T), serviceInstance);
-        }
-
-        public static bool TryGetService<T>(this IServiceProvider serviceProvider, out T service) where T : class {
-            service = (T) serviceProvider.GetService(typeof(T));
-            return !(service is null);
-        }
-
-        public static bool TryGetService(this IServiceProvider serviceProvider, Type serviceType, out object service) {
-            service = serviceProvider.GetService(serviceType);
-            return !(service is null);
-        }
-
         public static IServiceProvider FromValue(object value) {
             if (value == null) {
                 return Null;
@@ -127,7 +86,7 @@ namespace Carbonfrost.Commons.Core {
 
         public static IServiceProvider FromValue(object value, params Type[] types) {
             if (value == null) {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             return Filtered(FromValue(value), types);
@@ -149,7 +108,7 @@ namespace Carbonfrost.Commons.Core {
 
             public object GetService(Type serviceType) {
                 if (serviceType == null) {
-                    throw new ArgumentNullException("serviceType");
+                    throw new ArgumentNullException(nameof(serviceType));
                 }
                 return null;
             }
@@ -165,7 +124,7 @@ namespace Carbonfrost.Commons.Core {
 
             public object GetService(Type serviceType) {
                 if (serviceType == null) {
-                    throw new ArgumentNullException("serviceType");
+                    throw new ArgumentNullException(nameof(serviceType));
                 }
 
                 foreach (var s in _items) {
@@ -188,7 +147,7 @@ namespace Carbonfrost.Commons.Core {
 
             public object GetService(Type serviceType) {
                 if (serviceType == null) {
-                    throw new ArgumentNullException("serviceType");
+                    throw new ArgumentNullException(nameof(serviceType));
                 }
 
                 return _value.TryAdapt(serviceType, null);
@@ -207,7 +166,7 @@ namespace Carbonfrost.Commons.Core {
 
             public object GetService(Type serviceType) {
                 if (serviceType == null) {
-                    throw new ArgumentNullException("serviceType");
+                    throw new ArgumentNullException(nameof(serviceType));
                 }
                 if (_types(serviceType)) {
                     return _sp.GetService(serviceType);
