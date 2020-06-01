@@ -21,7 +21,7 @@ using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    public class ProviderInfoCollection : ICollection<ProviderInfo> {
+    class ProviderInfoCollection : ICollection<ProviderInfo> {
 
         private readonly Dictionary<MemberInfo, ProviderValueSource> _valueSources = new Dictionary<MemberInfo, ProviderValueSource>();
         private readonly List<ProviderInfo> _items = new List<ProviderInfo>();

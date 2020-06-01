@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright 2005, 2006, 2010, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,24 +16,47 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    internal sealed class UriStreamContext : StreamContext {
+    internal sealed class HttpClientStreamContext : StreamContext {
 
         private readonly Uri _uri;
+        private HttpResponseMessage _message;
 
-        public UriStreamContext(Uri uri) {
+        public HttpClientStreamContext(Uri uri) {
             if (uri == null) {
                 throw new ArgumentNullException(nameof(uri));
             }
             _uri = uri;
         }
 
+        public override ContentType ContentType {
+            get {
+                var content = ResponseMessage.Content.Headers.GetValues("Content-Type").FirstOrDefault();
+                if (content == null) {
+                    return ContentType.Parse(Runtime.ContentType.Binary);
+                }
+                return ContentType.Parse(content);
+            }
+        }
+
         public override Uri Uri {
             get {
                 return _uri;
+            }
+        }
+
+        private HttpResponseMessage ResponseMessage {
+            get {
+                if (_message == null) {
+                    using (var client = new HttpClient()) {
+                        _message = client.GetAsync(_uri).Result;
+                    }
+                }
+                return _message;
             }
         }
 
@@ -47,9 +70,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public override Stream Open() {
-            using (var client = new HttpClient()) {
-                return client.GetStreamAsync(_uri).Result;
-            }
+            return ResponseMessage.Content.ReadAsStreamAsync().Result;
         }
     }
 }

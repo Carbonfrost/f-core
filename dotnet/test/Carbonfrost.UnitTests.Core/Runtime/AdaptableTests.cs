@@ -113,19 +113,10 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Length);
         }
 
-        [Theory]
-        [InlineData(typeof(IUriContext))]
-        [InlineData(typeof(Exception))]
-        public void IsServiceType_should_detect_eligible_service_types(Type serviceType) {
-            Assert.True(Adaptable.IsServiceType(serviceType));
-        }
-
-        [Theory]
-        [InlineData(typeof(UriKind), Name = "Enums")]
-        [InlineData(typeof(Adaptable), Name = "Static classes")]
-        [InlineData(typeof(int), Name = "Primitives")]
-        public void IsServiceType_should_detect_ineligible_service_types(Type serviceType) {
-            Assert.False(Adaptable.IsServiceType(serviceType));
+        [Fact]
+        public void GetActivationConstructor_gets_static_method_marked() {
+            var expected = (MethodBase) typeof(PHasStaticActivationConstructor).GetMethod("Create");
+            Assert.Equal(expected, typeof(PHasStaticActivationConstructor).GetActivationConstructor());
         }
 
         [Fact]
@@ -144,6 +135,13 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             var pp = p.TryAdapt<StreamingSource>();
 
             Assert.IsInstanceOf<PropertiesStreamingSource>(pp);
+        }
+
+        private class PHasStaticActivationConstructor {
+            [ActivationConstructor]
+            public static PHasStaticActivationConstructor Create() {
+                return null;
+            }
         }
 
         class S {

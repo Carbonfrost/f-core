@@ -26,6 +26,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
     [Providers]
     public static partial class Activation {
 
+        public static readonly ExceptionHandler IgnoreErrors = (sender, e) => {};
+
         public static T CreateInstance<T>(QualifiedName typeName,
                                           IEnumerable<KeyValuePair<string, object>> values = null,
                                           IServiceProvider serviceProvider = null) {

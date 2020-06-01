@@ -41,6 +41,13 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         }
 
         [Fact]
+        public void Open_should_throw_FileNotFoundException() {
+            var ss = StreamContext.FromFile(RootDirectory + "Content/missing.p");
+            var ex = Record.Exception(() => ss.OpenRead());
+            Assert.IsInstanceOf<FileNotFoundException>(ex);
+        }
+
+        [Fact]
         public void AppendText_should_open_temp_file() {
             var path = Path.GetTempFileName();
             var ss = StreamContext.FromFile(path);

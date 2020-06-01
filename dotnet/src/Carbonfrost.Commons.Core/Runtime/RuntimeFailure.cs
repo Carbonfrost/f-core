@@ -110,6 +110,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return Failure.Prepare(new TypeLoadException(SR.TypeMissingFromQualifiedName(name)));
         }
 
+        internal static NotSupportedException StreamContextUriSchemeNotSupported() {
+            return Failure.Prepare(new NotSupportedException(SR.StreamContextUriSchemeNotSupported()));
+        }
+
         public static ArgumentException NoAcceptableStreamingSource(Type instanceType) {
             return Failure.Prepare(new ArgumentException(SR.NoAcceptableStreamingSource(instanceType)));
         }

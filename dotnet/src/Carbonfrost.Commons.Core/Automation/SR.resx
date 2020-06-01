@@ -175,9 +175,6 @@
   <data name="IncompleteEscapeSequence" xml:space="preserve">
     <value>Unrecognized or incomplete escape sequence.</value>
   </data>
-  <data name="InvalidSelfRelatedAssembly" xml:space="preserve">
-    <value>Assembly `{0}' specifies related assembly with the same name, which is not allowed.</value>
-  </data>
   <data name="InvalidProviderDeclared" xml:space="preserve">
     <value>Invalid provider `{0}': {1}</value>
   </data>
@@ -186,6 +183,9 @@
   </data>
   <data name="InvalidProviderInstanceType" xml:space="preserve">
     <value>Given provider instance type is not valid because it is abstract or doesn't extend the provider base type.</value>
+  </data>
+  <data name="InvalidSelfRelatedAssembly" xml:space="preserve">
+    <value>Assembly `{0}' specifies related assembly with the same name, which is not allowed.</value>
   </data>
   <data name="ItemAlreadyExists" xml:space="preserve">
     <value>The specified item already exists within the collection: {0}.</value>
@@ -330,6 +330,9 @@
   </data>
   <data name="StreamCannotWrite" xml:space="preserve">
     <value>The stream cannot be written to, but it is expected to be writable.</value>
+  </data>
+  <data name="StreamContextUriSchemeNotSupported" xml:space="preserve">
+    <value>Specified URI scheme is not supported</value>
   </data>
   <data name="TemplateDoesNotSupportOperand" xml:space="preserve">
     <value>Specified argument is not supported by the template.</value>
