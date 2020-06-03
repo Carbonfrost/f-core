@@ -22,6 +22,10 @@
 #            └── (source files)
 #
 
+# Automatically detect whether .NET is in use
+ENG_AUTODETECT_USING_DOTNET = $(shell [ ! -f $(ENG_DOTNET_DIR)/*.sln ] ; echo $$?)
+ENG_AVAILABLE_RUNTIMES += dotnet
+
 .PHONY: \
 	-dotnet/build \
 	-dotnet/pack \
@@ -42,29 +46,22 @@ use/dotnet: | -dotnet/init -dotnet/solution
 # Enable the tasks if we are using dotnet
 ifeq (1, $(ENG_USING_DOTNET))
 
+ENG_ENABLED_RUNTIMES += dotnet
+
 ## Install .NET  and project dependencies
 dotnet/init: -dotnet/init dotnet/restore
-else
-dotnet/init: -hint-unsupported-dotnet
-endif
 
 ## Set up dotnet configuration for NuGet
-dotnet/configure: -requirements-dotnet -check-env-NUGET_SOURCE_URL -check-env-NUGET_PASSWORD -check-env-NUGET_USER_NAME -check-env-NUGET_CONFIG_FILE
-	$(Q) test -e $(NUGET_CONFIG_FILE) || echo "<configuration />" > $(NUGET_CONFIG_FILE)
-	$(Q) $(OUTPUT_COLLAPSED) nuget sources add -Name "Carbonfrost" \
-		-Source $(NUGET_SOURCE_URL) \
-		-Password $(NUGET_PASSWORD) \
-		-Username $(NUGET_USER_NAME) \
-		-StorePasswordInClearText \
-		-ConfigFile $(NUGET_CONFIG_FILE)
+dotnet/configure: -dotnet/configure
 
 ## Restore package dependencies
-dotnet/restore: -requirements-dotnet
-	$(Q) $(OUTPUT_COLLAPSED) dotnet restore $(ENG_DOTNET_DIR)
-	$(Q) $(OUTPUT_COLLAPSED) dotnet tool restore
+dotnet/restore: -dotnet/restore
 
 ## Build the dotnet solution
 dotnet/build: dotnet/restore -dotnet/build
+
+## Executes dotnet clean
+dotnet/clean: -dotnet/clean
 
 ## Pack the dotnet build into a NuGet package
 dotnet/pack: dotnet/build -dotnet/pack
@@ -75,8 +72,37 @@ dotnet/push: dotnet/pack -dotnet/push
 ## Executes dotnet publish
 dotnet/publish: dotnet/build -dotnet/publish
 
-## Executes dotnet clean
-dotnet/clean:
+fetch: dotnet/restore
+build: dotnet/build
+redist: dotnet/redist
+push: dotnet/push
+clean: dotnet/clean
+
+else
+dotnet/init: -hint-unsupported-dotnet
+dotnet/configure: -hint-unsupported-dotnet
+dotnet/restore: -hint-unsupported-dotnet
+dotnet/build: -hint-unsupported-dotnet
+dotnet/clean: -hint-unsupported-dotnet
+dotnet/pack: -hint-unsupported-dotnet
+dotnet/push: -hint-unsupported-dotnet
+dotnet/publish: -hint-unsupported-dotnet
+endif
+
+-dotnet/configure: -requirements-dotnet -check-env-NUGET_SOURCE_NAME -check-env-NUGET_SOURCE_URL -check-env-NUGET_PASSWORD -check-env-NUGET_USER_NAME -check-env-NUGET_CONFIG_FILE
+	$(Q) test -e $(NUGET_CONFIG_FILE) || echo "<configuration />" > $(NUGET_CONFIG_FILE)
+	$(Q) $(OUTPUT_COLLAPSED) nuget sources add -Name $(NUGET_SOURCE_NAME) \
+		-Source $(NUGET_SOURCE_URL) \
+		-Password $(NUGET_PASSWORD) \
+		-Username $(NUGET_USER_NAME) \
+		-StorePasswordInClearText \
+		-ConfigFile $(NUGET_CONFIG_FILE)
+
+-dotnet/restore: -requirements-dotnet
+	$(Q) $(OUTPUT_COLLAPSED) dotnet restore $(ENG_DOTNET_DIR)
+	$(Q) $(OUTPUT_COLLAPSED) dotnet tool restore
+
+-dotnet/clean:
 	$(Q) rm $(_STANDARD_VERBOSE_FLAG) -rdf $(ENG_DOTNET_DIR)/{src,test}/*/{bin,obj}/*
 
 -dotnet/init:

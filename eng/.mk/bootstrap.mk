@@ -2,7 +2,31 @@
 	-direnv-install \
 	-homebrew-install \
 	-init-frameworks \
-	init
+	build \
+	clean \
+	default \
+	fetch \
+	init \
+	install \
+
+# The default target which is to build
+default: $(ENG_DEFAULT_TARGET)
+
+## Fetch dependencies
+fetch:
+	@ $(_DONE)
+
+## Build
+build: fetch
+	@ $(_DONE)
+
+## Install build outputs so they are ready to use on this computer
+install: build
+	@ $(_DONE)
+
+## Clean up intermediate build targets
+clean:
+	@ $(_DONE)
 
 # To simplify things, we just try to init every framework even if
 # they are not enabled.  However, we don't want to display hint messages

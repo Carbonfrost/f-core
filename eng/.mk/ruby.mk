@@ -1,5 +1,6 @@
 # Automatically detect whether Ruby is in use
 ENG_AUTODETECT_USING_RUBY = $(shell [ ! -f .ruby-version ] ; echo $$?)
+ENG_AVAILABLE_RUNTIMES += ruby
 
 .PHONY: \
 	-hint-unsupported-ruby \
@@ -14,7 +15,8 @@ ENG_AUTODETECT_USING_RUBY = $(shell [ ! -f .ruby-version ] ; echo $$?)
 use/ruby: | -use/ruby-version -ruby/init -use/ruby-Gemfile
 
 # Enable the tasks if we are using ruby
-ifeq (1, $(ENG_USING_RUBY))
+ifeq (1,$(ENG_USING_RUBY))
+ENG_ENABLED_RUNTIMES += ruby
 
 ## Install Ruby and project dependencies
 ruby/init: -ruby/init
