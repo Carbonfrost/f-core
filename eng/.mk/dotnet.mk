@@ -23,7 +23,7 @@
 #
 
 # Automatically detect whether .NET is in use
-ENG_AUTODETECT_USING_DOTNET = $(shell [ ! -f $(wildcard $(ENG_DOTNET_DIR)/*.sln) ] ; echo $$?)
+ENG_AUTODETECT_USING_DOTNET = $(if $(wildcard $(ENG_DOTNET_DIR)/*.sln),1,0)
 ENG_AVAILABLE_RUNTIMES += dotnet
 
 .PHONY: \
