@@ -567,6 +567,20 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("ProbingForAssemblies") , @type);
     }
 
+  /// <summary>Problem executing provider registration method `${type}.${method}`</summary>
+    internal static string ProblemExecutingProviderRegistrationMethod(
+    object @type, object @method
+    ) {
+        return string.Format(Culture, ResourceFinder("ProblemExecutingProviderRegistrationMethod") , @type, @method);
+    }
+
+  /// <summary>Problem executing service registration method `${startClass}.${method}'</summary>
+    internal static string ProblemExecutingServiceRegistration(
+    object @startClass, object @method
+    ) {
+        return string.Format(Culture, ResourceFinder("ProblemExecutingServiceRegistration") , @startClass, @method);
+    }
+
   /// <summary>A category name must be specified in brackets.</summary>
     internal static string PropertiesCategoryMissingBrackets(
     
@@ -670,6 +684,13 @@ namespace Carbonfrost.Commons.Core.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("SeekNotSupportedByBase") );
+    }
+
+  /// <summary>The service instance must be the same as the service type `${type}', derive from it, or implement a supported factory or metadata class.</summary>
+    internal static string ServiceContainerAddInvalidServiceDescriptor(
+    object @type
+    ) {
+        return string.Format(Culture, ResourceFinder("ServiceContainerAddInvalidServiceDescriptor") , @type);
     }
 
   /// <summary>Failed to start service: `${serviceType}'</summary>
