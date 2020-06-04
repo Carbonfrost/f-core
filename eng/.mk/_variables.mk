@@ -39,9 +39,6 @@ ENG_DOTNET_VARIABLES = \
 	NUGET_SOURCE_NAME \
 	NUGET_USER_NAME
 
-# Whether we are meant to use .NET  (See dotnet.mk for autodetection)
-ENG_USING_DOTNET ?= $(ENG_AUTODETECT_USING_DOTNET)
-
 # Directory to use as root of a dotnet project
 ENG_DOTNET_DIR ?= dotnet/
 

@@ -26,6 +26,10 @@
 ENG_AUTODETECT_USING_DOTNET = $(if $(wildcard $(ENG_DOTNET_DIR)/*.sln),1,0)
 ENG_AVAILABLE_RUNTIMES += dotnet
 
+# Whether we are meant to use .NET
+ENG_USING_DOTNET ?= $(ENG_AUTODETECT_USING_DOTNET)
+
+
 .PHONY: \
 	-dotnet/build \
 	-dotnet/pack \
