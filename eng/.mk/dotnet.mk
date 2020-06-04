@@ -48,7 +48,7 @@ ENG_USING_DOTNET ?= $(ENG_AUTODETECT_USING_DOTNET)
 use/dotnet: | -dotnet/init -dotnet/solution
 
 # Enable the tasks if we are using dotnet
-ifeq (1, $(ENG_USING_DOTNET))
+ifeq (1,$(ENG_USING_DOTNET))
 
 ENG_ENABLED_RUNTIMES += dotnet
 
