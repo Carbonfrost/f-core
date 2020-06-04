@@ -39,9 +39,6 @@ ENG_DOTNET_VARIABLES = \
 	NUGET_SOURCE_NAME \
 	NUGET_USER_NAME
 
-# Whether we are meant to use .NET  (See dotnet.mk for autodetection)
-ENG_USING_DOTNET ?= $(ENG_AUTODETECT_USING_DOTNET)
-
 # Directory to use as root of a dotnet project
 ENG_DOTNET_DIR ?= dotnet/
 
@@ -64,9 +61,6 @@ ENG_PYTHON_VARIABLES = \
 	PYTHON \
 	VIRTUAL_ENV_NAME \
 
-# Whether we are meant to use Pyhon.  (See python.mk for autodetection)
-ENG_USING_PYTHON ?= $(ENG_AUTODETECT_USING_PYTHON)
-
 # Name of the python executable
 PYTHON ?= python3
 
@@ -83,9 +77,6 @@ VIRTUAL_ENV_NAME ?= venv
 ENG_PYTHON_VARIABLES = \
 	ENG_USING_RUBY \
 	ENG_LATEST_RUBY_VERSION \
-
-# Whether we are meant to use Ruby.  (See ruby.mk for autodetection)
-ENG_USING_RUBY ?= $(ENG_AUTODETECT_USING_RUBY)
 
 # Latest version of Ruby supported
 ENG_LATEST_RUBY_VERSION = 2.6.0

@@ -5,6 +5,9 @@ ENG_AUTODETECT_USING_PYTHON = $(shell \
 )
 ENG_AVAILABLE_RUNTIMES += python
 
+# Whether we are meant to use Python.
+ENG_USING_PYTHON ?= $(ENG_AUTODETECT_USING_PYTHON)
+
 _VENV = . $(VIRTUAL_ENV_NAME)/bin/activate $(OUTPUT_HIDDEN)
 
 .PHONY: \

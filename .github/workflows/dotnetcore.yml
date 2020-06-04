@@ -10,6 +10,7 @@ env:
   NUGET_USER_NAME: ${{ github.actor }}
   NUGET_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
   NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VERBOSE: 1
 
 jobs:
   build:
@@ -25,6 +26,9 @@ jobs:
       uses: NuGet/setup-nuget@v1.0.2
       with:
        nuget-version: latest
+
+    - name: Check environment
+      run: make env
 
     - name: Configure dotnet and NuGet
       run: make dotnet/configure

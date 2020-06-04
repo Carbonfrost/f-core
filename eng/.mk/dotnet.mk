@@ -23,8 +23,11 @@
 #
 
 # Automatically detect whether .NET is in use
-ENG_AUTODETECT_USING_DOTNET = $(shell [ ! -f $(ENG_DOTNET_DIR)/*.sln ] ; echo $$?)
+ENG_AUTODETECT_USING_DOTNET = $(shell [ ! -f $(wildcard $(ENG_DOTNET_DIR)/*.sln) ] ; echo $$?)
 ENG_AVAILABLE_RUNTIMES += dotnet
+
+# Whether we are meant to use .NET
+ENG_USING_DOTNET ?= $(ENG_AUTODETECT_USING_DOTNET)
 
 .PHONY: \
 	-dotnet/build \
@@ -44,7 +47,7 @@ ENG_AVAILABLE_RUNTIMES += dotnet
 use/dotnet: | -dotnet/init -dotnet/solution
 
 # Enable the tasks if we are using dotnet
-ifeq (1, $(ENG_USING_DOTNET))
+ifeq (1,$(ENG_USING_DOTNET))
 
 ENG_ENABLED_RUNTIMES += dotnet
 

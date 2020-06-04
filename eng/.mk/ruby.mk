@@ -2,6 +2,9 @@
 ENG_AUTODETECT_USING_RUBY = $(shell [ ! -f .ruby-version ] ; echo $$?)
 ENG_AVAILABLE_RUNTIMES += ruby
 
+# Whether we are meant to use Ruby.
+ENG_USING_RUBY ?= $(ENG_AUTODETECT_USING_RUBY)
+
 .PHONY: \
 	-hint-unsupported-ruby \
 	-ruby/init \
