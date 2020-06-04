@@ -42,6 +42,7 @@ ENG_AVAILABLE_RUNTIMES += dotnet
 use/dotnet: | -dotnet/init -dotnet/solution
 
 # Automatically detect whether .NET is in use
+ENG_DOTNET_DIR := ./dotnet
 ENG_AUTODETECT_USING_DOTNET := $(if $(wildcard $(ENG_DOTNET_DIR)/*.sln),1,0)
 
 # Whether we are meant to use .NET
