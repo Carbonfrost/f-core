@@ -24,7 +24,7 @@
 
 ENG_AVAILABLE_RUNTIMES += dotnet
 
--include _variables.mk
+include $(dir $(lastword $(MAKEFILE_LIST)))/_variables.mk
 
 .PHONY: \
 	-dotnet/build \
