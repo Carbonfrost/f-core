@@ -40,7 +40,7 @@ ENG_DOTNET_VARIABLES = \
 	NUGET_USER_NAME
 
 # Directory to use as root of a dotnet project
-ENG_DOTNET_DIR ?= $(abspath dotnet/)
+ENG_DOTNET_DIR := ./dotnet
 
 # The location of the NuGet configuration file
 NUGET_CONFIG_FILE ?= ./nuget.config
