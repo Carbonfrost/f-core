@@ -24,7 +24,7 @@
 
 ENG_AVAILABLE_RUNTIMES += dotnet
 
--include variables.mk
+-include _variables.mk
 
 .PHONY: \
 	-dotnet/build \
