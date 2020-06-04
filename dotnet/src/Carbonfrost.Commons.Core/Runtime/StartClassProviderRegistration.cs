@@ -1,11 +1,11 @@
 //
-// Copyright 2014 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Carbonfrost.Commons.Core.Resources;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -25,17 +26,17 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public static readonly ProviderRegistration Instance = new StartClassProviderRegistration();
 
         public override void RegisterProviderTypes(ProviderRegistrationContext context) {
-            var types = context.Assembly.GetStartClasses("ProviderRegistration");
-
-            foreach (var type in types) {
+            foreach (var type in context.StartClasses) {
                 // Look for Register methods
                 // Register(ProviderRegistrationContext)
 
                 foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Static)) {
                     var pms = method.GetParameters();
-
-                    if (method.ReturnType == null && pms.Length == 1 && pms[0].ParameterType == typeof(ProviderRegistrationContext)) {
-                        method.Invoke(null, new object[] { context });
+                    if (method.ReturnType == typeof(void) && pms.Length == 1 && pms[0].ParameterType == typeof(ProviderRegistrationContext)) {
+                        LateBoundLog.Try(
+                            SR.ProblemExecutingProviderRegistrationMethod(type, method.Name),
+                            () => method.Invoke(null, new object[] { context })
+                        );
                     }
                 }
 

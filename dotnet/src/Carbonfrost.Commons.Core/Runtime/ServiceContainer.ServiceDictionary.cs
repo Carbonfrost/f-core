@@ -140,8 +140,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 if (serviceInstance is Func<T> fac) {
                     return ServiceDescriptor.Factory(fac);
                 }
-
-                throw new NotImplementedException();
+                throw RuntimeFailure.ServiceContainerAddInvalidServiceDescriptor(typeof(T));
             }
         }
     }

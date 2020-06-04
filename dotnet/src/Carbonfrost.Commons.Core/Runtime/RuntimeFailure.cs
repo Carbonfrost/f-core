@@ -1,11 +1,11 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -110,6 +110,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return Failure.Prepare(new TypeLoadException(SR.TypeMissingFromQualifiedName(name)));
         }
 
+        public static Exception ServiceContainerAddInvalidServiceDescriptor(Type type) {
+            return Failure.Prepare(new NotSupportedException(SR.ServiceContainerAddInvalidServiceDescriptor(type)));
+        }
+
         internal static NotSupportedException StreamContextUriSchemeNotSupported() {
             return Failure.Prepare(new NotSupportedException(SR.StreamContextUriSchemeNotSupported()));
         }
@@ -138,9 +142,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return Failure.Prepare(new AmbiguousMatchException(SR.MultipleProviderTypes()));
         }
 
-        public static InvalidOperationException ServiceNotFound(Type type, string name) {
-            string text = string.Join("/", type, name);
-            return Failure.Prepare(new InvalidOperationException(SR.ServiceNotFound(text)));
+        public static InvalidOperationException ServiceNotFound(Type type) {
+            return Failure.Prepare(new InvalidOperationException(SR.ServiceNotFound(type)));
         }
 
         public static InvalidOperationException CannotBuildTagUri() {
