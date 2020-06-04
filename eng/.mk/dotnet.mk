@@ -41,8 +41,18 @@ ENG_AVAILABLE_RUNTIMES += dotnet
 ## Add support for .NET to the project
 use/dotnet: | -dotnet/init -dotnet/solution
 
+# Automatically detect whether .NET is in use
+ENG_AUTODETECT_USING_DOTNET := $(if $(wildcard $(ENG_DOTNET_DIR)/*.sln),1,0)
+
+# Whether we are meant to use .NET
+ifdef ENG_USING_DOTNET
+_ENG_ACTUALLY_USING_DOTNET=$(ENG_USING_DOTNET)
+else
+_ENG_ACTUALLY_USING_DOTNET=$(ENG_AUTODETECT_USING_DOTNET)
+endif
+
 # Enable the tasks if we are using dotnet
-ifeq (1,$(ENG_USING_DOTNET))
+ifeq (1,$(_ENG_ACTUALLY_USING_DOTNET))
 
 ENG_ENABLED_RUNTIMES += dotnet
 

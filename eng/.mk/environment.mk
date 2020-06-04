@@ -28,7 +28,7 @@ env: -env-global -env-enabled-frameworks
 -env-enabled-frameworks: | -env-enabled-dotnet -env-enabled-python -env-enabled-ruby
 
 -env-enabled-dotnet:
-	@ $(call _runtime_status,.NET,$(ENG_USING_DOTNET))
+	@ $(call _runtime_status,.NET,$(_ENG_ACTUALLY_USING_DOTNET))
 	@ $(call _display_variables,ENG_DOTNET_VARIABLES)
 
 -env-enabled-python:

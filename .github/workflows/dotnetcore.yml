@@ -28,7 +28,7 @@ jobs:
        nuget-version: latest
 
     - name: Check environment
-      run: make env
+      run: make --version; make env
 
     - name: Configure dotnet and NuGet
       run: make dotnet/configure

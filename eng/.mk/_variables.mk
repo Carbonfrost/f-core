@@ -51,12 +51,6 @@ CONFIGURATION ?= Release
 # The framework to publish
 FRAMEWORK ?= netcoreapp3.0
 
-# Automatically detect whether .NET is in use
-ENG_AUTODETECT_USING_DOTNET = $(if $(wildcard $(ENG_DOTNET_DIR)/*.sln),1,0)
-
-# Whether we are meant to use .NET
-ENG_USING_DOTNET ?= $(ENG_AUTODETECT_USING_DOTNET)
-
 # ------- Python settings
 #
 
