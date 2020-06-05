@@ -131,7 +131,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (string.IsNullOrEmpty(name)) {
                 throw Failure.NullOrEmptyString(nameof(name));
             }
-            return TemplateData.GetTemplatesByLocalName(templateType, name).SingleOrDefault();
+            return TemplateData.Instance.GetTemplatesByLocalName(templateType, name).SingleOrDefault();
         }
 
         public static ITemplate FromName(Type templateType, QualifiedName name) {
@@ -141,7 +141,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (name == null) {
                 throw new ArgumentNullException("name");
             }
-            return TemplateData.GetTemplate(templateType, name);
+            return TemplateData.Instance.GetTemplate(templateType, name);
         }
 
         public static Template<T> FromName<T>(string name) {

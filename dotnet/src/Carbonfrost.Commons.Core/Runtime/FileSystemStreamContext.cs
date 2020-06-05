@@ -16,6 +16,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
@@ -40,6 +41,14 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
         }
 
+        public override StreamWriter AppendText(Encoding encoding) {
+            Stream stream = Open(FileMode.Append, FileAccess.Write);
+            if (encoding == null) {
+                return new StreamWriter(stream);
+            }
+            return new StreamWriter(stream, encoding);
+        }
+
         public override StreamContext ChangeContentType(ContentType contentType) {
             if (contentType == _contentType) {
                 return this;
@@ -53,16 +62,16 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public override Stream OpenRead() {
-            return Open(FileMode.Open);
+            return Open(FileMode.Open, FileAccess.Read);
         }
 
         public override Stream Open() {
-            return Open(FileMode.OpenOrCreate);
+            return Open(FileMode.OpenOrCreate, FileAccess.ReadWrite);
         }
 
-        public Stream Open(FileMode mode) {
+        public Stream Open(FileMode mode, FileAccess access) {
             string realPath = Uri.IsAbsoluteUri ? Uri.LocalPath : Uri.ToString();
-            return new FileStream(realPath, mode, FileAccess.Read);
+            return new FileStream(realPath, mode, access);
         }
     }
 }

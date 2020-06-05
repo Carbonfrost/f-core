@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Carbonfrost.Commons.Core.Resources;
 using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.Core {
@@ -27,10 +28,20 @@ namespace Carbonfrost.Commons.Core {
         private readonly IEnumerator<Type> _startClasses;
         private ServiceContainer _services = new ServiceContainer();
 
-        internal RootServiceProvider() {
-            var all = App.DescribeAssemblies();
-            _startClasses = all.SelectMany(t => t.GetStartClasses("ServiceRegistration")).GetEnumerator();
+        public IServiceProvider Parent {
+            get {
+                return null;
+            }
+        }
 
+        // For tests
+        internal RootServiceProvider(IEnumerator<Type> startClasses) {
+            _startClasses = startClasses;
+        }
+
+        internal RootServiceProvider() : this(
+            App.DescribeAssemblies().SelectMany(t => t.GetStartClasses("ServiceRegistration")).GetEnumerator()
+        ) {
             if (AppDomain.CurrentDomain.IsDefaultAppDomain()) {
                 AppDomain.CurrentDomain.DomainUnload += delegate {
                     Dispose();
@@ -77,7 +88,7 @@ namespace Carbonfrost.Commons.Core {
 
         public object GetService(Type serviceType) {
             if (serviceType == null) {
-                throw new ArgumentNullException("serviceType");
+                throw new ArgumentNullException(nameof(serviceType));
             }
 
             if (serviceType.IsInstanceOfType(this)) {
@@ -102,11 +113,10 @@ namespace Carbonfrost.Commons.Core {
                 var args = mi.GetParameters()
                     .Select(t => GetService(t.ParameterType)).ToArray();
 
-                try {
-                    mi.Invoke(null, args);
-
-                } catch (TargetException) {
-                }
+                LateBoundLog.Try(
+                    SR.ProblemExecutingServiceRegistration(startClass, mi.Name),
+                    () => mi.Invoke(null, args)
+                );
             }
         }
     }

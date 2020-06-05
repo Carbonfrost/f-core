@@ -41,6 +41,27 @@ namespace Carbonfrost.UnitTests.Core {
             }
         }
 
+        public IEnumerable<IPropertyProvider> PHasStringCoercibleValue {
+            get {
+                return new [] {
+                    PropertyProvider.FromArray("https://example.com/"),
+                    PropertyProvider.FromValue(new { a = "https://example.com/" }),
+                    PropertyProvider.FromValue(new Dictionary<string,string> { ["a"] = "https://example.com/" }),
+                    PropertyProvider.FromValue(new NameValueCollection {{ "a", "https://example.com/" }}),
+                };
+            }
+        }
+
+        public IEnumerable<IPropertyProvider> PHasAdapterCoercibleValue {
+            get {
+                return new [] {
+                    PropertyProvider.FromArray(new Properties()),
+                    PropertyProvider.FromValue(new { a = new Properties() }),
+                    PropertyProvider.FromValue(new Dictionary<string,object> { ["a"] = new Properties() }),
+                };
+            }
+        }
+
         [Fact]
         public void Compose_converts_null_to_Null_provider() {
             Assert.Same(PropertyProvider.Null, PropertyProvider.Compose(null, null));
@@ -164,6 +185,40 @@ namespace Carbonfrost.UnitTests.Core {
             Assert.Same(existing, pp);
         }
 
+        [Fact]
+        public void Except_can_accept_properties() {
+            var props = new Properties {
+                { "accept", "me" },
+                { "reject", "others" },
+            };
+            var pp = PropertyProvider.Except(props, "reject");
+            Assert.True(pp.TryGetProperty("accept", null, out _));
+            Assert.True(pp.TryGetProperty("Accept", null, out _)); // case insensitive
+            Assert.False(pp.TryGetProperty("reject", null, out _));
+        }
+
+        [Fact]
+        public void Filter_can_accept_properties() {
+            var props = new Properties {
+                { "accept", "me" },
+                { "reject", "others" },
+            };
+            var pp = PropertyProvider.Filter(props, p => p == "accept");
+            Assert.Equal("me", pp.GetProperty("accept"));
+            Assert.Equal(typeof(string), pp.GetPropertyType("accept"));
+        }
+
+        [Fact]
+        public void Filter_can_reject_properties() {
+            var props = new Properties {
+                { "accept", "me" },
+                { "reject", "others" },
+            };
+            var pp = PropertyProvider.Filter(props, p => p == "accept");
+            Assert.False(pp.TryGetProperty("reject", null, out _));
+            Assert.Equal(null, pp.GetPropertyType("reject"));
+        }
+
         [Theory]
         [PropertyData(nameof(StrictPropertyProviders))]
         public void GetProperty_will_throw_on_invalid_property_name(IPropertyProvider pp) {
@@ -172,6 +227,24 @@ namespace Carbonfrost.UnitTests.Core {
 
             Assert.Throws<ArgumentException>(() => pp.TryGetProperty("", typeof(object), out _));
             Assert.Throws<ArgumentException>(() => pp.TryGetProperty(null, typeof(object), out _));
+        }
+
+        [Fact]
+        public void TryGetProperty_applies_type_coercion_from_strings() {
+            var props = new Properties {
+                { "u", "https://example.com/" }
+            };
+            Assert.Equal(new Uri("https://example.com"), props.GetProperty<Uri>("u"));
+        }
+
+        [Fact]
+        public void GetPropertyType_for_missing_property_is_null() {
+            var pp = new DefaultPropertyProvider();
+            Assert.Null(pp.GetPropertyType("missing"));
+        }
+
+        class DefaultPropertyProvider : PropertyProvider {
+            public string U { get; set; }
         }
 
         class PPropertiesContainer : IPropertiesContainer {

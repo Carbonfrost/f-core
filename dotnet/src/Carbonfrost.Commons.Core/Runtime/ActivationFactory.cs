@@ -55,7 +55,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         {
 
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             try {
@@ -77,7 +77,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         protected virtual Type GetActivationType(Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             return type.GetConcreteClass();
@@ -129,7 +129,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                                           IServiceProvider serviceProvider = null) {
 
             if (component == null) {
-                throw new ArgumentNullException("component");
+                throw new ArgumentNullException(nameof(component));
             }
 
             if (values == null) {
@@ -137,7 +137,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             }
 
             serviceProvider = serviceProvider ?? ServiceProvider.Null;
-            var exceptionHandler = serviceProvider.GetServiceOrDefault<ExceptionHandler>(IgnoreErrors);
+            var exceptionHandler = serviceProvider.GetServiceOrDefault(
+                Activation.IgnoreErrors
+            );
 
             var props = Template.GetPropertyCache(component);
             foreach (var kvp in values.Distinct(KeyComparer)) {
@@ -221,8 +223,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             if (values != null) {
 
                 foreach (var kvp in values) {
-                    if (string.IsNullOrWhiteSpace(kvp.Key))
+                    if (string.IsNullOrWhiteSpace(kvp.Key)) {
                         continue;
+                    }
 
                     int literal;
                     if (int.TryParse(kvp.Key, out literal) && literal >= 0 && literal < args.Length) {
@@ -258,7 +261,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             object value = null;
 
             Type requiredType = parameter.ParameterType;
-            if (requiredType.IsServiceType()) {
+            if (IsServiceBindableType(requiredType)) {
                 value = serviceProvider.GetService(requiredType);
             }
 
@@ -275,7 +278,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             Initialize(component, values, serviceProvider);
         }
 
-        static void IgnoreErrors(object sender, Exception ex) {
+        internal static bool IsServiceBindableType(Type type) {
+            var tt = type.GetTypeInfo();
+            return !(tt.IsPrimitive || tt.IsEnum);
         }
     }
 }

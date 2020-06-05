@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2019-2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,12 +20,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using Carbonfrost.Commons.Core;
-using Carbonfrost.Commons.Core.Runtime;
-
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    public abstract class Builder<T> {
+    public class Builder<T> {
 
         public string Provider { get; set; }
         public string Implementation { get; set; }

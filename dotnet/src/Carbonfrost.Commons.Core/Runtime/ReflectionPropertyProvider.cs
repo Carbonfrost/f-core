@@ -24,6 +24,12 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     internal class ReflectionPropertyProvider : IPropertyProvider {
 
+        internal readonly TryCoerceValueCallback DEFAULT_COERCION = StaticDefaultCoercion;
+
+        internal delegate bool TryCoerceValueCallback(
+            PropertyInfo property, object value, Type requiredType, out object result
+        );
+
         protected readonly object ObjectContext;
 
         public ReflectionPropertyProvider(object component) {
@@ -36,9 +42,8 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public Type GetPropertyType(string property) {
-            if (string.IsNullOrEmpty(property)) {
-                throw Failure.NullOrEmptyString(nameof(property));
-            }
+            PropertyProvider.CheckProperty(property);
+
             PropertyInfo descriptor = _GetProperty(property);
             if (descriptor == null) {
                 return null;
@@ -47,21 +52,38 @@ namespace Carbonfrost.Commons.Core.Runtime {
             else return descriptor.PropertyType;
         }
 
-        public bool TryGetProperty(string property, Type propertyType, out object value) {
-            if (string.IsNullOrEmpty(property)) {
-                throw Failure.NullOrEmptyString(nameof(property));
-            }
-            PropertyInfo pd = _GetProperty(property);
-            if (pd == null) {
-                value = null;
-                return false;
-            }
+        public bool TryGetProperty(string property, Type requiredType, out object value) {
+            PropertyProvider.CheckProperty(property);
 
-            value = pd.GetValue(ObjectContext);
-            return value == null || propertyType.IsInstanceOfType(value);
+            PropertyInfo pd = _GetProperty(property);
+            requiredType = requiredType ?? typeof(object);
+            value = null;
+
+            if (pd != null && TryGetValue(pd, out object tempValue)) {
+                if (tempValue == null) {
+                    return true;
+                }
+                return TryCoerceValue(pd, tempValue, requiredType, out value)
+                    && requiredType.IsInstanceOfType(value);
+            }
+            return false;
         }
 
-        protected PropertyInfo _GetProperty(string property) {
+        internal bool TryGetValue(PropertyInfo property, out object value) {
+            value = property.GetValue(ObjectContext);
+            return true;
+        }
+
+        internal bool TryCoerceValue(PropertyInfo property, object value, Type requiredType, out object result) {
+            if (requiredType.IsAssignableFrom(property.PropertyType)) {
+                result = value;
+                return true;
+            }
+
+            return StaticDefaultCoercion(property, value, requiredType, out result);
+        }
+
+        internal PropertyInfo _GetProperty(string property) {
             return _EnsureProperties().GetValueOrDefault(property);
         }
 
@@ -76,6 +98,19 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     return pi;
             }
             return null;
+        }
+
+        private static bool StaticDefaultCoercion(PropertyInfo property, object value, Type requiredType, out object result) {
+            if (value is string str) {
+                try {
+                    result = Activation.FromText(requiredType, str, null, null);
+                    return true;
+                } catch {
+                    // Type conversion problem
+                }
+            }
+            result = null;
+            return false;
         }
     }
 }

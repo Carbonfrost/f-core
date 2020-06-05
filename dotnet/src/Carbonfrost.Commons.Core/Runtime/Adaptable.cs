@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Carbonfrost.Commons.Core.Runtime {
@@ -30,7 +29,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static object ApplyProperties(this MethodInfo method, object thisArg, IProperties properties) {
             if (method == null) {
-                throw new ArgumentNullException("method");
+                throw new ArgumentNullException(nameof(method));
             }
 
             properties = properties ?? Properties.Empty;
@@ -42,7 +41,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     throw RuntimeFailure.ApplyPropertiesStaticMethodRequiresArg("method");
                 }
                 if (thisArg == null) {
-                    throw new ArgumentNullException("thisArg");
+                    throw new ArgumentNullException(nameof(thisArg));
                 }
                 parms[0] = thisArg;
                 paramIndex = 1;
@@ -61,7 +60,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static object GetDefaultValue(this PropertyInfo property) {
             if (property == null) {
-                throw new ArgumentNullException("property");
+                throw new ArgumentNullException(nameof(property));
             }
             var data = property.CustomAttributes.FirstOrDefault(t => t.AttributeType == typeof(DefaultValueAttribute));
             if (data != null && data.ConstructorArguments.Count == 2) {
@@ -88,22 +87,16 @@ namespace Carbonfrost.Commons.Core.Runtime {
             return default(T);
         }
 
-        public static IEnumerable<string> GetAdapterRoleNames(this Assembly assembly) {
-            return assembly.GetCustomAttributes(typeof(DefinesAttribute))
-                .Select(t => ((DefinesAttribute) t).AdapterName)
-                .Distinct();
-        }
-
         public static MethodInfo GetTemplateMethod(this Type type) {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             return Template.FindCopyFromMethod(type);
         }
 
         public static MethodInfo GetParseMethod(this Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return type.GetTypeInfo().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static)
                 .OrderByDescending(m => m.GetParameters().Length)
@@ -112,27 +105,25 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static MethodInfo GetTryParseMethod(this Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             return type.GetTypeInfo().GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static)
                 .FirstOrDefault(m => m.Name == "TryParse" && !m.IsGenericMethod && m.ReturnType == typeof(bool));
         }
 
-        public static ConstructorInfo GetActivationConstructor(this Type type) {
+        public static MethodBase GetActivationConstructor(this Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
-            ConstructorInfo[] ci = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (ci.Length == 0) {
-                return null;
-            }
-            return ci.FirstOrDefault(IsActivationConstructor) ?? ci[0];
+            MethodBase[] ci = type.GetTypeInfo().GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var methods = type.GetTypeInfo().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            return ci.Concat(methods).FirstOrDefault(IsActivationConstructor) ?? ci[0];
         }
 
         public static IEnumerable<IActivationProvider> GetActivationProviders(this Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             var types = Template.GetActivationProviderTypes(type);
@@ -148,7 +139,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static IEnumerable<Type> GetStartClasses(this Assembly assembly, string className) {
             if (assembly == null) {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             }
 
             return StartClassInfo.Get(assembly).GetByName(className);
@@ -156,7 +147,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static IEnumerable<TValue> GetStartFields<TValue>(this Assembly assembly, string className) {
             if (assembly == null)
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
 
             return StartClassInfo.FindStartFields<TValue>(StartClassInfo.Get(assembly).GetByName(className));
         }
@@ -165,9 +156,9 @@ namespace Carbonfrost.Commons.Core.Runtime {
             this Assembly assembly, NamespaceUri namespaceUri) {
 
             if (assembly == null)
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             if (namespaceUri == null)
-                throw new ArgumentNullException("namespaceUri");
+                throw new ArgumentNullException(nameof(namespaceUri));
 
             return assembly.GetTypesHelper().Select(t => t.AsType()).Where(t => t.GetQualifiedName().Namespace == namespaceUri);
         }
@@ -175,7 +166,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public static IEnumerable<string> FilterNamespaces(
             this Assembly assembly, string namespacePattern) {
             if (assembly == null)
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
 
             return AssemblyInfo.GetAssemblyInfo(assembly).GetNamespaces(namespacePattern);
         }
@@ -183,10 +174,10 @@ namespace Carbonfrost.Commons.Core.Runtime {
         public static IEnumerable<MethodInfo> GetImplicitFilterMethods(this PropertyInfo property,
                                                                        Type attributeType) {
             if (property == null)
-                throw new ArgumentNullException("property"); // $NON-NLS-1
+                throw new ArgumentNullException(nameof(property)); 
 
             if (attributeType == null)
-                throw new ArgumentNullException("attributeType"); // $NON-NLS-1
+                throw new ArgumentNullException(nameof(attributeType)); 
 
             // For instance, LocalizableAtrribute/Title ==>  GetLocalizableTitle
             string nakedName = Utility.GetImpliedName(attributeType, "Attribute");
@@ -219,7 +210,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static object TryAdapt(this object source, string adapterRoleName, IServiceProvider serviceProvider = null) {
             if (source == null) {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (string.IsNullOrEmpty(adapterRoleName)) {
                 throw Failure.NullOrEmptyString(nameof(adapterRoleName));
@@ -231,15 +222,20 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public static object TryAdapt(this object source, Type adapterType, IServiceProvider serviceProvider = null) {
-            if (source == null)
-                throw new ArgumentNullException("source"); // $NON-NLS-1
-            if (adapterType == null)
-                throw new ArgumentNullException("adapterType"); // $NON-NLS-1
+            if (source == null) {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (adapterType == null) {
+                throw new ArgumentNullException(nameof(adapterType));
+            }
 
             if (adapterType.IsInstanceOfType(source)) {
                 return source;
             }
-
+            var ari = App.GetAdapterRoleInfo(adapterType);
+            if (ari != null) {
+                return TryAdapt(source, ari.Name, serviceProvider);
+            }
             return null;
         }
 
@@ -251,7 +247,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static IEnumerable<string> GetAdapterRoleNames(this Type adapteeType) {
             if (adapteeType == null) {
-                throw new ArgumentNullException("adapteeType"); // $NON-NLS-1
+                throw new ArgumentNullException(nameof(adapteeType)); 
             }
 
             return GetAdapterRoleNames(adapteeType, true);
@@ -259,7 +255,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static IEnumerable<string> GetAdapterRoleNames(this Type adapteeType, bool inherit) {
             if (adapteeType == null) {
-                throw new ArgumentNullException("adapteeType");
+                throw new ArgumentNullException(nameof(adapteeType));
             }
 
             AdapterAttribute[] items = (AdapterAttribute[]) adapteeType.GetTypeInfo().GetCustomAttributes(typeof(AdapterAttribute), inherit);
@@ -272,7 +268,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static Type GetBuilderType(this Type adapteeType) {
             if (adapteeType == null) {
-                throw new ArgumentNullException("adapteeType"); // $NON-NLS-1
+                throw new ArgumentNullException(nameof(adapteeType)); 
             }
 
             var result = Adaptable.GetAdapterType(adapteeType, AdapterRole.Builder);
@@ -284,24 +280,15 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static bool IsProviderType(this Type providerType) {
             if (providerType == null) {
-                throw new ArgumentNullException("providerType");
+                throw new ArgumentNullException(nameof(providerType));
             }
 
             return App.GetProviderTypes().Contains(providerType);
         }
 
-        public static bool IsServiceType(this Type type) {
-            if (type == null)
-                throw new ArgumentNullException("type");
-
-            var tt = type.GetTypeInfo();
-            bool isStatic = tt.IsSealed && tt.IsAbstract;
-            return !(tt.IsPrimitive || tt.IsEnum || isStatic);
-        }
-
         public static bool IsComposable(this Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             return type.GetTypeInfo().IsDefined(typeof(ComposableAttribute), false);
@@ -311,7 +298,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
             object instance, out MethodInfo buildMethod, IServiceProvider serviceProvider) {
 
             if (instance == null)
-                throw new ArgumentNullException("instance");
+                throw new ArgumentNullException(nameof(instance));
 
             Type componentType = instance.GetType();
             // Invoke the builder
@@ -341,7 +328,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
         public static QualifiedName GetQualifiedName(this Type type) {
             if (type == null) {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
             var tt = type.GetTypeInfo();
             if (tt.IsGenericParameter || (tt.IsGenericType && !tt.IsGenericTypeDefinition)) {
@@ -361,7 +348,7 @@ namespace Carbonfrost.Commons.Core.Runtime {
                 return name;
         }
 
-        static bool IsActivationConstructor(ConstructorInfo t) {
+        static bool IsActivationConstructor(MethodBase t) {
             return t.IsDefined(typeof(ActivationConstructorAttribute), false);
         }
     }

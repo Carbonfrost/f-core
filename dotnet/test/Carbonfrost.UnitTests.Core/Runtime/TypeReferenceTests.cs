@@ -15,6 +15,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 
@@ -125,6 +126,19 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             Assert.Matches(@"^Carbonfrost\.Commons\.Core\.Runtime\.TypeReference,", tr.ToString());
             Assert.Contains("Carbonfrost.Commons.Core,", tr.ToString());
             Assert.Contains("PublicKeyToken=d09aaf34527fe3e6", tr.ToString());
+        }
+
+        [Fact]
+        public void Parse_should_handle_open_generics() {
+            var tr = TypeReference.Parse("System.Collections.Generic.List`1");
+            Assert.Equal("System.Collections.Generic.List`1", tr.ToString());
+            Assert.Equal("System.Collections.Generic.List`1", tr.OriginalString);
+        }
+
+        [Fact]
+        public void Resolve_should_resolve_open_generics() {
+            var tr = TypeReference.Parse("System.Collections.Generic.List`1");
+            Assert.Equal(typeof(List<>), tr.Resolve());
         }
 
         [Fact]

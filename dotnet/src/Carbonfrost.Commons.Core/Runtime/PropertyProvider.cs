@@ -1,12 +1,11 @@
 //
-// Copyright 2005, 2006, 2010, 2016, 2019-2020 Carbonfrost Systems, Inc.
-// (http://carbonfrost.com)
+// Copyright 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,52 +21,56 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     public abstract partial class PropertyProvider : IPropertyProvider {
 
-        private readonly IPropertyProvider _reflection;
+        private readonly ReflectionPropertyProvider _reflection;
 
         protected PropertyProvider() {
-            _reflection = PropertyProvider.FromValue(this);
+            _reflection = new ReflectionPropertyProvider(this);
         }
 
         protected virtual bool TryGetPropertyCore(
             string property, Type requiredType, out object value) {
-            requiredType = requiredType ?? typeof(object);
 
             PropertyInfo pd = _GetProperty(property);
-            if (pd == null || !requiredType.IsAssignableFrom(pd.PropertyType)) {
-                value = null;
-                return false;
-            }
+            requiredType = requiredType ?? typeof(object);
+            value = null;
 
-            value = pd.GetValue(this);
-            return requiredType.IsInstanceOfType(value);
+            return pd != null
+                && TryGetValue(pd, out object tempValue)
+                && TryCoerceValue(pd, tempValue, requiredType, out value)
+                && requiredType.IsInstanceOfType(value);
+        }
+
+        protected virtual bool TryGetValue(PropertyInfo property, out object value) {
+            if (property == null) {
+                throw new ArgumentNullException(nameof(property));
+            }
+            return _reflection.TryGetValue(property, out value);
+        }
+
+        protected virtual bool TryCoerceValue(
+            PropertyInfo property, object value, Type requiredType, out object result) {
+            if (property == null) {
+                throw new ArgumentNullException(nameof(property));
+            }
+            return _reflection.TryCoerceValue(property, value, requiredType, out result);
         }
 
         public virtual Type GetPropertyType(string property) {
             CheckProperty(property);
-
-            object objValue;
-            if (TryGetProperty(property, typeof(object), out objValue)) {
-                return objValue == null ? typeof(object) : objValue.GetType();
+            var result = InferPropertyType(this, property);
+            if (result != null) {
+                return result;
             }
-
-            throw RuntimeFailure.PropertyNotFound("property", property);
+            return null;
         }
 
         public bool TryGetProperty(string property, Type propertyType, out object value) {
             CheckProperty(property);
-            object objValue;
-
-            if (TryGetPropertyCore(property, propertyType, out objValue)) {
-                value = objValue;
-                return true;
-            }
-
-            value = null;
-            return false;
+            return TryGetPropertyCore(property, propertyType, out value);
         }
 
         private PropertyInfo _GetProperty(string property) {
-            var result = Template.GetPropertyCache(this).GetValueOrDefault(property);
+            var result = _reflection._GetProperty(property);
             if (result == null) {
                 return null;
             }

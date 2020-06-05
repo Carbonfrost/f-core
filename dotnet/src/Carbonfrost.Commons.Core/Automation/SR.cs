@@ -336,13 +336,6 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("IncompleteEscapeSequence") );
     }
 
-  /// <summary>Assembly `${assembly}' specifies related assembly with the same name, which is not allowed.</summary>
-    internal static string InvalidSelfRelatedAssembly(
-    object @assembly
-    ) {
-        return string.Format(Culture, ResourceFinder("InvalidSelfRelatedAssembly") , @assembly);
-    }
-
   /// <summary>Invalid provider `${type}': ${ex}</summary>
     internal static string InvalidProviderDeclared(
     object @type, object @ex
@@ -362,6 +355,13 @@ namespace Carbonfrost.Commons.Core.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("InvalidProviderInstanceType") );
+    }
+
+  /// <summary>Assembly `${assembly}' specifies related assembly with the same name, which is not allowed.</summary>
+    internal static string InvalidSelfRelatedAssembly(
+    object @assembly
+    ) {
+        return string.Format(Culture, ResourceFinder("InvalidSelfRelatedAssembly") , @assembly);
     }
 
   /// <summary>The specified item already exists within the collection: ${itemExists}.</summary>
@@ -534,7 +534,7 @@ namespace Carbonfrost.Commons.Core.Resources {
 
   /// <summary>Argument cannot be null or the empty string.</summary>
     internal static string NullOrEmptyStringNotValid(
-
+    
     ) {
         return string.Format(Culture, ResourceFinder("NullOrEmptyStringNotValid") );
     }
@@ -565,6 +565,20 @@ namespace Carbonfrost.Commons.Core.Resources {
     object @type
     ) {
         return string.Format(Culture, ResourceFinder("ProbingForAssemblies") , @type);
+    }
+
+  /// <summary>Problem executing provider registration method `${type}.${method}`</summary>
+    internal static string ProblemExecutingProviderRegistrationMethod(
+    object @type, object @method
+    ) {
+        return string.Format(Culture, ResourceFinder("ProblemExecutingProviderRegistrationMethod") , @type, @method);
+    }
+
+  /// <summary>Problem executing service registration method `${startClass}.${method}'</summary>
+    internal static string ProblemExecutingServiceRegistration(
+    object @startClass, object @method
+    ) {
+        return string.Format(Culture, ResourceFinder("ProblemExecutingServiceRegistration") , @startClass, @method);
     }
 
   /// <summary>A category name must be specified in brackets.</summary>
@@ -672,6 +686,13 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("SeekNotSupportedByBase") );
     }
 
+  /// <summary>The service instance must be the same as the service type `${type}', derive from it, or implement a supported factory or metadata class.</summary>
+    internal static string ServiceContainerAddInvalidServiceDescriptor(
+    object @type
+    ) {
+        return string.Format(Culture, ResourceFinder("ServiceContainerAddInvalidServiceDescriptor") , @type);
+    }
+
   /// <summary>Failed to start service: `${serviceType}'</summary>
     internal static string ServiceFailedToStart(
     object @serviceType
@@ -698,6 +719,13 @@ namespace Carbonfrost.Commons.Core.Resources {
     
     ) {
         return string.Format(Culture, ResourceFinder("StreamCannotWrite") );
+    }
+
+  /// <summary>Specified URI scheme is not supported</summary>
+    internal static string StreamContextUriSchemeNotSupported(
+    
+    ) {
+        return string.Format(Culture, ResourceFinder("StreamContextUriSchemeNotSupported") );
     }
 
   /// <summary>Specified argument is not supported by the template.</summary>

@@ -36,7 +36,7 @@ namespace Carbonfrost.UnitTests.Core {
             var pp = new ReflectionPropertyProvider(new A());
             object actual;
             Assert.True(pp.TryGetProperty("C", typeof(string), out actual));
-            Assert.Equal(null, actual);
+            Assert.Null(actual);
         }
 
         [Fact]

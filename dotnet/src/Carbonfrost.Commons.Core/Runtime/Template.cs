@@ -17,13 +17,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
 namespace Carbonfrost.Commons.Core.Runtime {
 
-    public partial class Template {
+    public partial class Template : ITemplate {
 
         private readonly IList<ITemplateCommand> _commands;
 

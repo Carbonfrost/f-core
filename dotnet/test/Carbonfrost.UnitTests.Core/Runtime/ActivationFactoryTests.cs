@@ -1,5 +1,5 @@
 //
-// Copyright 2019 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2019, 2020 Carbonfrost Systems, Inc. (http://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,6 +53,31 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             Assert.True(called);
         }
 
+        [Theory]
+        [InlineData(typeof(PHasActivationConstructor))]
+        [InlineData(typeof(PHasStaticActivationConstructor))]
+        public void CreateInstance_should_apply_activation_constructor(Type type) {
+            var inst = (IPActivationConstructor) ActivationFactory.Default.CreateInstance(
+                type
+            );
+            Assert.IsInstanceOf(type, inst);
+            Assert.True(inst.ActivationConstructorCalled);
+        }
+
+        [Theory]
+        [InlineData(typeof(IUriContext))]
+        [InlineData(typeof(Exception))]
+        public void IsServiceBindableType_should_detect_eligible_service_types(Type serviceType) {
+            Assert.True(ActivationFactory.IsServiceBindableType(serviceType));
+        }
+
+        [Theory]
+        [InlineData(typeof(UriKind), Name = "Enums")]
+        [InlineData(typeof(int), Name = "Primitives")]
+        public void IsServiceBindableType_should_detect_ineligible_service_types(Type serviceType) {
+            Assert.False(ActivationFactory.IsServiceBindableType(serviceType));
+        }
+
         [ConcreteClass(typeof(PConcrete))]
         abstract class PAbstract {}
         class PConcrete : PAbstract {}
@@ -67,6 +92,30 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             protected override IEnumerable<IActivationProvider> GetActivationProviders(Type type, object component) {
                 return new [] {
                     new PThrowsActivationProvider(),
+                };
+            }
+        }
+
+        interface IPActivationConstructor {
+            bool ActivationConstructorCalled { get; }
+        }
+
+        private class PHasActivationConstructor : IPActivationConstructor {
+            public bool ActivationConstructorCalled { get; set; }
+
+            [ActivationConstructor]
+            public PHasActivationConstructor() {
+                ActivationConstructorCalled = true;
+            }
+        }
+
+        private class PHasStaticActivationConstructor : IPActivationConstructor {
+            public bool ActivationConstructorCalled { get; set; }
+
+            [ActivationConstructor]
+            public static PHasStaticActivationConstructor Create() {
+                return new PHasStaticActivationConstructor {
+                    ActivationConstructorCalled = true,
                 };
             }
         }

@@ -116,9 +116,11 @@ namespace Carbonfrost.Commons.Core.Runtime {
                     case "stream":
                         throw RuntimeFailure.ForbiddenStreamStreamContext();
 
+                    case "https":
+                    case "http":
+                        return new HttpClientStreamContext(source);
                     default:
-                        // Fall back to the URI
-                        return new UriStreamContext(source);
+                        throw RuntimeFailure.StreamContextUriSchemeNotSupported();
                 }
             } else {
                 // Relative URIs must be handled in this way

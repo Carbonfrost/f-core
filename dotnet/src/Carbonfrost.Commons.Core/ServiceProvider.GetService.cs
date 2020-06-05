@@ -1,11 +1,11 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,12 +24,12 @@ namespace Carbonfrost.Commons.Core {
 
         public static T GetRequiredService<T>(this IServiceProvider serviceProvider) {
             if (serviceProvider == null) {
-                throw new ArgumentNullException("serviceProvider");
+                throw new ArgumentNullException(nameof(serviceProvider));
             }
 
             T t = (T) serviceProvider.GetService(typeof(T));
             if (object.Equals(t, default(T))) {
-                throw RuntimeFailure.ServiceNotFound(typeof(T), null);
+                throw RuntimeFailure.ServiceNotFound(typeof(T));
             }
 
             return t;
@@ -37,7 +37,7 @@ namespace Carbonfrost.Commons.Core {
 
         public static T GetServiceOrDefault<T>(this IServiceProvider serviceProvider, T defaultService = default(T)) {
             if (serviceProvider == null) {
-                throw new ArgumentNullException("serviceProvider");
+                throw new ArgumentNullException(nameof(serviceProvider));
             }
 
             T result = (T) serviceProvider.GetService(typeof(T));
@@ -50,7 +50,7 @@ namespace Carbonfrost.Commons.Core {
 
         public static T GetService<T>(this IServiceProvider serviceProvider) {
             if (serviceProvider == null) {
-                throw new ArgumentNullException("serviceProvider");
+                throw new ArgumentNullException(nameof(serviceProvider));
             }
 
             return (T) serviceProvider.GetService(typeof(T));

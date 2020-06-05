@@ -27,16 +27,6 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
 
     public class AdaptableTests {
 
-        [Fact]
-        public void TryAdapt_nominal() {
-            Properties p = new Properties();
-            var ps = p.TryAdapt("StreamingSource");
-            var pp = p.TryAdapt("Builder");
-
-            Assert.IsInstanceOf<PropertiesStreamingSource>(ps);
-            Assert.Null(pp);
-        }
-
         [Theory]
         [InlineData(typeof(List<int>), "Capacity")]
         public void GetTemplatingMode_should_hide_certain_properties(Type type, string property) {
@@ -123,19 +113,35 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Length);
         }
 
-        [Theory]
-        [InlineData(typeof(IUriContext))]
-        [InlineData(typeof(Exception))]
-        public void IsServiceType_should_detect_eligible_service_types(Type serviceType) {
-            Assert.True(Adaptable.IsServiceType(serviceType));
+        [Fact]
+        public void GetActivationConstructor_gets_static_method_marked() {
+            var expected = (MethodBase) typeof(PHasStaticActivationConstructor).GetMethod("Create");
+            Assert.Equal(expected, typeof(PHasStaticActivationConstructor).GetActivationConstructor());
         }
 
-        [Theory]
-        [InlineData(typeof(UriKind), Name = "Enums")]
-        [InlineData(typeof(Adaptable), Name = "Static classes")]
-        [InlineData(typeof(int), Name = "Primitives")]
-        public void IsServiceType_should_detect_ineligible_service_types(Type serviceType) {
-            Assert.False(Adaptable.IsServiceType(serviceType));
+        [Fact]
+        public void TryAdapt_obtains_registered_adapter_type() {
+            Properties p = new Properties();
+            var ps = p.TryAdapt("StreamingSource");
+            var pp = p.TryAdapt("Builder");
+
+            Assert.IsInstanceOf<PropertiesStreamingSource>(ps);
+            Assert.Null(pp);
+        }
+
+        [Fact]
+        public void TryAdapt_will_use_the_adapter_role_corresponding_to_adapter_type() {
+            Properties p = new Properties();
+            var pp = p.TryAdapt<StreamingSource>();
+
+            Assert.IsInstanceOf<PropertiesStreamingSource>(pp);
+        }
+
+        private class PHasStaticActivationConstructor {
+            [ActivationConstructor]
+            public static PHasStaticActivationConstructor Create() {
+                return null;
+            }
         }
 
         class S {

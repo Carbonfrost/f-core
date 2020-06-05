@@ -3,6 +3,8 @@
 #
 .PHONY: dotnet/generate
 
+-include eng/.mk/*.mk
+
 ## Generate generated code
 dotnet/generate:
 	@ srgen -c Carbonfrost.Commons.Core.Resources.SR \
@@ -11,15 +13,15 @@ dotnet/generate:
 		dotnet/src/Carbonfrost.Commons.Core/Automation/SR.properties
 
 ## Execute dotnet unit tests
-dotnet/test: dotnet/build -dotnet/test
+dotnet/test: dotnet/publish -dotnet/test
 
 -dotnet/test:
-	@ fspec -i dotnet/test/Carbonfrost.UnitTests.Core/Content \
+	@ fspec $(FSPEC_OPTIONS) -i dotnet/test/Carbonfrost.UnitTests.Core/Content \
 		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.Commons.Core.dll \
 		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.UnitTests.Core.dll
 
 ## Run unit tests with code coverage
-dotnet/cover: dotnet/build -check-command-coverlet
+dotnet/cover: dotnet/publish -check-command-coverlet
 	coverlet \
 		--target "make" \
 		--targetargs "-- -dotnet/test" \
@@ -29,5 +31,3 @@ dotnet/cover: dotnet/build -check-command-coverlet
 		--exclude-by-attribute 'GeneratedCode' \
 		--exclude-by-attribute 'CompilerGenerated' \
 		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.UnitTests.Core.dll
-
--include eng/.mk/*.mk
