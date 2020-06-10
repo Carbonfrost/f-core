@@ -24,8 +24,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
     class DefaultAssemblyProbe : AssemblyProbe, IEnumerable<Assembly> {
 
-        // TODO Vary by application
-
         private readonly AssemblyProbe[] _probes = {
             new ProbeAppDomain(),
             new ProbeForAssembliesInAppDirectory(),

@@ -40,7 +40,6 @@ namespace Carbonfrost.Commons.Core.Runtime {
                                                         ?? GetParseMethod(componentType)
                                                         ?? GetStreamingSource(componentType)
                                                         ?? _nullTextConversion);
-            // TODO Probe for IValueSerializer
         }
 
         private static object[] BindParseParams(MethodInfo method, string text, IServiceProvider sp, CultureInfo culture) {

@@ -22,7 +22,7 @@ dotnet/test: dotnet/publish -dotnet/test
 
 ## Run unit tests with code coverage
 dotnet/cover: dotnet/publish -check-command-coverlet
-	coverlet \
+	$(Q) coverlet \
 		--target "make" \
 		--targetargs "-- -dotnet/test" \
 		--format lcov \

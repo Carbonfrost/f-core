@@ -49,7 +49,7 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
                 sc.RegisterProviderTypes(new ProviderRegistrationContextImpl());
 
                 Assert.Equal(
-                    "Problem executing provider registration method `Carbonfrost.UnitTests.Core.Runtime.PStartProviderRegistrationClass+ErrorRegistrationMethod'",
+                    "Problem executing provider registration method `Carbonfrost.UnitTests.Core.Runtime.StartClassProviderRegistrationTests+PStartProviderRegistrationClass.ErrorRegistrationMethod`'",
                     record.LastFailure.Message
                 );
             }
