@@ -29,9 +29,6 @@ jobs:
       with:
        nuget-version: latest
 
-    - name: Check release requirements
-      run: make release/requirements
-
     - name: Configure dotnet and NuGet
       run: make dotnet/configure
 
@@ -43,6 +40,9 @@ jobs:
 
     - name: Pack with dotnet
       run: make -- -dotnet/pack
+
+    - name: Check release requirements
+      run: make release/requirements
 
     - name: Publish the package to GitHub Package Repository
       run: make -- -dotnet/push

@@ -28,6 +28,10 @@ install: build
 clean:
 	@ $(_DONE)
 
+## Create packages for various online package repositories
+pack:
+	@ $(_DONE)
+
 # To simplify things, we just try to init every framework even if
 # they are not enabled.  However, we don't want to display hint messages
 # about them not being enabled, so that's what this variable is used for
@@ -50,7 +54,8 @@ init:
 	$(Q) $(OUTPUT_COLLAPSED) brew update
 
 -direnv-install: -check-command-brew
-	$(Q) $(OUTPUT_COLLAPSED) brew install direnv
+	$(Q) $(OUTPUT_COLLAPSED) eng/brew_bundle_inject direnv
+	$(Q) $(OUTPUT_COLLAPSED) brew bundle
 	$(Q) $(OUTPUT_COLLAPSED) direnv allow
 
 -init-frameworks: | homebrew/init dotnet/init ruby/init

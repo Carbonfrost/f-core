@@ -91,6 +91,7 @@ build: dotnet/build
 redist: dotnet/redist
 push: dotnet/push
 clean: dotnet/clean
+pack: dotnet/pack
 
 else
 dotnet/init: -hint-unsupported-dotnet
@@ -117,10 +118,11 @@ endif
 	$(Q) $(OUTPUT_COLLAPSED) dotnet tool restore
 
 -dotnet/clean:
-	$(Q) rm $(_STANDARD_VERBOSE_FLAG) -rdf $(ENG_DOTNET_DIR)/{src,test}/*/{bin,obj}/*
+	$(Q) rm $(_STANDARD_VERBOSE_FLAG) -rdf $(ENG_DOTNET_DIR)/{src,test}/*/{bin,obj}/
 
 -dotnet/init:
-	$(Q) $(OUTPUT_COLLAPSED) brew cask install dotnet-sdk
+	$(Q) $(OUTPUT_COLLAPSED) eng/brew_bundle_inject --cask dotnet-sdk
+	$(Q) $(OUTPUT_COLLAPSED) brew bundle
 
 -dotnet/solution:
 	$(Q) mkdir $(_STANDARD_VERBOSE_FLAG) -p $(ENG_DOTNET_DIR)/{src,test}
@@ -141,7 +143,7 @@ endif
 # Nuget CLI doesn't work with GitHub package registry for some reason, so we're using a curl directly
 -dotnet/push: -requirements-dotnet -check-env-NUGET_PASSWORD -check-env-NUGET_USER_NAME -check-env-NUGET_UPLOAD_URL
 	$(Q) for f in dotnet/src/*/bin/Release/*.nupkg; do \
-		curl -X PUT -u "$(NUGET_USER_NAME):$(NUGET_PASSWORD)" -F package=@$$f $(NUGET_UPLOAD_URL); \
+		dotnet nuget push "$$f"; \
 	done
 
 -requirements-dotnet: -check-command-dotnet

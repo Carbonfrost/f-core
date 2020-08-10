@@ -16,7 +16,7 @@ dotnet/generate:
 dotnet/test: dotnet/publish -dotnet/test
 
 -dotnet/test:
-	@ fspec $(FSPEC_OPTIONS) -i dotnet/test/Carbonfrost.UnitTests.Core/Content \
+	@ fspec $(FSPEC_OPTIONS) -t ~integration -i dotnet/test/Carbonfrost.UnitTests.Core/Content \
 		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.Commons.Core.dll \
 		dotnet/test/Carbonfrost.UnitTests.Core/bin/$(CONFIGURATION)/netcoreapp3.0/Carbonfrost.UnitTests.Core.dll
 
