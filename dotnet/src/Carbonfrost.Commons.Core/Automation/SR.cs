@@ -567,7 +567,7 @@ namespace Carbonfrost.Commons.Core.Resources {
         return string.Format(Culture, ResourceFinder("ProbingForAssemblies") , @type);
     }
 
-  /// <summary>Problem executing provider registration method `${type}.${method}`</summary>
+  /// <summary>Problem executing provider registration method `${type}.${method}'</summary>
     internal static string ProblemExecutingProviderRegistrationMethod(
     object @type, object @method
     ) {

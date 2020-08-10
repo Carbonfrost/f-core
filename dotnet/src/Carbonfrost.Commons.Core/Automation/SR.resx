@@ -275,7 +275,7 @@
     <value>Probing for assemblies ({0})</value>
   </data>
   <data name="ProblemExecutingProviderRegistrationMethod" xml:space="preserve">
-    <value>Problem executing provider registration method `{0}.{1}`</value>
+    <value>Problem executing provider registration method `{0}.{1}'</value>
   </data>
   <data name="ProblemExecutingServiceRegistration" xml:space="preserve">
     <value>Problem executing service registration method `{0}.{1}'</value>
