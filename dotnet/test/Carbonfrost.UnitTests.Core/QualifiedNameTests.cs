@@ -162,10 +162,14 @@ namespace Carbonfrost.UnitTests.Core {
             return ServiceProvider.FromValue(r);
         }
 
-        class FakeFormatProvider : IFormatProvider {
+        class FakeFormatProvider : IFormatProvider, IServiceProvider {
 
             public object GetFormat(Type formatType) {
-                if (formatType == typeof(IXmlNamespaceResolver)) {
+                return null;
+            }
+
+            public object GetService(Type serviceType) {
+                if (serviceType == typeof(IXmlNamespaceResolver)) {
                     return new FakeXmlNamespaceResolver();
                 }
                 return null;

@@ -224,8 +224,7 @@ namespace Carbonfrost.Commons.Core {
                 case 'M':
                     return string.Concat("{", _ns.NamespaceName, "}");
                 case 'C':
-                    var resolver = (IXmlNamespaceResolver) formatProvider.GetFormat(typeof(IXmlNamespaceResolver))
-                        ?? XmlNamespaceResolver.Global;
+                    var resolver = ResolveNamespaceResolver(formatProvider);
                     string prefix = resolver.LookupPrefix(NamespaceName);
                     return string.Format("[{0}:{1}]", prefix, LocalName);
                 default:
@@ -282,6 +281,14 @@ namespace Carbonfrost.Commons.Core {
         internal bool EqualsIgnoreCase(QualifiedName name) {
             return this == name
                 || (Namespace == name.Namespace && string.Equals(LocalName, name.LocalName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static IXmlNamespaceResolver ResolveNamespaceResolver(object any) {
+            IXmlNamespaceResolver result = null;
+            if (any is IServiceProvider serviceProvider) {
+                result = serviceProvider.GetService<IXmlNamespaceResolver>();
+            }
+            return result ?? XmlNamespaceResolver.Global;
         }
     }
 }
