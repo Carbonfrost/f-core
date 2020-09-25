@@ -27,7 +27,8 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
         [Theory]
         [InlineData("Mac OS X", "10.12", "16A320", "MacOSX/10.12 (Build 16A320; \"macOS Sierra\")")]
         [InlineData("Mac OS X", "10.11", "15A820", "MacOSX/10.11 (Build 15A820; \"Mac OS X El Capitan\")")]
-        [InlineData("Mac OS X", "10.15.1", "19B88", "MacOSX/10.15.1 (Build 19B88; \"macOS Catalina\")")]
+        [InlineData("Mac OS X", "10.15.1", "19B88", "MacOSX/10.15.1 (Build 19B88; \"macOS Catalina\") macOS/10.15.1")]
+        [InlineData("macOS", "11.0", "19B88", "macOS/11.0 (Build 19B88; \"macOS Big Sur\"; like MacOSX)")]
         public void ParseResult_should_generate_correct_result(string productName, string productVersion, string buildVersion, string expected) {
             var lines = new string[] {
                 string.Format("ProductName:    {0}", productName),
@@ -37,7 +38,7 @@ namespace Carbonfrost.UnitTests.Core.Runtime {
             var unit = new Platform.MacOSXSwversVersionFinder();
             var results = unit.ParseResult(lines).ToList();
 
-            Assert.Equal(expected, results[0].ToString());
+            Assert.Equal(expected, string.Join(" ", results));
             Assert.Equal("MacOSX", results[0].PlatformFamily);
         }
 

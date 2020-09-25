@@ -38,10 +38,16 @@ namespace Carbonfrost.Commons.Core.Runtime {
             .ToArray();
 
         public static Platform Current {
-            get { return _current; }
+            get {
+                return _current;
+            }
         }
 
-        public bool IsMono { get { return _isMono; } }
+        public bool IsMono {
+            get {
+                return _isMono;
+            }
+        }
 
         private IList<PlatformVersion> Versions {
             get {
@@ -56,7 +62,13 @@ namespace Carbonfrost.Commons.Core.Runtime {
         }
 
         public string UserAgent {
-            get { return string.Join(" ", Versions); }
+            get {
+                return string.Join(" ", Versions);
+            }
+        }
+
+        public override string ToString() {
+            return UserAgent;
         }
 
         static IEnumerable<PlatformVersion> SafelyFind(IPlatformVersionFinder finder) {

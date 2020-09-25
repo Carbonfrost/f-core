@@ -36,27 +36,58 @@ namespace Carbonfrost.Commons.Core.Runtime {
 
             internal IEnumerable<PlatformVersion> ParseResult(IEnumerable<string> lines) {
                 if (lines == null) {
-                    yield break;
+                    return Array.Empty<PlatformVersion>();
                 }
                 var result = SwVersResult.Parse(lines);
                 if (result == null) {
-                    yield break;
+                    return Array.Empty<PlatformVersion>();
                 }
+                if (result.ProductName == "macOS") {
+                    return ParseResultmacOS(result);
+                }
+                return ParseResultMacOSX(result);
+            }
 
+            private IEnumerable<PlatformVersion> ParseResultMacOSX(SwVersResult result) {
                 yield return new PlatformVersion(result.ProductName.Replace(" ", ""), result.ProductVersion, "MacOSX") {
                     Attributes = {
-                        string.Format("Build {0}", result.BuildVersion),
-                        "\"" + FriendlyName(result.ProductVersion) + "\"",
+                        BuildVersion(result),
+                        FriendlyName(result),
+                    }
+                };
+
+                // Easing branding into macOS
+                if (string.Compare(result.ProductVersion, "10.12") > 0) {
+                    yield return new PlatformVersion("macOS", result.ProductVersion, "MacOSX");
+                }
+            }
+
+            private IEnumerable<PlatformVersion> ParseResultmacOS(SwVersResult result) {
+                yield return new PlatformVersion(result.ProductName.Replace(" ", ""), result.ProductVersion, "MacOSX") {
+                    Attributes = {
+                        BuildVersion(result),
+                        FriendlyName(result),
+                        "like MacOSX"
                     }
                 };
             }
 
-            static string FriendlyName(string productVersion) {
+            static string BuildVersion(SwVersResult result) {
+                return string.Format("Build {0}", result.BuildVersion);
+            }
+
+            static string FriendlyName(SwVersResult result) {
+                return "\"" + _FriendlyName(result.ProductVersion) + "\"";
+            }
+
+            static string _FriendlyName(string productVersion) {
                 var match = Regex.Match(productVersion, @"^\d+\.\d+");
                 if (!match.Success) {
                     return "Mac OS X " + productVersion;
                 }
                 switch (match.Value) {
+                    case "11.0":
+                        return "macOS Big Sur";
                     case "10.15":
                         return "macOS Catalina";
                     case "10.14":
