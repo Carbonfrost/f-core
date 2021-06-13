@@ -1,3 +1,5 @@
+#: execute project commands across frameworks
+
 .PHONY: \
 	-direnv-install \
 	-homebrew-install \
@@ -9,14 +11,12 @@
 	init \
 	install \
 
-# The default target which is to build
-default: $(ENG_DEFAULT_TARGET)
-
 ## Fetch dependencies
+fetch: _HIDDEN_IF_BOOTSTRAPPING=>/dev/null
 fetch:
 	@ $(_DONE)
 
-## Build
+## Build project outputs
 build: fetch
 	@ $(_DONE)
 
@@ -30,6 +30,10 @@ clean:
 
 ## Create packages for various online package repositories
 pack:
+	@ $(_DONE)
+
+## Format source code
+fmt:
 	@ $(_DONE)
 
 # To simplify things, we just try to init every framework even if
@@ -58,4 +62,4 @@ init:
 	$(Q) $(OUTPUT_COLLAPSED) brew bundle
 	$(Q) $(OUTPUT_COLLAPSED) direnv allow
 
--init-frameworks: | homebrew/init dotnet/init ruby/init
+-init-frameworks:

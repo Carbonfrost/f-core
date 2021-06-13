@@ -1,3 +1,5 @@
+#: use homebrew to manage macOS dependencies
+
 ENG_AUTODETECT_USING_HOMEBREW_BUNDLE = $(shell [ ! -f Brewfile ] ; echo $$?)
 ENG_USING_HOMEBREW_BUNDLE ?= $(ENG_AUTODETECT_USING_HOMEBREW_BUNDLE)
 

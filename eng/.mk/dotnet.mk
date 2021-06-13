@@ -1,3 +1,5 @@
+#: dotnet engineering
+
 #
 # A standard system for building a dotnet assembly.  This should be included from the
 # main Makefile
@@ -30,6 +32,7 @@ ENG_AVAILABLE_RUNTIMES += dotnet
 include $(dir $(lastword $(MAKEFILE_LIST)))/_variables.mk
 
 .PHONY: \
+	-check-dotnet-version \
 	-dotnet/build \
 	-dotnet/pack \
 	-dotnet/publish \
@@ -61,6 +64,7 @@ endif
 ifeq (1,$(_ENG_ACTUALLY_USING_DOTNET))
 
 ENG_ENABLED_RUNTIMES += dotnet
+_ENG_ACTUAL_DOTNET_VERSION = $(dotnet --version)
 
 ## Install .NET  and project dependencies
 dotnet/init: -dotnet/init dotnet/restore
@@ -124,7 +128,7 @@ endif
 	$(Q) $(OUTPUT_COLLAPSED) eng/brew_bundle_inject --cask dotnet-sdk
 	$(Q) $(OUTPUT_COLLAPSED) brew bundle
 
--dotnet/solution:
+-dotnet/solution: -requirements-dotnet
 	$(Q) mkdir $(_STANDARD_VERBOSE_FLAG) -p $(ENG_DOTNET_DIR)/{src,test}
 	$(Q) $(OUTPUT_COLLAPSED) dotnet new sln -o $(ENG_DOTNET_DIR) -n $(shell basename $$(pwd))
 
@@ -140,14 +144,18 @@ endif
 	$(Q) eval $(shell eng/build_env); \
 		$(OUTPUT_COLLAPSED) dotnet publish --configuration $(CONFIGURATION) --no-build $(ENG_DOTNET_DIR)
 
-# Nuget CLI doesn't work with GitHub package registry for some reason, so we're using a curl directly
 -dotnet/push: -requirements-dotnet -check-env-NUGET_PASSWORD -check-env-NUGET_USER_NAME -check-env-NUGET_UPLOAD_URL
 	$(Q) for f in dotnet/src/*/bin/Release/*.nupkg; do \
 		dotnet nuget push "$$f"; \
 	done
 
--requirements-dotnet: -check-command-dotnet
+-check-dotnet-version: -check-command-dotnet
+	@ $(call _check_version,dotnet,$(_ENG_ACTUAL_DOTNET_VERSION),$(DOTNET_VERSION))
+
+-requirements-dotnet: -check-dotnet-version -check-command-dotnet
 
 -hint-unsupported-dotnet:
 	@ echo $(_HIDDEN_IF_BOOTSTRAPPING) "$(_WARNING) Nothing to do" \
 		"because $(_MAGENTA).NET$(_RESET) is not enabled (Investigate $(_CYAN)\`make use/dotnet\`$(_RESET))"
+
+-init-frameworks: dotnet/init

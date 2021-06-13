@@ -1,5 +1,15 @@
+#: ruby engineering
+
 # Automatically detect whether Ruby is in use
 ENG_AUTODETECT_USING_RUBY = $(shell [ ! -f .ruby-version ] ; echo $$?)
+
+# User can define ENG_USING_RUBY themselves to avoid autodeteciton
+ifdef ENG_USING_RUBY
+_ENG_ACTUALLY_USING_RUBY = $(ENG_USING_RUBY)
+else
+_ENG_ACTUALLY_USING_RUBY = $(ENG_AUTODETECT_USING_RUBY)
+endif
+
 ENG_AVAILABLE_RUNTIMES += ruby
 
 .PHONY: \
@@ -20,8 +30,13 @@ ENG_ENABLED_RUNTIMES += ruby
 
 ## Install Ruby and project dependencies
 ruby/init: -ruby/init
+ruby/fmt: -ruby/fmt
+
+fmt: ruby/fmt
+
 else
 ruby/init: -hint-unsupported-ruby
+ruby/fmt: -hint-unsupported-ruby
 endif
 
 -ruby/init: -check-command-rbenv
@@ -29,6 +44,9 @@ endif
 	$(Q) $(OUTPUT_COLLAPSED) rbenv install -s
 	$(Q) $(OUTPUT_COLLAPSED) gem install bundler
 	$(Q) [ -f Gemfile ] && $(OUTPUT_HIDDEN) bundle install
+
+-ruby/fmt: -check-command-rufo
+	$(Q) rufo .
 
 -use/ruby-Gemfile: -check-command-Gemfile
 	$(Q) [ -f Gemfile ] || bundle init
@@ -40,3 +58,5 @@ endif
 -hint-unsupported-ruby:
 	@ echo $(_HIDDEN_IF_BOOTSTRAPPING) "$(_WARNING) Nothing to do" \
 		"because $(_MAGENTA)Ruby$(_RESET) is not enabled (Investigate $(_CYAN)\`make use/ruby\`$(_RESET))"
+
+-init-frameworks: ruby/init

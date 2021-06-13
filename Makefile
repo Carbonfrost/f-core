@@ -3,7 +3,7 @@
 #
 .PHONY: dotnet/generate
 
--include eng/.mk/*.mk
+-include eng/Makefile
 
 ## Generate generated code
 dotnet/generate:
